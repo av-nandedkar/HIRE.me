@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState } from 'react';
-import { FaGoogle, FaApple } from 'react-icons/fa';
+import { FaGoogle } from 'react-icons/fa';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -11,12 +11,12 @@ const Login = () => {
         <h2 className="text-black text-2xl font-bold text-center mb-6">Welcome to HIRE.me</h2>
         
         <div className="flex gap-2 mb-4">
-          <button className="flex items-center justify-center w-1/2 px-4 py-3 bg-gray-100 text-black rounded-2xl hover:bg-gray-300 cursor-pointer">
-            <FaGoogle className="mr-2 w-6 h-6 " /> Log in with Google
+          <button className="flex items-center justify-center w-full px-4 py-3 bg-gray-100 text-black rounded-2xl hover:bg-gray-300 cursor-pointer">
+            <FaGoogle className="mr-2 w-5 h-5 " /> Log in with Google
           </button>
-          <button className="flex items-center justify-center w-1/2 px-4 py-3 bg-gray-100 text-black rounded-2xl hover:bg-gray-300 cursor-pointer">
+          {/* <button className="flex items-center justify-center w-1/2 px-4 py-3 bg-gray-100 text-black rounded-2xl hover:bg-gray-300 cursor-pointer">
             <FaApple className="mr-2 w-6 h-6 " /> Log in with Apple
-          </button>
+          </button> */}
         </div>
         
         <div className="flex items-center my-4">
