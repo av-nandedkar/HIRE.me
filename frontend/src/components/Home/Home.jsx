@@ -1,5 +1,6 @@
 import React from "react";
 import { ShieldCheck, Cog, Headset, Users,TrendingUp, Star,Clock } from "lucide-react";
+import { Typewriter } from "react-simple-typewriter";
 
 const Home = () => {
   return (
@@ -8,7 +9,17 @@ const Home = () => {
       <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black opacity-60" />
       
       <div className="relative text-center z-10">
-        <h2 className="text-2xl sm:text-xl md:text-6xl ">Connecting Job Seekers &  <br /> Employers Seamlessly</h2>
+      <h2 className="text-2xl sm:text-xl md:text-4xl text-center ">
+      <Typewriter
+        words={["Connecting Job Seekers & Employers Seamlessly", "Find Your Perfect Job or Hire Top Talent"]}
+        loop={true}
+        cursor
+        cursorStyle="|"
+        typeSpeed={80}
+        deleteSpeed={50}
+        delaySpeed={2000}
+      />
+    </h2>
         <p className="mt-4 text-sm md:text-lg max-w-2xl mx-auto text-gray-300">
         HIRE.me bridges the gap between job seekers and employers, making hiring and job hunting effortless. Whether you're looking for work or need skilled professionals, our platform ensures the perfect match—quickly and efficiently.
         </p>

@@ -16,11 +16,21 @@ const Navbar = () => {
 
         {/* Desktop Menu */}
         <ul className="hidden md:flex space-x-6 text-lg">
-          <li><a href="/" className="hover:text-blue-400 transition duration-300">Home</a></li>
-          <li><a href="/login" className="hover:text-blue-400 transition duration-300">Login</a></li>
-          <li><a href="/companies" className="hover:text-blue-400 transition duration-300">Job</a></li>
-          <li><a href="/pricing" className="hover:text-blue-400 transition duration-300">Part-time</a></li>
-          <li><a href="/contact" className="hover:text-blue-400 transition duration-300">Services</a></li>
+          <li><a href="/" className="relative hover:text-[#ff347f] transition duration-300 
+               after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] 
+               after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full">Home</a></li>
+          <li><a href="/login" className="relative hover:text-[#ff347f] transition duration-300 
+               after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] 
+               after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full">Login</a></li>
+          <li><a href="/companies" className="relative hover:text-[#ff347f] transition duration-300 
+               after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] 
+               after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full">Job</a></li>
+          <li><a href="/pricing" className="relative hover:text-[#ff347f] transition duration-300 
+               after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] 
+               after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full">Part-time</a></li>
+          <li><a href="/contact" className="relative hover:text-[#ff347f] transition duration-300 
+               after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] 
+               after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full">Services</a></li>
         </ul>
 
         {/* Profile Dropdown */}
@@ -56,11 +66,21 @@ const Navbar = () => {
           menuOpen ? "opacity-100 visible" : "opacity-0 invisible"
         }`}
       >
-        <a href="/" className="hover:text-blue-400 transition duration-300 text-lg">Home</a>
-        <a href="/login" className="hover:text-blue-400 transition duration-300 text-lg">Login</a>
-        <a href="/companies" className="hover:text-blue-400 transition duration-300 text-lg">Jobs</a>
-        <a href="/pricing" className="hover:text-blue-400 transition duration-300 text-lg">Part-time</a>
-        <a href="/contact" className="hover:text-blue-400 transition duration-300 text-lg">Services</a>
+        <a href="/" className="relative hover:text-[#ff347f] transition duration-300 
+               after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] 
+               after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full">Home</a>
+        <a href="/login" className="relative hover:text-[#ff347f] transition duration-300 
+               after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] 
+               after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full">Login</a>
+        <a href="/companies" className="relative hover:text-[#ff347f] transition duration-300 
+               after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] 
+               after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full">Jobs</a>
+        <a href="/pricing" className="relative hover:text-[#ff347f] transition duration-300 
+               after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] 
+               after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full">Part-time</a>
+        <a href="/contact" className="relative hover:text-[#ff347f] transition duration-300 
+               after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] 
+               after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full">Services</a>
       </div>
     </nav>
   );
