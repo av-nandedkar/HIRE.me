@@ -18,7 +18,6 @@ const Register = () => {
 
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -78,7 +77,7 @@ const Register = () => {
 
     try {
       const { data } = await axios.post(
-        `${process.env.REACT_APP_API_URL}/register`,
+        `${import.meta.env.VITE_API_URL}/register`,
         { ...formData }, // ✅ Sending formData without confirmPassword
         { headers: { "Content-Type": "application/json" } }
       );
