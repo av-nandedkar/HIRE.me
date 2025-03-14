@@ -77,15 +77,15 @@ const Home = () => {
         </div>
 
         {/* Testimonial Section */}
-<div className="relative z-10 mt-16 w-full text-center">
+<div className="relative z-10 mt-30 w-full text-center">
   <h2 className="text-3xl font-bold">What Our Users Say</h2>
   <p className="text-gray-400 mt-2 max-w-2xl mx-auto">
     Real experiences from job seekers and employers who found success with HIRE.me.
   </p>
 
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8 max-w-6xl mx-auto px-4 mb-50">
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-15 max-w-6xl mx-auto px-4 mb-50">
     {/* Employer Review - 1 */}
-    <div className="bg-gray-780 hover:bg-gray-800 transition duration-300 p-6 rounded-lg shadow-lg text-center cursor-pointer">
+    <div className="bg-gray-780 hover:bg-gray-800 transition duration-300 p-6 rounded-lg  shadow-[0px_1px_1px_rgba(255,255,255,0.6)] text-center cursor-pointer">
       <div className="w-16 h-16 mx-auto mb-4">
         <img src="https://i.pravatar.cc/150?img=45" alt="Rajesh Sharma" className="rounded-full" />
       </div>
@@ -97,7 +97,7 @@ const Home = () => {
     </div>
 
     {/* Employer Review - 2 */}
-    <div className="bg-gray-780 hover:bg-gray-800 transition duration-300 p-6 rounded-lg shadow-lg text-center cursor-pointer">
+    <div className="bg-gray-780 hover:bg-gray-800 transition duration-300 p-6 rounded-lg shadow-[0px_1px_1px_rgba(255,255,255,0.6)] text-center cursor-pointer">
       <div className="w-16 h-16 mx-auto mb-4">
         <img src="https://i.pravatar.cc/150?img=48" alt="Priya Verma" className="rounded-full" />
       </div>
@@ -109,7 +109,7 @@ const Home = () => {
     </div>
 
     {/* Employee Review */}
-    <div className="bg-gray-780 hover:bg-gray-800 transition duration-300 p-6 rounded-lg shadow-lg text-center cursor-pointer">
+    <div className="bg-gray-780 hover:bg-gray-800 transition duration-300 p-6 rounded-lg shadow-[0px_1px_1px_rgba(255,255,255,0.6)]  text-center cursor-pointer">
       <div className="w-16 h-16 mx-auto mb-4">
         <img src="https://i.pravatar.cc/150?img=52" alt="Amit Kumar" className="rounded-full" />
       </div>
