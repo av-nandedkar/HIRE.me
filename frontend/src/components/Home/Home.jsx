@@ -3,7 +3,7 @@ import { ShieldCheck, Cog, Headset, Users,TrendingUp, Star,Clock } from "lucide-
 
 const Home = () => {
   return (
-    <div className="pt-30 bg-gray-700  relative  text-white min-h-screen flex flex-col justify-center items-center px-6 md:px-12">
+    <div className="pt-30 bg-gray-900  relative  text-white min-h-screen flex flex-col justify-center items-center px-6 md:px-12">
       {/* Background Overlay with Red Lines Effect */}
       <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black opacity-60" />
       
@@ -16,21 +16,21 @@ const Home = () => {
       
       <div className="relative flex flex-wrap justify-center items-center gap-8 mt-10 z-10">
         <div className="text-center  pr-6 border-r-0 md:border-r border-gray-500">
-          <span className="text-cyan-300 text-2xl font-bold">500+</span>
+          <span className="text-[#ff347f] text-2xl font-bold">500+</span>
           <p className="text-gray-300">Job Listings</p>
         </div>
         <div className="text-center  pr-6 border-r-0 md:border-r border-gray-500">
-          <span className="text-cyan-300 text-2xl font-bold">300+</span>
+          <span className="text-[#ff347f] text-2xl font-bold">300+</span>
           <p className="text-gray-300">Active Employers</p>
         </div>
         <div className="text-center">
-          <span className="text-cyan-300 text-2xl font-bold">95%</span>
+          <span className="text-[#ff347f] text-2xl font-bold">95%</span>
           <p className="text-gray-300">Job Matche</p>
         </div>
       </div>
       
       <div className="relative flex gap-4 mt-10 z-10 mb-25">
-        <button className="bg-cyan-500 hover:bg-cyan-700 cursor-pointer text-white px-6 py-3 rounded-lg font-medium transition">
+        <button className="bg-[black] hover:bg-[#ff347f] cursor-pointer text-white px-6 py-3 rounded-lg font-medium transition">
           Join HIRE.me
         </button>
         <button className="border border-white px-6 py-3 rounded-lg font-medium transition hover:bg-gray-800 cursor-pointer">
