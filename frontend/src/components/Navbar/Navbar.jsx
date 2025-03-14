@@ -16,11 +16,11 @@ const Navbar = () => {
 
         {/* Desktop Menu */}
         <ul className="hidden md:flex space-x-6 text-lg">
-          {["Home", "Jobs", "Companies", "Pricing", "Contact"].map((item) => (
-            <li key={item}>
-              <a href="#" className="hover:text-blue-400 transition duration-300">{item}</a>
-            </li>
-          ))}
+          <li><a href="/" className="hover:text-blue-400 transition duration-300">Home</a></li>
+          <li><a href="/jobs" className="hover:text-blue-400 transition duration-300">Jobs</a></li>
+          <li><a href="/companies" className="hover:text-blue-400 transition duration-300">Companies</a></li>
+          <li><a href="/pricing" className="hover:text-blue-400 transition duration-300">Pricing</a></li>
+          <li><a href="/contact" className="hover:text-blue-400 transition duration-300">Contact</a></li>
         </ul>
 
         {/* Profile Dropdown */}
@@ -34,9 +34,9 @@ const Navbar = () => {
           </button>
           {dropdownOpen && (
             <div className="absolute right-0 mt-3 bg-gray-900/90 backdrop-blur-lg text-white rounded-lg p-3 w-44 shadow-lg border border-gray-700 transition-all duration-300">
-              {["Dashboard", "Settings", "Logout"].map((option) => (
-                <a key={option} href="#" className="block px-4 py-2 hover:bg-gray-700 rounded-md transition duration-200">{option}</a>
-              ))}
+              <a href="/dashboard" className="block px-4 py-2 hover:bg-gray-700 rounded-md transition duration-200">Dashboard</a>
+              <a href="/settings" className="block px-4 py-2 hover:bg-gray-700 rounded-md transition duration-200">Settings</a>
+              <a href="/logout" className="block px-4 py-2 hover:bg-gray-700 rounded-md transition duration-200">Logout</a>
             </div>
           )}
         </div>
@@ -56,9 +56,11 @@ const Navbar = () => {
           menuOpen ? "opacity-100 visible" : "opacity-0 invisible"
         }`}
       >
-        {["Home", "Jobs", "Companies", "Pricing", "Contact"].map((item) => (
-          <a key={item} href="#" className="hover:text-blue-400 transition duration-300 text-lg">{item}</a>
-        ))}
+        <a href="/" className="hover:text-blue-400 transition duration-300 text-lg">Home</a>
+        <a href="/jobs" className="hover:text-blue-400 transition duration-300 text-lg">Jobs</a>
+        <a href="/companies" className="hover:text-blue-400 transition duration-300 text-lg">Companies</a>
+        <a href="/pricing" className="hover:text-blue-400 transition duration-300 text-lg">Pricing</a>
+        <a href="/contact" className="hover:text-blue-400 transition duration-300 text-lg">Contact</a>
       </div>
     </nav>
   );

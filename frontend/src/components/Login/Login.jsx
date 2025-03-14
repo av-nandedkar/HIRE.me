@@ -64,8 +64,8 @@ const Login = () => {
     <>
       <Toaster position="top-center" toastOptions={{ style: { fontSize: '1rem', padding: '10px 20px', maxWidth: '500px', borderRadius: '40px', marginTop: '30px' } }} />
 
-      <div className="flex items-center px-8 justify-center min-h-screen bg-gray-900">
-        <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+      <div className="flex items-center p-8 justify-center min-h-screen bg-gray-900">
+        <div className="bg-white mt-12 p-8 rounded-3xl shadow-lg w-full max-w-md">
           <h2 className="text-black text-2xl font-bold text-center mb-6">Welcome to</h2>
           <div className="flex justify-center mb-6">
             <a href='/'> <img src="/HIRE.me-blue.png" alt="HIRE.me Logo" className="h-12" /></a>
