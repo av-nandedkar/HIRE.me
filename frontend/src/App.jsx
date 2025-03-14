@@ -4,7 +4,7 @@ import Navbar from './components/Navbar/Navbar'
 import Login from './components/Login/Login';
 import Register from './components/Login/Register';
 import Home from './components/Home/Home'
-import { Home } from 'lucide-react';
+
 
 function App() {
   return (
