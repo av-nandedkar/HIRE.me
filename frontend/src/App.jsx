@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import Navbar from './components/Navbar/Navbar'
+import {Navbar,Footer} from './components/Navbar/Navbar'
 import Login from './components/Login/Login';
 import Register from './components/Login/Register';
 import Home from './components/Home/Home'
@@ -19,6 +19,7 @@ function App() {
 
 
         </Routes>
+        <Footer/>
       </div>
     </Router>
 

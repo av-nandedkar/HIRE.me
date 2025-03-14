@@ -17,10 +17,10 @@ const Navbar = () => {
         {/* Desktop Menu */}
         <ul className="hidden md:flex space-x-6 text-lg">
           <li><a href="/" className="hover:text-blue-400 transition duration-300">Home</a></li>
-          <li><a href="/jobs" className="hover:text-blue-400 transition duration-300">Jobs</a></li>
-          <li><a href="/companies" className="hover:text-blue-400 transition duration-300">Companies</a></li>
-          <li><a href="/pricing" className="hover:text-blue-400 transition duration-300">Pricing</a></li>
-          <li><a href="/contact" className="hover:text-blue-400 transition duration-300">Contact</a></li>
+          <li><a href="/login" className="hover:text-blue-400 transition duration-300">Login</a></li>
+          <li><a href="/companies" className="hover:text-blue-400 transition duration-300">Job</a></li>
+          <li><a href="/pricing" className="hover:text-blue-400 transition duration-300">Part-time</a></li>
+          <li><a href="/contact" className="hover:text-blue-400 transition duration-300">Services</a></li>
         </ul>
 
         {/* Profile Dropdown */}
@@ -57,13 +57,70 @@ const Navbar = () => {
         }`}
       >
         <a href="/" className="hover:text-blue-400 transition duration-300 text-lg">Home</a>
-        <a href="/jobs" className="hover:text-blue-400 transition duration-300 text-lg">Jobs</a>
-        <a href="/companies" className="hover:text-blue-400 transition duration-300 text-lg">Companies</a>
-        <a href="/pricing" className="hover:text-blue-400 transition duration-300 text-lg">Pricing</a>
-        <a href="/contact" className="hover:text-blue-400 transition duration-300 text-lg">Contact</a>
+        <a href="/login" className="hover:text-blue-400 transition duration-300 text-lg">Login</a>
+        <a href="/companies" className="hover:text-blue-400 transition duration-300 text-lg">Jobs</a>
+        <a href="/pricing" className="hover:text-blue-400 transition duration-300 text-lg">Part-time</a>
+        <a href="/contact" className="hover:text-blue-400 transition duration-300 text-lg">Services</a>
       </div>
     </nav>
   );
 };
 
-export default Navbar;
+const Footer = () => {
+  return (
+    <footer className="bg-white border-t border-gray-200 py-8">
+      <div className="max-w-7xl mx-auto px-6 md:px-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          
+          {/* About Us Section */}
+          <div>
+            <h3 className="text-sm font-semibold">About HIRE.me</h3>
+            <p className="text-xs text-gray-500 mt-2">
+              HIRE.me is a job-matching platform that helps businesses find skilled professionals and job seekers land their ideal roles.
+            </p>
+          </div>
+
+          {/* Services Section */}
+          <div>
+            <h3 className="text-sm font-semibold">Services</h3>
+            <ul className="mt-2 text-xs text-gray-500 space-y-2">
+              <li>Job Search</li>
+              <li>Freelance Opportunities</li>
+              <li>Company Reviews</li>
+              <li>Career Coaching</li>
+            </ul>
+          </div>
+
+          {/* Resources Section */}
+          <div>
+            <h3 className="text-sm font-semibold">Resources</h3>
+            <ul className="mt-2 text-xs text-gray-500 space-y-2">
+              <li>Interview Tips</li>
+              <li>Resume Writing</li>
+              <li>Career Blog</li>
+              <li>Salary Insights</li>
+            </ul>
+          </div>
+
+          {/* Company Info */}
+          <div>
+            <h3 className="text-sm font-semibold">Company</h3>
+            <ul className="mt-2 text-xs text-gray-500 space-y-2">
+              <li>About Us</li>
+              <li>Our Team</li>
+              <li>Privacy Policy</li>
+              <li>Terms of Service</li>
+            </ul>
+          </div>
+
+        </div>
+
+        {/* Copyright Section */}
+        <div className="text-center text-gray-500 text-sm mt-5 border-t pt-4">
+          © {new Date().getFullYear()} Hire.me Inc. All Rights Reserved.
+        </div>
+      </div>
+    </footer>
+  );
+};
+export { Navbar, Footer };

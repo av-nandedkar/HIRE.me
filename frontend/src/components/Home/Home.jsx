@@ -83,42 +83,43 @@ const Home = () => {
     Real experiences from job seekers and employers who found success with HIRE.me.
   </p>
 
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-15 max-w-6xl mx-auto px-4 mb-50">
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-15 max-w-6xl mx-auto px-4 mb-20">
     {/* Employer Review - 1 */}
-    <div className="bg-gray-780 hover:bg-gray-800 transition duration-300 p-6 rounded-lg  shadow-[0px_1px_1px_rgba(255,255,255,0.6)] text-center cursor-pointer">
-      <div className="w-16 h-16 mx-auto mb-4">
-        <img src="https://i.pravatar.cc/150?img=45" alt="Rajesh Sharma" className="rounded-full" />
-      </div>
-      <h3 className="text-xl font-semibold">Rajesh Sharma</h3>
-      <p className="text-gray-400 text-sm">Small Business Owner, Mumbai</p>
-      <p className="text-gray-300 mt-4">
-        "HIRE.me made hiring electricians and carpenters for my store so easy! The ratings and reviews helped me choose the best professionals, and the real-time alerts saved me time."
-      </p>
-    </div>
+<div className="bg-gray-780 hover:bg-gray-800 transition duration-300 p-4 sm:p-6 rounded-lg shadow-[0px_1px_1px_rgba(255,255,255,0.6)] text-center cursor-pointer">
+  <div className="w-12 sm:w-16 h-12 sm:h-16 mx-auto mb-3 sm:mb-4">
+    <img src="https://i.pravatar.cc/150?img=45" alt="Rajesh Sharma" className="rounded-full" />
+  </div>
+  <h3 className="text-lg sm:text-xl font-semibold">Rajesh Sharma</h3>
+  <p className="text-gray-400 text-xs sm:text-sm">Small Business Owner, Mumbai</p>
+  <p className="text-gray-300 mt-3 sm:mt-4 text-sm sm:text-base">
+    "WorkConnect made hiring electricians and carpenters for my store so easy! The ratings and reviews helped me choose the best professionals, and the real-time alerts saved me time."
+  </p>
+</div>
 
-    {/* Employer Review - 2 */}
-    <div className="bg-gray-780 hover:bg-gray-800 transition duration-300 p-6 rounded-lg shadow-[0px_1px_1px_rgba(255,255,255,0.6)] text-center cursor-pointer">
-      <div className="w-16 h-16 mx-auto mb-4">
-        <img src="https://i.pravatar.cc/150?img=48" alt="Priya Verma" className="rounded-full" />
-      </div>
-      <h3 className="text-xl font-semibold">Priya Verma</h3>
-      <p className="text-gray-400 text-sm">Restaurant Owner, Delhi</p>
-      <p className="text-gray-300 mt-4">
-        "Finding skilled workers for my restaurant was always a hassle until I started using HIRE.me. The platform helped me connect with reliable staff quickly, and the process was smooth."
-      </p>
-    </div>
+{/* Employer Review - 2 */}
+<div className="bg-gray-780 hover:bg-gray-800 transition duration-300 p-4 sm:p-6 rounded-lg shadow-[0px_1px_1px_rgba(255,255,255,0.6)] text-center cursor-pointer">
+  <div className="w-12 sm:w-16 h-12 sm:h-16 mx-auto mb-3 sm:mb-4">
+    <img src="https://i.pravatar.cc/150?img=48" alt="Priya Verma" className="rounded-full" />
+  </div>
+  <h3 className="text-lg sm:text-xl font-semibold">Priya Verma</h3>
+  <p className="text-gray-400 text-xs sm:text-sm">Restaurant Owner, Delhi</p>
+  <p className="text-gray-300 mt-3 sm:mt-4 text-sm sm:text-base">
+    "Finding skilled workers for my restaurant was always a hassle until I started using WorkConnect. The platform helped me connect with reliable staff quickly, and the process was smooth."
+  </p>
+</div>
 
-    {/* Employee Review */}
-    <div className="bg-gray-780 hover:bg-gray-800 transition duration-300 p-6 rounded-lg shadow-[0px_1px_1px_rgba(255,255,255,0.6)]  text-center cursor-pointer">
-      <div className="w-16 h-16 mx-auto mb-4">
-        <img src="https://i.pravatar.cc/150?img=52" alt="Amit Kumar" className="rounded-full" />
-      </div>
-      <h3 className="text-xl font-semibold">Amit Kumar</h3>
-      <p className="text-gray-400 text-sm">Electrician, Bangalore</p>
-      <p className="text-gray-300 mt-4">
-        "HIRE.me helped me find jobs in my area without any middlemen. I get instant notifications about new job postings, and the rating system has helped me build trust with employers."
-      </p>
-    </div>
+{/* Employee Review */}
+<div className="bg-gray-780 hover:bg-gray-800 transition duration-300 p-4 sm:p-6 rounded-lg shadow-[0px_1px_1px_rgba(255,255,255,0.6)] text-center cursor-pointer">
+  <div className="w-12 sm:w-16 h-12 sm:h-16 mx-auto mb-3 sm:mb-4">
+    <img src="https://i.pravatar.cc/150?img=52" alt="Amit Kumar" className="rounded-full" />
+  </div>
+  <h3 className="text-lg sm:text-xl font-semibold">Amit Kumar</h3>
+  <p className="text-gray-400 text-xs sm:text-sm">Electrician, Bangalore</p>
+  <p className="text-gray-300 mt-3 sm:mt-4 text-sm sm:text-base">
+    "WorkConnect helped me find jobs in my area without any middlemen. I get instant notifications about new job postings, and the rating system has helped me build trust with employers."
+  </p>
+</div>
+
   </div>
 </div>
 
