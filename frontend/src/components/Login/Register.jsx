@@ -5,7 +5,7 @@ import { Toaster } from "react-hot-toast";
 import axios from "axios";
 
 const Register = () => {
-  const [step, setStep] = useState(3);
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     userType: "",
     name: "",
