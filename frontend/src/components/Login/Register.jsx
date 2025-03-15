@@ -54,7 +54,7 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (
       !formData.userType ||
       !formData.name ||
@@ -68,35 +68,38 @@ const Register = () => {
       toast.error("Please fill all required fields.");
       return;
     }
-
+  
     if (passwordError) {
       toast.error(passwordError);
       return;
     }
-
+  
     if (formData.password !== confirmPassword) {
       toast.error("Passwords do not match!");
       return;
     }
-
+  
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-    const user = userCredential.user;
-    const db = getDatabase(app);
-    await set(ref(db, `users/${user.uid}`), {
-      userType: formData.userType,
-      name: formData.name,
-      email: formData.email,
-      phone: formData.phone,
-      location: formData.location,
-      pinCode: formData.pinCode,
-    });
-
-     toast.success( "Registration successful!");
+      const user = userCredential.user;
+      
+      const db = getDatabase(app);
+      await set(ref(db, `users/${user.uid}`), {
+        userType: formData.userType,
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        location: formData.location,
+        pinCode: formData.pinCode,
+      });
+  
+      toast.success("Registration successful!");
     } catch (error) {
-      toast.error( "Registration failed.",error);
+      console.error("Registration Error:", error); // Add this line for debugging
+      toast.error(`Registration failed: ${error.message}`); // Show error message
     }
   };
+  
 
   return (
     <>

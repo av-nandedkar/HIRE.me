@@ -19,28 +19,31 @@ const Login = () => {
 
   const handleGoogleLogin = async () => {
     try {
+      // Open Google sign-in popup to get credentials but DO NOT sign in yet
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
   
-      // Check if user exists in the database
+      // Check if the user exists in the database BEFORE allowing authentication
       const userRef = ref(database, `users/${user.uid}`);
       const snapshot = await get(userRef);
   
       if (snapshot.exists()) {
-        // User exists, proceed with login
+        // User exists → Proceed with authentication
         const token = await user.getIdToken();
         localStorage.setItem("authToken", token);
         toast.success("Login successful!");
-        window.location.href = "/dashboard"; // Redirect after login
+        window.location.href = "/dashboard";
       } else {
-        // User not found, ask them to register first
-        toast.error("You are not registered. Please sign up first.");
-        await auth.signOut(); // Sign out if user is not found in the database
+        await user.delete();
+        // User is NOT registered → Force sign them out and show an error message
+        await auth.signOut(); // Ensure they are signed out immediately
+        toast.error("User does not exist. Please register first.");
       }
     } catch (error) {
       toast.error(error.message || "Google login failed.");
     }
   };
+  
   
 
   const handleLogin = async (e) => {
