@@ -5,6 +5,7 @@ import Login from './components/Login/Login';
 import Register from './components/Login/Register';
 import Home from './components/Home/Home'
 import WorkProviderForm from './components/Forms/provider';
+import SeekerForm from './components/Forms/seeker';
 
 function App() {
   return (
@@ -17,7 +18,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/workproviderform" element={<WorkProviderForm />} />
-
+          <Route path="/seekerform" element={<SeekerForm/>}></Route>
         </Routes>
         <Footer/>
       </div>

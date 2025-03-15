@@ -89,13 +89,6 @@ const JobForm = () => {
     <div className="flex items-center px-8 justify-center min-h-screen bg-gray-900">
       <Toaster />
       <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-3xl relative">
-        {/* Close Button */}
-        <button
-          onClick={handleClose}
-          className="absolute top-3 right-3 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-600 transition"
-        >
-          ✖
-        </button>
 
         {/* Progress Indicator */}
         <div className="text-center mb-6">
