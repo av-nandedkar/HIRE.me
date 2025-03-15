@@ -6,7 +6,6 @@ const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [languageOpen, setLanguageOpen] = useState(false);
   const dropdownRef = useRef(null);
-  const languageRef = useRef(null);
 
   useEffect(() => {
     if (languageOpen && !window.googleTranslateElementInit) {
@@ -23,24 +22,16 @@ const Navbar = () => {
     }
   }, [languageOpen]);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (languageRef.current && !languageRef.current.contains(event.target)) {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest(".language")) {
         setLanguageOpen(false);
       }
-    }
-
-    if (languageOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [languageOpen]);
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []);
+
 
 
   useEffect(() => {
@@ -87,7 +78,7 @@ const Navbar = () => {
                after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full">Part-time</a></li>
 
           {/* Language Dropdown */}
-          <li className="relative" ref={languageRef}>
+          <li className="relative language" >
             <button
               onClick={() => setLanguageOpen((prev) => !prev)}
               className="flex items-center space-x-2 bg-white text-black px-4 py-2 rounded-full shadow-md border border-gray-300 hover:bg-gray-200 transition-all"
@@ -97,7 +88,7 @@ const Navbar = () => {
             </button>
 
             {/* Dropdown Menu */}
-            <div className={`absolute right-0 mt-2 w-52 bg-white shadow-lg border border-gray-300 rounded-lg p-3 transition-all duration-300 ease-in-out ${languageOpen ? "opacity-100 scale-100 visible" : "opacity-0 scale-95 invisible"}`}>
+            <div className={`absolute right-0 mt-2 w-52 bg-white shadow-lg border border-gray-300 rounded-lg p-3 transition-all duration-300 ease-in-out ${languageOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}>
               <div id="google_translate_element" className="p-2 text-center"></div>
             </div>
           </li>
@@ -163,7 +154,7 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Language Dropdown */}
-        <div className="relative w-full flex justify-center" ref={languageRef}>
+        <div className="relative w-full flex justify-center" >
           <button
             onClick={() => setLanguageOpen((prev) => !prev)}
             className="flex items-center space-x-2 bg-white text-black px-4 py-2 rounded-full shadow-md border border-gray-300 hover:bg-gray-200 transition-all"
