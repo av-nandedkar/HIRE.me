@@ -44,9 +44,9 @@ const Home = () => {
         <a href="/register"><button className="bg-[black] hover:bg-[#ff347f] cursor-pointer text-white px-6 py-3 rounded-lg font-medium transition">
           Join HIRE.me
         </button></a>
-        <button className="border border-white px-6 py-3 rounded-lg font-medium transition hover:bg-gray-800 cursor-pointer">
+        <a href="/contact"><button className="border border-white px-6 py-3 rounded-lg font-medium transition hover:bg-gray-800 cursor-pointer">
           Contact Us
-        </button>
+        </button></a>
       </div>
       
       {/* Features Section */}
