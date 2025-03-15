@@ -1,5 +1,8 @@
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import { getDatabase ,ref, push} from "firebase/database";
+import {app}from '../../firebase';
+const database = getDatabase(app);
 
 const JobForm = () => {
   const [step, setStep] = useState(1);
@@ -9,7 +12,7 @@ const JobForm = () => {
     businessDetails: "",
     companyName: "",
     companyAddress: "",
-    pinCode: "", // New Pin Code Field
+    pinCode: "", 
     gstId: "",
     jobCategories: "",
     preferredSkills: "",
@@ -23,10 +26,8 @@ const JobForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
   
-    // Required fields
     const requiredFields = ["location", "companyAddress", "pinCode", "jobCategories", "preferredSkills", "budgetRange"];
   
-    // Check if any required field is empty
     for (const field of requiredFields) {
       if (!formData[field].trim()) {
         toast.error("Please fill all the required fields!");
@@ -34,13 +35,37 @@ const JobForm = () => {
       }
     }
   
-    toast.success("Job posted successfully!");
-    console.log("Form Submitted:", formData);
+    const jobsRef = ref(database, "jobs"); 
+
+  // Push job data to Firebase
+  push(jobsRef, formData)
+    .then(() => {
+      toast.success("Job posted successfully!");
+      console.log("Job Data Stored:", formData);
+      
+      // Reset form after submission
+      setFormData({
+        profilePicture: null,
+        location: "",
+        businessDetails: "",
+        companyName: "",
+        companyAddress: "",
+        pinCode: "",
+        gstId: "",
+        jobCategories: "",
+        preferredSkills: "",
+        budgetRange: "",
+      });
+    })
+    .catch((error) => {
+      toast.error("Error posting job: " + error.message);
+      console.error("Firebase Error:", error);
+    });
   };
   
   
 
-  // Function to close/reset the form
+  
   const handleClose = () => {
     if (window.confirm("Are you sure you want to close the form? All progress will be lost.")) {
       setStep(1);
@@ -50,7 +75,7 @@ const JobForm = () => {
         businessDetails: "",
         companyName: "",
         companyAddress: "",
-        pinCode: "", // Reset Pin Code
+        pinCode: "", 
         gstId: "",
         jobCategories: "",
         preferredSkills: "",

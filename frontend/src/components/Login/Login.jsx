@@ -3,8 +3,10 @@ import { FaGoogle, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { toast, Toaster } from "react-hot-toast";
 import { getAuth,signInWithEmailAndPassword,GoogleAuthProvider ,signInWithPopup } from 'firebase/auth';
 import {app}from '../../firebase';
+import { getDatabase, ref, get } from "firebase/database";
 const auth=getAuth(app);
 const provider = new GoogleAuthProvider();
+const database = getDatabase(app);
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -19,17 +21,27 @@ const Login = () => {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-      
-      // Store token in local storage
-      const token = await user.getIdToken();
-      localStorage.setItem("authToken", token);
-      
-      toast.success("Login successful!");
-      window.location.href = "/dashboard"; // Redirect after login
+  
+      // Check if user exists in the database
+      const userRef = ref(database, `users/${user.uid}`);
+      const snapshot = await get(userRef);
+  
+      if (snapshot.exists()) {
+        // User exists, proceed with login
+        const token = await user.getIdToken();
+        localStorage.setItem("authToken", token);
+        toast.success("Login successful!");
+        window.location.href = "/dashboard"; // Redirect after login
+      } else {
+        // User not found, ask them to register first
+        toast.error("You are not registered. Please sign up first.");
+        await auth.signOut(); // Sign out if user is not found in the database
+      }
     } catch (error) {
       toast.error(error.message || "Google login failed.");
     }
   };
+  
 
   const handleLogin = async (e) => {
     e.preventDefault();
