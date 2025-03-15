@@ -1,10 +1,12 @@
-import React, { useState ,useEffect } from "react";
+import React, { useState ,useEffect, useRef } from "react";
 import { FaUser, FaCaretDown, FaBars, FaTimes } from "react-icons/fa";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [languageOpen, setLanguageOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  const languageRef = useRef(null);
 
   useEffect(() => {
     if (languageOpen && !window.googleTranslateElementInit) {
@@ -20,6 +22,45 @@ const Navbar = () => {
       document.body.appendChild(script);
     }
   }, [languageOpen]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (languageRef.current && !languageRef.current.contains(event.target)) {
+        setLanguageOpen(false);
+      }
+    }
+
+    if (languageOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [languageOpen]);
+
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    }
+
+    // Add event listener when dropdown is open
+    if (dropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownOpen]);
   
   return (
     <nav className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white p-4 fixed top-0 w-full z-50 shadow-lg">
@@ -31,7 +72,7 @@ const Navbar = () => {
         </a>
 
         {/* Desktop Menu */}
-        <ul className="hidden md:flex space-x-6 text-lg">
+        <ul className="hidden md:flex space-x-6 text-lg items-center">
           <li><a href="/" className="relative hover:text-[#ff347f] transition duration-300 
                after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] 
                after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full">Home</a></li>
@@ -46,7 +87,7 @@ const Navbar = () => {
                after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full">Part-time</a></li>
 
           {/* Language Dropdown */}
-          <li className="relative">
+          <li className="relative" ref={languageRef}>
             <button
               onClick={() => setLanguageOpen((prev) => !prev)}
               className="flex items-center space-x-2 bg-white text-black px-4 py-2 rounded-full shadow-md border border-gray-300 hover:bg-gray-200 transition-all"
@@ -63,7 +104,7 @@ const Navbar = () => {
         </ul>
 
         {/* Profile Dropdown */}
-        <div className="relative hidden md:block">
+        <div className="relative hidden md:block " ref={dropdownRef}>
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
             className="flex items-center space-x-2 bg-gray-800 px-4 py-2 rounded-full hover:bg-gray-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -103,7 +144,7 @@ const Navbar = () => {
         <a href="/contact" className="hover:text-[#ff347f] transition duration-300">Services</a>
 
         {/* Mobile Profile Dropdown */}
-        <div className="relative">
+        <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
             className="flex items-center space-x-2 bg-gray-800 px-4 py-2 rounded-full hover:bg-gray-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -122,7 +163,7 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Language Dropdown */}
-        <div className="relative w-full flex justify-center">
+        <div className="relative w-full flex justify-center" ref={languageRef}>
           <button
             onClick={() => setLanguageOpen((prev) => !prev)}
             className="flex items-center space-x-2 bg-white text-black px-4 py-2 rounded-full shadow-md border border-gray-300 hover:bg-gray-200 transition-all"

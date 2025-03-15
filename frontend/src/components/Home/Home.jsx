@@ -10,7 +10,7 @@ const Home = () => {
       
       <div className="relative text-center z-10">
       <h2 className="text-2xl sm:text-xl md:text-4xl text-center ">
-      <Typewriter
+      <span className="notranslate"><Typewriter
         words={["Connecting Job Seekers & Employers Seamlessly", "Find Your Perfect Job or Hire Top Talent"]}
         loop={true}
         cursor
@@ -18,7 +18,7 @@ const Home = () => {
         typeSpeed={80}
         deleteSpeed={50}
         delaySpeed={2000}
-      />
+      /></span>
     </h2>
         <p className="mt-4 text-sm md:text-lg max-w-2xl mx-auto text-gray-300">
         HIRE.me bridges the gap between job seekers and employers, making hiring and job hunting effortless. Whether you're looking for work or need skilled professionals, our platform ensures the perfect match—quickly and efficiently.
