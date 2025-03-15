@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { FaGoogle, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { toast, Toaster } from "react-hot-toast";
-import { getAuth,signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth,signInWithEmailAndPassword,GoogleAuthProvider ,signInWithPopup } from 'firebase/auth';
 import {app}from '../../firebase';
 const auth=getAuth(app);
+const provider = new GoogleAuthProvider();
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -13,6 +14,22 @@ const Login = () => {
 
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const isValidPassword = (password) => /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/.test(password);
+
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      
+      // Store token in local storage
+      const token = await user.getIdToken();
+      localStorage.setItem("authToken", token);
+      
+      toast.success("Login successful!");
+      window.location.href = "/dashboard"; // Redirect after login
+    } catch (error) {
+      toast.error(error.message || "Google login failed.");
+    }
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -71,7 +88,7 @@ const Login = () => {
           </div>
 
           <div className="flex gap-2 mb-4">
-            <button className="flex items-center justify-center w-full px-4 py-3 bg-gray-100 text-black rounded-2xl hover:bg-gray-300 cursor-pointer">
+            <button onClick={handleGoogleLogin} className="flex items-center justify-center w-full px-4 py-3 bg-gray-100 text-black rounded-2xl hover:bg-gray-300 cursor-pointer">
               <FaGoogle className="mr-2 w-5 h-5" /> Log in with Google
             </button>
           </div>
