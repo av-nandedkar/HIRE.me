@@ -1,17 +1,33 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect } from "react";
 import { FaUser, FaCaretDown, FaBars, FaTimes } from "react-icons/fa";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [languageOpen, setLanguageOpen] = useState(false);
 
+  useEffect(() => {
+    if (languageOpen && !window.googleTranslateElementInit) {
+      window.googleTranslateElementInit = () => {
+        new window.google.translate.TranslateElement(
+          { pageLanguage: "en", autoDisplay: false },
+          "google_translate_element"
+        );
+      };
+      const script = document.createElement("script");
+      script.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  }, [languageOpen]);
+  
   return (
     <nav className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white p-4 fixed top-0 w-full z-50 shadow-lg">
-      <div className="container mx-auto flex justify-between items-center">
-        
+      <div className="container mx-auto flex justify-between items-center px-4">
+
         {/* Logo */}
         <a href="/" className="flex items-center space-x-2">
-          <img src="/HIRE.me-white.png" alt="HIRE.me Logo" className="px-5 h-10 w-auto" />
+          <img src="/HIRE.me-white.png" alt="HIRE.me Logo" className="h-10 w-auto" />
         </a>
 
         {/* Desktop Menu */}
@@ -24,66 +40,106 @@ const Navbar = () => {
                after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full">Login</a></li>
           <li><a href="/companies" className="relative hover:text-[#ff347f] transition duration-300 
                after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] 
-               after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full">Job</a></li>
+               after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full">Jobs</a></li>
           <li><a href="/pricing" className="relative hover:text-[#ff347f] transition duration-300 
                after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] 
                after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full">Part-time</a></li>
-          <li><a href="/contact" className="relative hover:text-[#ff347f] transition duration-300 
-               after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] 
-               after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full">Services</a></li>
+
+          {/* Language Dropdown */}
+          <li className="relative">
+            <button
+              onClick={() => setLanguageOpen((prev) => !prev)}
+              className="flex items-center space-x-2 bg-white text-black px-4 py-2 rounded-full shadow-md border border-gray-300 hover:bg-gray-200 transition-all"
+            >
+              <span className="font-medium"><strong>🌐</strong></span>
+              <FaCaretDown className={`transition-transform ${languageOpen ? "rotate-180" : ""}`} />
+            </button>
+
+            {/* Dropdown Menu */}
+            <div className={`absolute right-0 mt-2 w-52 bg-white shadow-lg border border-gray-300 rounded-lg p-3 transition-all duration-300 ease-in-out ${languageOpen ? "opacity-100 scale-100 visible" : "opacity-0 scale-95 invisible"}`}>
+              <div id="google_translate_element" className="p-2 text-center"></div>
+            </div>
+          </li>
         </ul>
 
         {/* Profile Dropdown */}
         <div className="relative hidden md:block">
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="flex items-center space-x-2 bg-gray-800 px-4 py-2 rounded-full hover:bg-gray-700 transition"
+            className="flex items-center space-x-2 bg-gray-800 px-4 py-2 rounded-full hover:bg-gray-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <FaUser className="text-lg" />
-            <FaCaretDown />
+            <FaCaretDown className={`transition-transform duration-300 ${dropdownOpen ? 'rotate-180' : 'rotate-0'}`} />
           </button>
+
           {dropdownOpen && (
-            <div className="absolute right-0 mt-3 bg-gray-900/90 backdrop-blur-lg text-white rounded-lg p-3 w-44 shadow-lg border border-gray-700 transition-all duration-300">
-              <a href="/dashboard" className="block px-4 py-2 hover:bg-gray-700 rounded-md transition duration-200">Dashboard</a>
-              <a href="/settings" className="block px-4 py-2 hover:bg-gray-700 rounded-md transition duration-200">Settings</a>
-              <a href="/logout" className="block px-4 py-2 hover:bg-gray-700 rounded-md transition duration-200">Logout</a>
+            <div className="absolute right-0 mt-3 w-48 origin-top-right bg-gray-800/90 backdrop-blur-sm border border-gray-700 rounded-lg shadow-lg transition-all ease-out duration-300 scale-100">
+              <a href="/dashboard" className="block px-4 py-3 text-sm text-white hover:bg-gray-700 rounded-md transition-colors">Dashboard</a>
+              <a href="/settings" className="block px-4 py-3 text-sm text-white hover:bg-gray-700 rounded-md transition-colors">Settings</a>
+              <a href="/logout" className="block px-4 py-3 text-sm text-red-400 hover:bg-red-700 hover:text-white rounded-md transition-colors">Logout</a>
             </div>
           )}
         </div>
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden block text-gray-400 focus:outline-none"
+          className="md:hidden block text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-full transition-transform duration-300 ease-in-out"
           onClick={() => setMenuOpen(!menuOpen)}
         >
-          {menuOpen ? <FaTimes className="w-6 h-6" /> : <FaBars className="w-6 h-6" />}
+          {menuOpen ? (
+            <FaTimes className="w-6 h-6 transition-transform duration-300 ease-in-out transform scale-100 hover:scale-110" />
+          ) : (
+            <FaBars className="w-6 h-6 transition-transform duration-300 ease-in-out transform scale-100 hover:scale-110" />
+          )}
         </button>
       </div>
 
       {/* Mobile Menu */}
-      <div
-        className={`md:hidden bg-gray-900/90 p-5 absolute top-16 left-0 w-full flex flex-col items-center space-y-4 transition-all duration-300 ${
-          menuOpen ? "opacity-100 visible" : "opacity-0 invisible"
-        }`}
-      >
-        <a href="/" className="relative hover:text-[#ff347f] transition duration-300 
-               after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] 
-               after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full">Home</a>
-        <a href="/login" className="relative hover:text-[#ff347f] transition duration-300 
-               after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] 
-               after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full">Login</a>
-        <a href="/companies" className="relative hover:text-[#ff347f] transition duration-300 
-               after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] 
-               after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full">Jobs</a>
-        <a href="/pricing" className="relative hover:text-[#ff347f] transition duration-300 
-               after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] 
-               after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full">Part-time</a>
-        <a href="/contact" className="relative hover:text-[#ff347f] transition duration-300 
-               after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] 
-               after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full">Services</a>
+      <div className={`md:hidden bg-gray-900/90 p-5 absolute top-16 left-0 w-full flex flex-col items-center space-y-4 transition-all duration-300 ease-in-out ${menuOpen ? "opacity-100 visible scale-100" : "opacity-0 invisible scale-95"}`}>
+        <a href="/" className="hover:text-[#ff347f] transition duration-300">Home</a>
+        <a href="/login" className="hover:text-[#ff347f] transition duration-300">Login</a>
+        <a href="/companies" className="hover:text-[#ff347f] transition duration-300">Jobs</a>
+        <a href="/pricing" className="hover:text-[#ff347f] transition duration-300">Part-time</a>
+        <a href="/contact" className="hover:text-[#ff347f] transition duration-300">Services</a>
+
+        {/* Mobile Profile Dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            className="flex items-center space-x-2 bg-gray-800 px-4 py-2 rounded-full hover:bg-gray-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <FaUser className="text-lg" />
+            <FaCaretDown className={`transition-transform duration-300 ${dropdownOpen ? 'rotate-180' : 'rotate-0'}`} />
+          </button>
+
+          {dropdownOpen && (
+            <div className="absolute right-0 mt-3 w-48 origin-top-right bg-gray-800/90 backdrop-blur-sm border border-gray-700 rounded-lg shadow-lg transition-all ease-out duration-300 scale-100">
+              <a href="/dashboard" className="block px-4 py-3 text-sm text-white hover:bg-gray-700 rounded-md transition-colors">Dashboard</a>
+              <a href="/settings" className="block px-4 py-3 text-sm text-white hover:bg-gray-700 rounded-md transition-colors">Settings</a>
+              <a href="/logout" className="block px-4 py-3 text-sm text-red-400 hover:bg-red-700 hover:text-white rounded-md transition-colors">Logout</a>
+            </div>
+          )}
+        </div>
+
+        {/* Mobile Language Dropdown */}
+        <div className="relative w-full flex justify-center">
+          <button
+            onClick={() => setLanguageOpen((prev) => !prev)}
+            className="flex items-center space-x-2 bg-white text-black px-4 py-2 rounded-full shadow-md border border-gray-300 hover:bg-gray-200 transition-all"
+          >
+            <span className="font-medium"><strong>🌐</strong></span>
+            <FaCaretDown className={`transition-transform ${languageOpen ? "rotate-180" : ""}`} />
+          </button>
+
+          {/* Dropdown Menu */}
+          <div className={`absolute top-full mt-2 w-52 bg-white shadow-lg border border-gray-300 rounded-lg p-3 transition-all ease-in-out ${languageOpen ? "opacity-100 scale-100 visible" : "opacity-0 scale-95 invisible"}`}>
+            <div id="google_translate_element_mobile" className="p-2 text-center"></div>
+          </div>
+        </div>
       </div>
     </nav>
   );
+
 };
 
 const Footer = () => {
@@ -91,7 +147,7 @@ const Footer = () => {
     <footer className="bg-white border-t border-gray-200 py-8">
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          
+
           {/* About Us Section */}
           <div>
             <h3 className="text-sm font-semibold">About HIRE.me</h3>
