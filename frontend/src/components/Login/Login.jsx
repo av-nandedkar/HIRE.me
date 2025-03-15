@@ -19,77 +19,117 @@ const Login = () => {
 
   const handleGoogleLogin = async () => {
     try {
-      // Open Google sign-in popup to get credentials but DO NOT sign in yet
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-  
-      // Check if the user exists in the database BEFORE allowing authentication
       const userRef = ref(database, `users/${user.uid}`);
       const snapshot = await get(userRef);
   
-      if (snapshot.exists()) {
-        // User exists → Proceed with authentication
-        const token = await user.getIdToken();
-        localStorage.setItem("authToken", token);
-        toast.success("Login successful!");
-        window.location.href = "/dashboard";
-      } else {
+      if (!snapshot.exists()) {
+        // If the user does not exist, prevent sign-in and sign them out
         await user.delete();
-        // User is NOT registered → Force sign them out and show an error message
-        await auth.signOut(); // Ensure they are signed out immediately
+        await auth.signOut();
         toast.error("User does not exist. Please register first.");
+        return;
       }
+  
+      // 🔹 Ensure Google account is linked to email/password authentication
+      try {
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        await user.linkWithCredential(credential); // Link accounts
+      } catch (error) {
+        if (error.code === "auth/credential-already-in-use") {
+          // This means the email is already registered with a password
+          toast.error("This account is already registered with an email and password. Please log in using email/password.");
+          await auth.signOut();
+          return;
+        }
+        console.warn("User account might already be linked.");
+      }
+  
+      // If successful, store token and redirect
+      const token = await user.getIdToken();
+      localStorage.setItem("authToken", token);
+      toast.success("Login successful!");
+      window.location.href = "/dashboard";
+  
     } catch (error) {
       toast.error(error.message || "Google login failed.");
     }
   };
   
   
+  
+  
 
   const handleLogin = async (e) => {
     e.preventDefault();
     if (loading) return;
-
+  
     setLoading(true);
     const trimmedEmail = email.trim();
     const trimmedPassword = password.trim();
-
+  
     if (!trimmedEmail || !trimmedPassword) {
       toast.error("Please enter both email and password.");
       setLoading(false);
       return;
     }
-
+  
     if (!isValidEmail(trimmedEmail)) {
       toast.error("Please enter a valid email.");
       setLoading(false);
       return;
     }
-
+  
     if (!isValidPassword(trimmedPassword)) {
       toast.error("Password must have at least 6 characters, 1 uppercase, 1 number, and 1 special character.");
       setLoading(false);
       return;
     }
-
+  
     try {
-    
+      // 🔹 Check if the user exists in the database
+      const userRef = ref(database, `users`);
+      const snapshot = await get(userRef);
+  
+      let userExists = false;
+      snapshot.forEach((childSnapshot) => {
+        if (childSnapshot.val().email === trimmedEmail) {
+          userExists = true;
+        }
+      });
+  
+      if (!userExists) {
+        toast.error("User not found. Please register first.");
+        setLoading(false);
+        return;
+      }
+  
+      // 🔹 Try signing in with email and password
       const userCredential = await signInWithEmailAndPassword(auth, trimmedEmail, trimmedPassword);
       const user = userCredential.user;
   
       toast.success("Login successful!");
-  
       const token = await user.getIdToken();
       localStorage.setItem("authToken", token);
-  
       window.location.href = "/dashboard";
   
     } catch (error) {
-      toast.error(error.message || "Invalid credentials. Try again.");
+      if (error.code === "auth/wrong-password") {
+        toast.error("Incorrect password. Try again or reset your password.");
+      } else if (error.code === "auth/user-not-found") {
+        toast.error("No account found with this email. Please register.");
+      } else if (error.code === "auth/invalid-credential") {
+        toast.error("This account might be registered with Google. Try logging in with Google.");
+      } else {
+        toast.error("An error occurred. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
   };
+  
+  
 
   return (
     <>
