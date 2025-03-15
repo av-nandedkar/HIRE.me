@@ -2,7 +2,11 @@ import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import { Toaster } from "react-hot-toast";
-import axios from "axios";
+import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
+import {app} from "../../firebase";
+import { getDatabase, ref, set } from "firebase/database";
+
+const auth = getAuth(app);
 
 const Register = () => {
   const [step, setStep] = useState(1);
@@ -76,15 +80,21 @@ const Register = () => {
     }
 
     try {
-      const { data } = await axios.post(
-        `${import.meta.env.VITE_API_URL}/register`,
-        { ...formData }, // ✅ Sending formData without confirmPassword
-        { headers: { "Content-Type": "application/json" } }
-      );
+      const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+    const user = userCredential.user;
+    const db = getDatabase(app);
+    await set(ref(db, `users/${user.uid}`), {
+      userType: formData.userType,
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      location: formData.location,
+      pinCode: formData.pinCode,
+    });
 
-      toast.success(data?.message || "Registration successful!");
+     toast.success( "Registration successful!");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Registration failed.");
+      toast.error( "Registration failed.");
     }
   };
 

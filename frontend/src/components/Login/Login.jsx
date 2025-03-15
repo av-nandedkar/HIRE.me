@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { FaGoogle, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { toast, Toaster } from "react-hot-toast";
+import { getAuth,signInWithEmailAndPassword } from 'firebase/auth';
+import {app}from '../../firebase';
+const auth=getAuth(app);
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -39,22 +41,19 @@ const Login = () => {
     }
 
     try {
-      const { data } = await axios.post("http://localhost:5000/api/auth/login", {
-        email: trimmedEmail,
-        password: trimmedPassword,
-      }, {
-        headers: { "Content-Type": "application/json" }
-      });
-
+    
+      const userCredential = await signInWithEmailAndPassword(auth, trimmedEmail, trimmedPassword);
+      const user = userCredential.user;
+  
       toast.success("Login successful!");
-
-      if (data.token) {
-        localStorage.setItem("authToken", data.token);
-      }
-
+  
+      const token = await user.getIdToken();
+      localStorage.setItem("authToken", token);
+  
       window.location.href = "/dashboard";
+  
     } catch (error) {
-      toast.error(error.response?.data?.message || "Invalid credentials. Try again.");
+      toast.error(error.message || "Invalid credentials. Try again.");
     } finally {
       setLoading(false);
     }
