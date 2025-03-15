@@ -88,7 +88,7 @@ const JobForm = () => {
   return (
     <div className="flex items-center px-8 justify-center min-h-screen bg-gray-900">
       <Toaster />
-      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-3xl relative">
+      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-xl xl:max-w-xl relative">
 
         {/* Progress Indicator */}
         <div className="text-center mb-6">
@@ -104,7 +104,7 @@ const JobForm = () => {
           <>
             <div className="mb-5">
               <label className="block text-sm font-medium text-gray-700">Profile Picture (Optional)</label>
-              <input type="file" name="profilePicture" onChange={(e) => setFormData({ ...formData, profilePicture: e.target.files[0] })} className="w-full mt-1 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none" />
+              <input type="file" name="profilePicture" onChange={(e) => setFormData({ ...formData, profilePicture: e.target.files[0] })} className="text-xs w-full mt-1 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none" />
             </div>
 
             <div className="mb-5">
