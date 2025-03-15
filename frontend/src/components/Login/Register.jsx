@@ -117,8 +117,8 @@ const Register = () => {
         }}
       />
       <div className="flex items-center px-8 justify-center min-h-screen bg-gray-900">
-        <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-3xl">
-          <div className="flex justify-center mb-4">
+        <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-xl xl:max-w-xl">
+          <div className="flex justify-center mb-2">
             <a href="/">
               {" "}
               <img
@@ -129,7 +129,7 @@ const Register = () => {
             </a>
           </div>
 
-          <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
+          <h2 className="text-2xl font-bold text-center mb-4 text-gray-800">
             Join HIRE.me Today
           </h2>
 
@@ -151,12 +151,12 @@ const Register = () => {
           {step === 1 && (
             <>
               {/* User Type */}
-              <label className="block text-gray-600 mb-2">
+              <label className="text-sm block text-gray-600 mb-2">
                 How do you want to use HIRE.me?
               </label>
               <select
                 name="userType"
-                className="w-full px-3 py-1 bg-gray-100 text-black rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                className="text-s w-full px-3 py-1 bg-gray-100 text-black rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300"
                 value={formData.userType}
                 onChange={handleChange}
               >
@@ -167,7 +167,7 @@ const Register = () => {
 
               {/* Name, Email, Phone */}
               <div className="mt-4">
-                <label className="block text-gray-600">
+                <label className="text-sm block text-gray-600">
                   Full Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -180,7 +180,7 @@ const Register = () => {
               </div>
 
               <div className="mt-4">
-                <label className="block text-gray-600">
+                <label className="text-sm block text-gray-600">
                   Email<span className="text-red-500">*</span>
                 </label>
                 <input
@@ -205,13 +205,13 @@ const Register = () => {
           {step === 2 && (
             <>
               {/* Password */}
-              <div className="mt-4 relative">
-                <label className="block text-gray-600">
+              <div className="mt-3 relative">
+                <label className="mb-3 text-sm block text-gray-600">
                   Password<span className="text-red-500">*</span>
                 </label>
                 <input
                   type={showPassword ? "text" : "password"}
-                  className="w-full px-3 py-1 bg-gray-100 text-black rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  className="text-s w-full px-3 py-1 bg-gray-100 text-black rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300"
                   value={formData.password}
                   onChange={handlePasswordChange}
                   placeholder="Enter strong password"
@@ -230,7 +230,7 @@ const Register = () => {
 
               {/* Confirm Password */}
               <div className="mt-4 relative">
-                <label className="block text-gray-600">
+                <label className="mb-3 text-sm block text-gray-600">
                   Confirm Password<span className="text-red-500">*</span>
                 </label>
                 <input
@@ -267,7 +267,7 @@ const Register = () => {
           {step === 3 && (
             <>
               <div className="mt-4">
-                <label className="block text-gray-600">
+                <label className="text-sm block text-gray-600">
                   Phone Number<span className="text-red-500">*</span>
                 </label>
                 <input
@@ -281,7 +281,7 @@ const Register = () => {
 
               {/* Location and Pin Code */}
               <div className="mt-4">
-                <label className="block text-gray-600">
+                <label className="text-sm block text-gray-600">
                   Location<span className="text-red-500">*</span>
                 </label>
                 <input
@@ -294,7 +294,7 @@ const Register = () => {
               </div>
 
               <div className="mt-4">
-                <label className="block text-gray-600">
+                <label className="text-sm block text-gray-600">
                   Pin Code<span className="text-red-500">*</span>
                 </label>
                 <input

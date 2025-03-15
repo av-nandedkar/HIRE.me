@@ -41,7 +41,7 @@ const Home = () => {
       </div>
       
       <div className="relative flex gap-4 mt-10 z-10 mb-25">
-        <a href="/workproviderform"><button className="bg-[black] hover:bg-[#ff347f] cursor-pointer text-white px-6 py-3 rounded-lg font-medium transition">
+        <a href="/register"><button className="bg-[black] hover:bg-[#ff347f] cursor-pointer text-white px-6 py-3 rounded-lg font-medium transition">
           Join HIRE.me
         </button></a>
         <button className="border border-white px-6 py-3 rounded-lg font-medium transition hover:bg-gray-800 cursor-pointer">
