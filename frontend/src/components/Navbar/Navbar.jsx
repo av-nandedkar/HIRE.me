@@ -1,12 +1,41 @@
-import React, { useState ,useEffect, useRef } from "react";
+import React, { useState ,useEffect } from "react";
 import { FaUser, FaCaretDown, FaBars, FaTimes } from "react-icons/fa";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [languageOpen, setLanguageOpen] = useState(false);
-  const dropdownRef = useRef(null);
-
+  useEffect(() => {
+    // Function to initialize Google Translate with the stored language
+    window.googleTranslateElementInit = () => {
+      new window.google.translate.TranslateElement(
+        { pageLanguage: "en", autoDisplay: false },
+        "google_translate_element"
+      );
+  
+      // Apply stored language
+      const storedLang = localStorage.getItem("selectedLanguage");
+      if (storedLang) {
+        setTimeout(() => {
+          const selectElement = document.querySelector(".goog-te-combo");
+          if (selectElement) {
+            selectElement.value = storedLang;
+            selectElement.dispatchEvent(new Event("change"));
+          }
+        }, 500);
+      }
+    };
+  
+    // Load Google Translate script
+    if (!window.googleTranslateLoaded) {
+      window.googleTranslateLoaded = true;
+      const script = document.createElement("script");
+      script.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  }, []);
+  
   useEffect(() => {
     if (languageOpen && !window.googleTranslateElementInit) {
       window.googleTranslateElementInit = () => {
@@ -21,37 +50,6 @@ const Navbar = () => {
       document.body.appendChild(script);
     }
   }, [languageOpen]);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (!event.target.closest(".language")) {
-        setLanguageOpen(false);
-      }
-    };
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
-  }, []);
-
-
-
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setDropdownOpen(false);
-      }
-    }
-
-    // Add event listener when dropdown is open
-    if (dropdownOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [dropdownOpen]);
   
   return (
     <nav className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white p-4 fixed top-0 w-full z-50 shadow-lg">
@@ -78,7 +76,7 @@ const Navbar = () => {
                after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full">Part-time</a></li>
 
           {/* Language Dropdown */}
-          <li className="relative language" >
+          <li className="relative">
             <button
               onClick={() => setLanguageOpen((prev) => !prev)}
               className="flex items-center space-x-2 bg-white text-black px-4 py-2 rounded-full shadow-md border border-gray-300 hover:bg-gray-200 transition-all"
@@ -88,14 +86,14 @@ const Navbar = () => {
             </button>
 
             {/* Dropdown Menu */}
-            <div className={`absolute right-0 mt-2 w-52 bg-white shadow-lg border border-gray-300 rounded-lg p-3 transition-all duration-300 ease-in-out ${languageOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}>
+            <div className={`absolute right-0 mt-2 w-52 bg-white shadow-lg border border-gray-300 rounded-lg p-3 transition-all duration-300 ease-in-out ${languageOpen ? "opacity-100 scale-100 visible" : "opacity-0 scale-95 invisible"}`}>
               <div id="google_translate_element" className="p-2 text-center"></div>
             </div>
           </li>
         </ul>
 
         {/* Profile Dropdown */}
-        <div className="relative hidden md:block " ref={dropdownRef}>
+        <div className="relative hidden md:block">
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
             className="flex items-center space-x-2 bg-gray-800 px-4 py-2 rounded-full hover:bg-gray-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -135,7 +133,7 @@ const Navbar = () => {
         <a href="/contact" className="hover:text-[#ff347f] transition duration-300">Services</a>
 
         {/* Mobile Profile Dropdown */}
-        <div className="relative" ref={dropdownRef}>
+        <div className="relative">
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
             className="flex items-center space-x-2 bg-gray-800 px-4 py-2 rounded-full hover:bg-gray-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -154,7 +152,7 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Language Dropdown */}
-        <div className="relative w-full flex justify-center" >
+        <div className="relative w-full flex justify-center">
           <button
             onClick={() => setLanguageOpen((prev) => !prev)}
             className="flex items-center space-x-2 bg-white text-black px-4 py-2 rounded-full shadow-md border border-gray-300 hover:bg-gray-200 transition-all"
