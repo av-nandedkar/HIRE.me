@@ -4,7 +4,7 @@ import {Navbar,Footer} from './components/Navbar/Navbar'
 import Login from './components/Login/Login';
 import Register from './components/Login/Register';
 import Home from './components/Home/Home'
-
+import WorkProviderForm from './components/Forms/provider';
 
 function App() {
   return (
@@ -14,9 +14,9 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/" element={<Home/>}></Route>
-          <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-
+          <Route path="/login" element={<Login />} />
+          <Route path="/workproviderform" element={<WorkProviderForm />} />
 
         </Routes>
         <Footer/>
