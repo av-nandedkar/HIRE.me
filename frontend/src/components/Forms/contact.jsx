@@ -35,8 +35,9 @@ const Contact = () => {
   };
 
   return (
+    
     <div className="pt-30 bg-gray-900 text-white">
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black opacity-60" />
+        
       <div id="contact" className="text-center text-4xl mb-5">
         <h1 className="text-4xl  mb-4">Contact Us</h1>
       </div>
