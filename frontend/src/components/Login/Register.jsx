@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import { Toaster } from "react-hot-toast";
@@ -16,8 +17,6 @@ const Register = () => {
     email: "",
     password: "",
     phone: "",
-    location: "",
-    pinCode: "",
   });
 
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -61,9 +60,7 @@ const Register = () => {
       !formData.email ||
       !formData.password ||
       !confirmPassword ||
-      !formData.phone ||
-      !formData.location ||
-      !formData.pinCode
+      !formData.phone 
     ) {
       toast.error("Please fill all required fields.");
       return;
@@ -89,11 +86,13 @@ const Register = () => {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
-        location: formData.location,
-        pinCode: formData.pinCode,
       });
   
       toast.success("Registration successful!");
+      // Redirect to login page after 2 seconds
+      
+        navigate("/login");
+      
     } catch (error) {
       console.error("Registration Error:", error); // Add this line for debugging
       toast.error(`Registration failed: ${error.message}`); // Show error message
@@ -247,25 +246,6 @@ const Register = () => {
                   {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
                 </span>
               </div>
-              <div className="mt-4 flex justify-between">
-                <button
-                  onClick={() => setStep(1)}
-                  className="bg-gray-400 text-white py-1 px-4 rounded-3xl hover:bg-gray-800 transition cursor-pointer"
-                >
-                  «
-                </button>
-                <button
-                  onClick={() => setStep(3)}
-                  className="bg-gray-800 text-white py-2 px-4 rounded-3xl "
-                >
-                  Next
-                </button>
-              </div>
-            </>
-          )}
-
-          {step === 3 && (
-            <>
               <div className="mt-4">
                 <label className="text-sm block text-gray-600">
                   Phone Number<span className="text-red-500">*</span>
@@ -278,38 +258,9 @@ const Register = () => {
                   onChange={handleChange}
                 />
               </div>
-
-              {/* Location and Pin Code */}
-              <div className="mt-4">
-                <label className="text-sm block text-gray-600">
-                  Location<span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="location"
-                  className="w-full px-3 py-1 bg-gray-100 text-black rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                  value={formData.location}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="mt-4">
-                <label className="text-sm block text-gray-600">
-                  Pin Code<span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="pinCode"
-                  className="w-full px-3 py-1 bg-gray-100 text-black rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                  value={formData.pinCode}
-                  onChange={handleChange}
-                />
-              </div>
-
-              {/* Submit Button */}
               <div className="mt-4 flex justify-between">
                 <button
-                  onClick={() => setStep(2)}
+                  onClick={() => setStep(1)}
                   className="bg-gray-400 text-white py-1 px-4 rounded-3xl hover:bg-gray-800 transition cursor-pointer"
                 >
                   «
