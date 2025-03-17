@@ -10,6 +10,7 @@ import { getDatabase, ref, set } from "firebase/database";
 const auth = getAuth(app);
 
 const Register = () => {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     userType: "",
