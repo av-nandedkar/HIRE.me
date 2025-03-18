@@ -51,6 +51,13 @@ const Navbar = () => {
     }
   }, [languageOpen]);
   
+  const handleLogout = () => {
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("authToken");
+    navigate("/login");
+  };
+
+
   return (
     <nav className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white p-4 fixed top-0 w-full z-50 shadow-lg">
       <div className="container mx-auto flex justify-between items-center px-4">
@@ -106,7 +113,7 @@ const Navbar = () => {
             <div className="absolute right-0 mt-3 w-48 origin-top-right bg-gray-800/90 backdrop-blur-sm border border-gray-700 rounded-lg shadow-lg transition-all ease-out duration-300 scale-100">
               <a href="/dashboard" className="block px-4 py-3 text-sm text-white hover:bg-gray-700 rounded-md transition-colors">Dashboard</a>
               <a href="/settings" className="block px-4 py-3 text-sm text-white hover:bg-gray-700 rounded-md transition-colors">Settings</a>
-              <a href="/logout" className="block px-4 py-3 text-sm text-red-400 hover:bg-red-700 hover:text-white rounded-md transition-colors">Logout</a>
+              <a href="/login" onClick={handleLogout} className="block px-4 py-3 text-sm text-red-400 hover:bg-red-700 hover:text-white rounded-md transition-colors">Logout</a>
             </div>
           )}
         </div>
@@ -146,7 +153,7 @@ const Navbar = () => {
             <div className="absolute right-0 mt-3 w-48 origin-top-right bg-gray-800/90 backdrop-blur-sm border border-gray-700 rounded-lg shadow-lg transition-all ease-out duration-300 scale-100">
               <a href="/dashboard" className="block px-4 py-3 text-sm text-white hover:bg-gray-700 rounded-md transition-colors">Dashboard</a>
               <a href="/settings" className="block px-4 py-3 text-sm text-white hover:bg-gray-700 rounded-md transition-colors">Settings</a>
-              <a href="/logout" className="block px-4 py-3 text-sm text-red-400 hover:bg-red-700 hover:text-white rounded-md transition-colors">Logout</a>
+              <a href="/login" onClick={handleLogout} className="block px-4 py-3 text-sm text-red-400 hover:bg-red-700 hover:text-white rounded-md transition-colors">Logout</a>
             </div>
           )}
         </div>

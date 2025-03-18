@@ -91,29 +91,29 @@ const Login = () => {
     }
   
     try {
+      // Sign in the user with email and password
+      const userCredential = await signInWithEmailAndPassword(auth, trimmedEmail, trimmedPassword);
+      const user = userCredential.user;
   
-      const userRef = ref(database, `users`);
+      // Fetch user data from Firebase Realtime Database
+      const userRef = ref(database, `users/${user.uid}`);
       const snapshot = await get(userRef);
   
-      let userExists = false;
-      snapshot.forEach((childSnapshot) => {
-        if (childSnapshot.val().email === trimmedEmail) {
-          userExists = true;
-        }
-      });
-  
-      if (!userExists) {
-        toast.error("User not found. Please register first.");
+      if (!snapshot.exists()) {
+        toast.error("User not found in the database. Please register first.");
         setLoading(false);
         return;
       }
   
-      const userCredential = await signInWithEmailAndPassword(auth, trimmedEmail, trimmedPassword);
-      const user = userCredential.user;
+      const userData = snapshot.val();
+      const userRole = userData.userType; // Fetching the userType
   
-      toast.success("Login successful!");
+      // Store token and user role
       const token = await user.getIdToken();
       localStorage.setItem("authToken", token);
+      localStorage.setItem("userRole", userRole);
+  
+      toast.success("Login successful!");
       navigate("/dashboard");
   
     } catch (error) {
@@ -130,6 +130,7 @@ const Login = () => {
       setLoading(false);
     }
   };
+  
   
   
 
