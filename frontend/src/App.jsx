@@ -7,7 +7,7 @@ import Home from './components/Home/Home'
 import WorkProviderForm from './components/Forms/provider';
 import SeekerForm from './components/Forms/seeker';
 import Contact from './components/Forms/contact';
-import Dashboard from './components/Login/dashboard';
+import Dashboard from './components/Dashboards/dashboard';
 function App() {
   return (
 
