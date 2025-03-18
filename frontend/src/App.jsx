@@ -7,7 +7,7 @@ import Home from './components/Home/Home'
 import WorkProviderForm from './components/Forms/provider';
 import SeekerForm from './components/Forms/seeker';
 import Contact from './components/Forms/contact';
-
+import Dashboard from './components/Login/dashboard';
 function App() {
   return (
 
@@ -17,6 +17,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home/>}></Route>
           <Route path="/register" element={<Register />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/login" element={<Login />} />
           <Route path="/workproviderform" element={<WorkProviderForm />} />
           <Route path="/seekerform" element={<SeekerForm/>}></Route>

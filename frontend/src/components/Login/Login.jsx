@@ -4,6 +4,8 @@ import { toast, Toaster } from "react-hot-toast";
 import { getAuth,signInWithEmailAndPassword,GoogleAuthProvider ,signInWithPopup } from 'firebase/auth';
 import {app}from '../../firebase';
 import { getDatabase, ref, get } from "firebase/database";
+import { useNavigate } from "react-router-dom";
+
 const auth=getAuth(app);
 const provider = new GoogleAuthProvider();
 const database = getDatabase(app);
@@ -14,6 +16,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const navigate = useNavigate();
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const isValidPassword = (password) => /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/.test(password);
 
@@ -25,20 +28,21 @@ const Login = () => {
       const snapshot = await get(userRef);
   
       if (!snapshot.exists()) {
-        // If the user does not exist, prevent sign-in and sign them out
         await user.delete();
         await auth.signOut();
         toast.error("User does not exist. Please register first.");
         return;
       }
-  
-      // 🔹 Ensure Google account is linked to email/password authentication
+     
+      const userData = snapshot.val();
+    const userRole = userData.userType 
+    
       try {
         const credential = GoogleAuthProvider.credentialFromResult(result);
-        await user.linkWithCredential(credential); // Link accounts
-      } catch (error) {
+        await user.linkWithCredential(credential); 
+      } catch (error) { 
         if (error.code === "auth/credential-already-in-use") {
-          // This means the email is already registered with a password
+          
           toast.error("This account is already registered with an email and password. Please log in using email/password.");
           await auth.signOut();
           return;
@@ -46,18 +50,17 @@ const Login = () => {
         console.warn("User account might already be linked.");
       }
   
-      // If successful, store token and redirect
       const token = await user.getIdToken();
       localStorage.setItem("authToken", token);
+      localStorage.setItem("userRole", userRole);
+      navigate("/dashboard");
       toast.success("Login successful!");
-      window.location.href = "/dashboard";
+    
   
     } catch (error) {
       toast.error(error.message || "Google login failed.");
     }
   };
-  
-  
   
   
 
@@ -88,7 +91,7 @@ const Login = () => {
     }
   
     try {
-      // 🔹 Check if the user exists in the database
+  
       const userRef = ref(database, `users`);
       const snapshot = await get(userRef);
   
@@ -105,14 +108,13 @@ const Login = () => {
         return;
       }
   
-      // 🔹 Try signing in with email and password
       const userCredential = await signInWithEmailAndPassword(auth, trimmedEmail, trimmedPassword);
       const user = userCredential.user;
   
       toast.success("Login successful!");
       const token = await user.getIdToken();
       localStorage.setItem("authToken", token);
-      window.location.href = "/dashboard";
+      navigate("/dashboard");
   
     } catch (error) {
       if (error.code === "auth/wrong-password") {

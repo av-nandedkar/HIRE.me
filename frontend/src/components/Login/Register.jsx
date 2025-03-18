@@ -76,6 +76,11 @@ const Register = () => {
       toast.error("Passwords do not match!");
       return;
     }
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phoneRegex.test(formData.phone)) {
+      toast.error("Please enter a valid 10-digit phone number.");
+      return;
+    }
   
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
@@ -89,8 +94,9 @@ const Register = () => {
         phone: formData.phone,
       });
   
+      localStorage.setItem("userRole", formData.userType);
       toast.success("Registration successful!");
-      // Redirect to login page after 2 seconds
+     
       
         navigate("/login");
       
@@ -99,6 +105,7 @@ const Register = () => {
       toast.error(`Registration failed: ${error.message}`); // Show error message
     }
   };
+  
   
 
   return (
