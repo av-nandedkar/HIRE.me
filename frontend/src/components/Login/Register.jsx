@@ -87,7 +87,7 @@ const Register = () => {
       const user = userCredential.user;
       
       const db = getDatabase(app);
-      await set(ref(db, `users/${user.uid}`), {
+      await set(ref(db, `registrationdetails/${user.uid}`), {
         userType: formData.userType,
         name: formData.name,
         email: formData.email,
@@ -97,7 +97,6 @@ const Register = () => {
       localStorage.setItem("userRole", formData.userType);
       toast.success("Registration successful!");
      
-      
         navigate("/login");
       
     } catch (error) {

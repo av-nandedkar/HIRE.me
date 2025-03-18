@@ -4,8 +4,8 @@ import {Navbar,Footer} from './components/Navbar/Navbar'
 import Login from './components/Login/Login';
 import Register from './components/Login/Register';
 import Home from './components/Home/Home'
-import WorkProviderForm from './components/Forms/provider';
-import SeekerForm from './components/Forms/seeker';
+import WorkProviderForm from './components/Provider/provider';
+import SeekerForm from './components/Seeker/seeker';
 import Contact from './components/Forms/contact';
 import Dashboard from './components/Dashboards/dashboard';
 function App() {

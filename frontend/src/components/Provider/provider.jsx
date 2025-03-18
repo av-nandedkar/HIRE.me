@@ -35,7 +35,8 @@ const JobForm = () => {
       }
     }
   
-    const jobsRef = ref(database, "jobs"); 
+    const jobsRef = ref(database, "user-metadata/provider");
+
 
   // Push job data to Firebase
   push(jobsRef, formData)

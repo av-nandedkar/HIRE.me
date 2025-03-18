@@ -57,9 +57,9 @@ const Dashboard = () => {
           {/* Post a Job */}
           <button
             className="bg-blue-600 hover:bg-blue-700 p-4 rounded-lg flex items-center justify-center gap-2"
-            onClick={() => handleNavigation("/workproviderform/post-job")}
+            onClick={() => handleNavigation("/workproviderform")}
           >
-            <PlusCircle /> Post a Job
+            <PlusCircle /> post a job
           </button>
 
           {/* View Applications */}
@@ -111,7 +111,7 @@ const Dashboard = () => {
           {/* Apply for Jobs */}
           <button
             className="bg-blue-600 hover:bg-blue-700 p-4 rounded-lg flex items-center justify-center gap-2"
-            onClick={() => handleNavigation("/seekerform/jobs")}
+            onClick={() => handleNavigation("/seekerform")}
           >
             <UserCheck /> Apply for Jobs
           </button>

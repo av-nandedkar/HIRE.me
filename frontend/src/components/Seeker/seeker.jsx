@@ -62,7 +62,7 @@ const SeekerForm = () => {
       }
     }
 
-    const professionalsRef = ref(database, "professionals");
+    const professionalsRef = ref(database, "user-metadata/seeker");
     push(professionalsRef, formData)
       .then(() => {
         toast.success("Profile submitted successfully!");
