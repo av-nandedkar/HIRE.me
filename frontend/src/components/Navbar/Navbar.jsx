@@ -52,11 +52,10 @@ const Navbar = () => {
   }, [languageOpen]);
   
   const handleLogout = () => {
-    localStorage.removeItem("userRole");
-    localStorage.removeItem("authToken");
+    localStorage.clear(); // Removes all localStorage items
     navigate("/login");
   };
-
+  
 
   return (
     <nav className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white p-4 fixed top-0 w-full z-50 shadow-lg">

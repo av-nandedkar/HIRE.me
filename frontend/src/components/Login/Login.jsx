@@ -36,6 +36,7 @@ const Login = () => {
      
       const userData = snapshot.val();
     const userRole = userData.userType 
+    const usermail = userData.email
     
       try {
         const credential = GoogleAuthProvider.credentialFromResult(result);
@@ -53,8 +54,9 @@ const Login = () => {
       const token = await user.getIdToken();
       localStorage.setItem("authToken", token);
       localStorage.setItem("userRole", userRole);
-      navigate("/dashboard");
+      localStorage.setItem("email", usermail);
       toast.success("Login successful!");
+      navigate("/dashboard");
     
   
     } catch (error) {
@@ -105,11 +107,13 @@ const Login = () => {
   
       const userData = snapshot.val();
       const userRole = userData.userType; // Fetching the userType
-  
+      const usermail = userData.email
+
       // Store token and user role
       const token = await user.getIdToken();
       localStorage.setItem("authToken", token);
       localStorage.setItem("userRole", userRole);
+      localStorage.setItem("email", usermail);
   
       toast.success("Login successful!");
       navigate("/dashboard");

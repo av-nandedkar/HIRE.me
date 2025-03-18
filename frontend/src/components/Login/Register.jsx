@@ -11,6 +11,7 @@ const auth = getAuth(app);
 
 const Register = () => {
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     userType: "",
@@ -54,7 +55,10 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
+    setIsSubmitting(true);
+    setTimeout(() => setIsSubmitting(false), 3000);
+
     if (
       !formData.userType ||
       !formData.name ||
@@ -274,6 +278,7 @@ const Register = () => {
                 </button>
                 <button
                   onClick={handleSubmit}
+                  disabled={isSubmitting}
                   className="bg-gray-800 text-white py-2 px-4 rounded-3xl hover:bg-blue-700 transition cursor-pointer "
                 >
                   Register

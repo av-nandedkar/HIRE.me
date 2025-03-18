@@ -40,11 +40,10 @@ const Dashboard = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("userRole");
-    localStorage.removeItem("authToken");
+    localStorage.clear(); // Removes all localStorage items
     navigate("/login");
   };
-
+  
   if (loading) {
     return <p className="text-gray-400">Loading...</p>;
   }
