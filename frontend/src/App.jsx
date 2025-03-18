@@ -8,6 +8,7 @@ import WorkProviderForm from './components/Provider/provider';
 import SeekerForm from './components/Seeker/seeker';
 import Contact from './components/Forms/contact';
 import Dashboard from './components/Dashboards/dashboard';
+import JobForm from './components/Provider/Jobpost'
 function App() {
   return (
 
@@ -22,6 +23,7 @@ function App() {
           <Route path="/workproviderform" element={<WorkProviderForm />} />
           <Route path="/seekerform" element={<SeekerForm/>}></Route>
           <Route path="/contact" element={<Contact/>}></Route>
+          <Route path="/jobpost" element={<JobForm/>}></Route>
         </Routes>
         <Footer/>
       </div>

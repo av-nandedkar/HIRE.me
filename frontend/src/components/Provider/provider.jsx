@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
-import { getDatabase ,ref, push} from "firebase/database";
-import {app}from '../../firebase';
+import { getDatabase, ref, push, get, update } from "firebase/database";
+import { app } from "../../firebase";
+import { useNavigate } from "react-router-dom";
+
 const database = getDatabase(app);
 
 const JobForm = () => {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     profilePicture: null,
@@ -12,39 +15,103 @@ const JobForm = () => {
     businessDetails: "",
     companyName: "",
     companyAddress: "",
-    pinCode: "", 
+    pinCode: "",
     gstId: "",
     jobCategories: "",
     preferredSkills: "",
     budgetRange: "",
+    profileComplete: false, // Added for checking profile status
   });
 
+  
+  
+  // Check profileComplete status on load
+  useEffect(() => {
+
+    const storedEmail = localStorage.getItem("email");
+    if (storedEmail) {
+      const userRef = ref(database, `user-metadata/provider/${storedEmail.replace(/\./g, "_")}`);
+      get(userRef)
+        .then((snapshot) => {
+          if (snapshot.exists() && snapshot.val().profileComplete) {
+            // Redirect to /jobpost if profileComplete is true
+            navigate("/jobpost");
+          } else {
+            setFormData((prevData) => ({
+              ...prevData,
+              provideremail: storedEmail,
+            }));
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching user data:", error);
+        });
+    }
+  },[]);
+
+  // Handle form change
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-  
+
     const requiredFields = ["location", "companyAddress", "pinCode", "jobCategories", "preferredSkills", "budgetRange"];
-  
     for (const field of requiredFields) {
       if (!formData[field].trim()) {
         toast.error("Please fill all the required fields!");
         return;
       }
     }
-  
-    const jobsRef = ref(database, "user-metadata/provider");
+    const storedEmail = localStorage.getItem("email");
+    const jobsRef = ref(database, `user-metadata/provider/${storedEmail.replace(/\./g, "_")}`);
 
+    // Push job data to Firebase
+    push(jobsRef, {
+      ...formData,
+      profileComplete: true, // Mark profile as complete
+    })
+      .then(() => {
+        toast.success("Job posted successfully!");
+        console.log("Job Data Stored:", formData);
 
-  // Push job data to Firebase
-  push(jobsRef, formData)
-    .then(() => {
-      toast.success("Job posted successfully!");
-      console.log("Job Data Stored:", formData);
-      
-      // Reset form after submission
+        // Update profileComplete to true after form submission
+        const userRef = ref(database, `user-metadata/provider/${formData.provideremail.replace(/\./g, "_")}`);
+        update(userRef, { profileComplete: true })
+          .then(() => {
+            navigate("/jobpost"); // Redirect after updating profileComplete
+          })
+          .catch((error) => {
+            toast.error("Error updating profile status: " + error.message);
+          });
+
+        // Reset form after submission
+        setFormData({
+          profilePicture: null,
+          location: "",
+          businessDetails: "",
+          companyName: "",
+          companyAddress: "",
+          pinCode: "",
+          gstId: "",
+          jobCategories: "",
+          preferredSkills: "",
+          budgetRange: "",
+         
+        });
+      })
+      .catch((error) => {
+        toast.error("Error posting job: " + error.message);
+        console.error("Firebase Error:", error);
+      });
+  };
+
+  // Handle form close/reset
+  const handleClose = () => {
+    if (window.confirm("Are you sure you want to close the form? All progress will be lost.")) {
+      setStep(1);
       setFormData({
         profilePicture: null,
         location: "",
@@ -56,31 +123,7 @@ const JobForm = () => {
         jobCategories: "",
         preferredSkills: "",
         budgetRange: "",
-      });
-    })
-    .catch((error) => {
-      toast.error("Error posting job: " + error.message);
-      console.error("Firebase Error:", error);
-    });
-  };
-  
-  
-
-  
-  const handleClose = () => {
-    if (window.confirm("Are you sure you want to close the form? All progress will be lost.")) {
-      setStep(1);
-      setFormData({
-        profilePicture: null,
-        location: "",
-        businessDetails: "",
-        companyName: "",
-        companyAddress: "",
-        pinCode: "", 
-        gstId: "",
-        jobCategories: "",
-        preferredSkills: "",
-        budgetRange: "",
+       
       });
       toast.error("Form reset!");
     }
