@@ -24,7 +24,7 @@ const Login = () => {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-      const userRef = ref(database, `users/${user.uid}`);
+      const userRef = ref(database, `registrationdetails/${user.uid}`);
       const snapshot = await get(userRef);
   
       if (!snapshot.exists()) {
@@ -94,7 +94,7 @@ const Login = () => {
       const user = userCredential.user;
   
       // Fetch user data from Firebase Realtime Database
-      const userRef = ref(database, `users/${user.uid}`);
+      const userRef = ref(database, `registrationdetails/${user.uid}`);
       const snapshot = await get(userRef);
   
       if (!snapshot.exists()) {
