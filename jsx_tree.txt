@@ -1,0 +1,49 @@
+Command : for /r %i in (*.jsx) do @echo %i >> jsx_tree.txt
+
+D:\Hire.me\backend\index.jsx
+D:\Hire.me\frontend\src\App.jsx
+D:\Hire.me\frontend\src\firebase.jsx
+D:\Hire.me\frontend\src\main.jsx
+D:\Hire.me\frontend\src\components\Dashboards\dashboard.jsx
+D:\Hire.me\frontend\src\components\Forms\contact.jsx
+D:\Hire.me\frontend\src\components\Home\Home.jsx
+D:\Hire.me\frontend\src\components\Login\forgotpassword.jsx
+D:\Hire.me\frontend\src\components\Login\Login.jsx
+D:\Hire.me\frontend\src\components\Login\Register.jsx
+D:\Hire.me\frontend\src\components\Login\ViewProfile.jsx
+D:\Hire.me\frontend\src\components\Navbar\Navbar.jsx
+D:\Hire.me\frontend\src\components\Provider\Jobpost.jsx
+D:\Hire.me\frontend\src\components\Provider\providerDetails.jsx
+D:\Hire.me\frontend\src\components\Seeker\JobSearch.jsx
+D:\Hire.me\frontend\src\components\Seeker\seekerDetails.jsx
+
+
+D:\
+└── Hire.me
+    ├── backend
+    │   └── index.jsx
+    └── frontend
+        └── src
+            ├── App.jsx
+            ├── firebase.jsx
+            ├── main.jsx
+            ├── components
+                ├── Dashboards
+                │   └── dashboard.jsx
+                ├── Forms
+                │   └── contact.jsx
+                ├── Home
+                │   └── Home.jsx
+                ├── Login
+                │   ├── forgotpassword.jsx
+                │   ├── Login.jsx
+                │   ├── Register.jsx
+                │   └── ViewProfile.jsx
+                ├── Navbar
+                │   └── Navbar.jsx
+                ├── Provider
+                │   ├── Jobpost.jsx
+                │   └── providerDetails.jsx
+                └── Seeker
+                    ├── JobSearch.jsx
+                    └── seekerDetails.jsx
