@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
-import { getDatabase, ref, push , set, child } from "firebase/database";
+import { getDatabase, ref, push , set,get, child } from "firebase/database";
 import { app } from '../../firebase';
 import { useNavigate } from "react-router-dom";
 
@@ -23,8 +23,69 @@ const  ProviderForm = () => {
     pincode: "",
      businessType: "",
      communicationMethod: "",
-    identityVerification: null,
+    formSubmitted: false, // New field 
   });
+
+  const [loading, setLoading] = useState(true);
+  
+    useEffect(() => {
+      const fetchUserData = async () => {
+        const storedEmail = localStorage.getItem("email");
+        if (!storedEmail) return;
+    
+        const formattedEmail = storedEmail.replace(/\./g, ",");
+        const userRef = child(ref(database, "user-metadata/provider"), formattedEmail);
+    
+        try {
+          const snapshot = await get(userRef);
+          if (snapshot.exists()) {
+            const userData = snapshot.val();
+            setFormData(userData);
+            console.log("flag", userData.formSubmitted);
+            if (userData.formSubmitted) {
+              setLoading(false);
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+    
+      fetchUserData();
+    }, []);
+    
+    if (loading) {
+      return <p className="text-center">Loading...</p>;
+    }
+
+    if (formData.formSubmitted) {
+      return (
+        <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white px-4">
+          <div className="bg-white text-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-md text-center">
+            <h2 className="text-3xl text-gray-900">🎉 Profile Completed </h2>
+            <p className="mt-3 text-gray-600">Post job opportunities now!</p>
+      
+            <div className="mt-6 flex flex-col gap-4">
+              <button
+                onClick={() => navigate("/viewprofile")}
+                className="w-full bg-purple-600  text-white py-3 px-6 rounded-3xl  text-lg hover:bg-purple-700 transition duration-300 "
+              >
+                View Profile
+              </button>
+              <button
+                onClick={() => navigate("/jobpost")}
+                className="w-full bg-green-600 text-white py-3 px-6 rounded-3xl text-lg hover:bg-green-700 transition duration-300"
+              >
+                Post Jobs
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+      
+    }
 
   const skillOptions = [
     "Plumber", "Electrician", "Painter", "Electronics Repairs", "Mechanic", 
@@ -85,6 +146,7 @@ const  ProviderForm = () => {
       toast.error("Email not found! Please log in again.");
       return;
     }
+   
   
     // Replace `.` with `,` to avoid Firebase key issues
     const emailKey = storedEmail.replace('.', ',');
@@ -92,7 +154,7 @@ const  ProviderForm = () => {
     const userRef = child(professionalsRef, emailKey);
   
     // Add userType: 'provider' to the submitted data
-    set(userRef, { ...formData, email: storedEmail, userType: "provider" })
+    set(userRef, { ...formData, email: storedEmail, userType: "provider" ,formSubmitted: true,})
       .then(() => {
         toast.success("Profile submitted successfully!");
         navigate("/viewprofile");
