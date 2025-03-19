@@ -59,7 +59,7 @@ const Login = () => {
   };
   const saveToLocalStoragebymail = (user) => {
     // Generate a random token
-    const randomToken = Math.random().toString(36).substr(2) + Date.now().toString(36);
+    const randomToken = Math.random().toString(36).substr(2) + Date.now().toString(36) + Math.random().toString(36).substr(2) + Math.random().toString(36).substr(2) + Date.now().toString(36) + Math.random().toString(36).substr(2);
   
     // Store in localStorage
     localStorage.setItem("authToken", randomToken);
