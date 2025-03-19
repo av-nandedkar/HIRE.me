@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import Select from "react-select";
-import { getDatabase, ref, push ,set , child } from "firebase/database";
+import { getDatabase, ref, push ,set ,get,  child } from "firebase/database";
 import { app } from '../../firebase';
 import { useNavigate } from "react-router-dom";
 
@@ -11,6 +11,7 @@ const CLOUDINARY_UPLOAD_PRESET = "Hire.me";
 const database = getDatabase(app);
 
 const SeekerForm = () => {
+  
   const [step, setStep] = useState(1);
   const navigate = useNavigate();
   const [imageUploading, setImageUploading] = useState(false);
@@ -30,9 +31,70 @@ const SeekerForm = () => {
     latitude: null,
     longitude: null,
     expectedPayRange: "",
+    formSubmitted: false, // New field  
 
   });
 
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const storedEmail = localStorage.getItem("email");
+      if (!storedEmail) return;
+  
+      const formattedEmail = storedEmail.replace(/\./g, ",");
+      const userRef = child(ref(database, "user-metadata/seeker"), formattedEmail);
+  
+      try {
+        const snapshot = await get(userRef);
+        if (snapshot.exists()) {
+          const userData = snapshot.val();
+          setFormData(userData);
+          console.log("flag", userData.formSubmitted);
+          if (userData.formSubmitted) {
+            setLoading(false);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchUserData();
+  }, []);
+  
+  if (loading) {
+    return <p className="text-center">Loading...</p>;
+  }
+  
+  if (formData.formSubmitted) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white px-4">
+        <div className="bg-white text-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-md text-center">
+          <h2 className="text-3xl text-gray-900">🎉 Profile Completed </h2>
+          <p className="mt-3 text-gray-600">Explore job opportunities now!</p>
+    
+          <div className="mt-6 flex flex-col gap-4">
+            <button
+              onClick={() => navigate("/viewprofile")}
+              className="w-full bg-purple-600  text-white py-3 px-6 rounded-3xl  text-lg hover:bg-purple-700 transition duration-300 "
+            >
+              View Profile
+            </button>
+            <button
+              onClick={() => navigate("/jobsearch")}
+              className="w-full bg-green-600 text-white py-3 px-6 rounded-3xl text-lg hover:bg-green-700 transition duration-300"
+            >
+              Find Jobs
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+    
+  }
   const fetchCoordinates = async (pincode) => {
     try {
       const response = await fetch(
@@ -101,8 +163,11 @@ const SeekerForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const requiredFields = ["fullName", "phoneNumber", "skills", "experienceYears", "location", "pincode", "expectedPayRange"];
+    console.log("formsubmitted", formData.formSubmitted);
+    
   
+    const requiredFields = ["fullName", "phoneNumber", "skills", "experienceYears", "location", "pincode", "expectedPayRange"];
+    
     for (const field of requiredFields) {
       if (!formData[field] || (Array.isArray(formData[field]) && formData[field].length === 0)) {
         toast.error("Please fill all the required fields!");
@@ -110,24 +175,21 @@ const SeekerForm = () => {
       }
     }
   
-    // Fetch coordinates before submitting
-  const { latitude, longitude } =  await fetchCoordinates(formData.pincode);
-  console.log("lat and long", latitude,longitude);
-  
-    // Fetch email from local storage and format it
+    const { latitude, longitude } = await fetchCoordinates(formData.pincode);
+    
     const storedEmail = localStorage.getItem("email");
     const formattedEmail = storedEmail.replace(/\./g, ",");
-  
-    // Add email and userType to formData
+    
     const updatedFormData = {
       ...formData,
       email: storedEmail,
       userType: "seeker",
       latitude,
-    longitude,
+      longitude,
+      formSubmitted: true, // Mark as submitted
     };
-  
-    // Use child() to store data using the formatted email as key
+
+    
     const professionalsRef = ref(database, "user-metadata/seeker");
     const userRef = child(professionalsRef, formattedEmail);
   
@@ -135,21 +197,28 @@ const SeekerForm = () => {
       .then(() => {
         toast.success("Profile submitted successfully!");
         navigate("/viewprofile");
-        setFormData({
-          fullName: "",
-          email: "",
-          phoneNumber: "",
-          profilePicture: null,
-          skills: [],
-          experienceYears: "",
-          location: "",
-          pincode: "",
-          expectedPayRange: "",
-        });
+        setFormData({ ...formData, formSubmitted: true }); // Ensure the form stays marked as submitted
       })
       .catch((error) => {
         toast.error("Error submitting profile: " + error.message);
       });
+
+      if (updatedFormData.formSubmitted) {
+        return (
+          <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
+            <div className="bg-white text-gray-800 p-6 rounded-xl shadow-lg w-full max-w-md text-center">
+              <h2 className="text-2xl font-bold">Thank You!</h2>
+              <p className="mt-2">Your form has been submitted successfully.</p>
+              <button 
+                onClick={() => navigate("/dashboard")} 
+                className="bg-blue-600 text-white py-2 px-4 rounded-3xl mt-4 hover:bg-blue-700 transition"
+              >
+                Go to Dashboard
+              </button>
+            </div>
+          </div>
+        );
+      }
   };
   
   
@@ -172,6 +241,9 @@ const SeekerForm = () => {
     }
   };
 
+ 
+
+
   return (
     <div className="flex items-center px-8 justify-center min-h-screen bg-gray-900">
       <Toaster />
@@ -185,9 +257,6 @@ const SeekerForm = () => {
             <div>
               <label className="block text-sm font-medium text-gray-700 mt-1">Full Name *</label>
               <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} required className="text-sm w-full p-2 border-b-2 border-gray-300 rounded focus:border-blue-600 outline-none" />
-
-              <label className="block text-sm font-medium text-gray-700 mt-4">Email Address (Optional)</label>
-              <input type="email" name="email" value={formData.email} onChange={handleChange} className="text-sm w-full p-2 border-b-2 border-gray-300 rounded focus:border-blue-600 outline-none" />
 
               <label className="block text-sm font-medium text-gray-700 mt-4">Phone Number *</label>
               <input type="text" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} required className="text-sm w-full p-2 border-b-2 border-gray-300 rounded focus:border-blue-600 outline-none" />
