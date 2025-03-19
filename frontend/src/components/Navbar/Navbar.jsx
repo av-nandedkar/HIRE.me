@@ -78,7 +78,7 @@ const Navbar = () => {
 </a>
 
 {/* Desktop Menu */}
-<ul className="hidden md:flex flex-1 justify-center space-x-8 text-lg items-center">
+<ul className={`hidden md:flex flex-1 ${authToken ? "justify-center" : "justify-center"} space-x-8 text-lg items-center`}>
   <li>
     <a href="/" className="relative hover:text-[#ff347f] transition duration-300 
        after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] 
@@ -111,47 +111,50 @@ const Navbar = () => {
   </li>
 </ul>
 
-{/* Language Dropdown */}
-<div className="relative flex items-center">
-  <button
-    onClick={() => setLanguageOpen((prev) => !prev)}
-    className="flex items-center space-x-2 bg-white text-black px-2 py-2 rounded-full shadow-md border border-gray-300 hover:bg-gray-200 transition-all"
-  >
-    <span className="font-medium"><strong>🌐</strong></span>
-    <FaCaretDown className={`transition-transform ${languageOpen ? "rotate-180" : ""}`} />
-  </button>
-
-  {/* Dropdown Menu */}
-  <div
-    className={`absolute right-0 mt-49 w-52 bg-white shadow-lg border border-gray-300 rounded-lg p-3 transition-all duration-300 ease-in-out ${
-      languageOpen ? "opacity-100 scale-100 visible" : "opacity-0 scale-95 invisible"
-    }`}
-  >
-    <div id="google_translate_element" className="google_translate_element p-2 text-center"></div>
-  </div>
-</div>
-
-{/* Profile Dropdown */}
-{authToken && (
-  <div className="relative hidden md:block ml-4">
-    <button
-      onClick={() => setDropdownOpen(!dropdownOpen)}
-      className="flex items-center space-x-2 bg-gray-800 px-4 py-2 rounded-full hover:bg-gray-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500"
+{/* Language Dropdown & Profile Placeholder */}
+<div className="relative flex items-center space-x-4">
+         {/* Language Dropdown */}
+         <div className="relative flex items-center">
+            <button
+               onClick={() => setLanguageOpen((prev) => !prev)}
+               className="flex items-center space-x-2 bg-white text-black px-2 py-2 rounded-full shadow-md border border-gray-300 hover:bg-gray-200 transition-all"
             >
-      <FaUser className="text-lg" />
-      <FaCaretDown className={`transition-transform duration-300 ${dropdownOpen ? 'rotate-180' : 'rotate-0'}`} />
-    </button>
+               <span className="font-medium"><strong>🌐</strong></span>
+               <FaCaretDown className={`transition-transform ${languageOpen ? "rotate-180" : ""}`} />
+            </button>
 
-    {dropdownOpen && (
-      <div className="absolute right-0 mt-3 w-48 origin-top-right bg-gray-800/90 backdrop-blur-sm border border-gray-700 rounded-lg shadow-lg transition-all ease-out duration-300 scale-100">
-        <a href="/viewprofile" className="block px-4 py-3 text-sm text-white hover:bg-gray-700 rounded-md transition-colors">Profile</a>
-        <a href="/login" onClick={handleLogout} className="block px-4 py-3 text-sm text-red-400 hover:bg-red-700 hover:text-white rounded-md transition-colors">Logout</a>
-      </div>
-    )}
-  </div>
-)}
+            {/* Dropdown Menu */}
+            <div
+               className={`absolute right-0 mt-49 w-52 bg-white shadow-lg border border-gray-300 rounded-lg p-3 transition-all duration-300 ease-in-out ${
+                  languageOpen ? "opacity-100 scale-100 visible" : "opacity-0 scale-95 invisible"
+               }`}
+            >
+               <div id="google_translate_element" className="google_translate_element p-2 text-center"></div>
+            </div>
+         </div>
 
+{/* Profile Dropdown (With Fixed Width) */}
+<div className="relative hidden md:block" style={{ minWidth: "3rem" }}>
+            {authToken && (
+               <div>
+                  <button
+                     onClick={() => setDropdownOpen(!dropdownOpen)}
+                     className="flex items-center space-x-2 bg-gray-800 px-4 py-2 rounded-full hover:bg-gray-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                     <FaUser className="text-lg" />
+                     <FaCaretDown className={`transition-transform duration-300 ${dropdownOpen ? "rotate-180" : "rotate-0"}`} />
+                  </button>
 
+                  {dropdownOpen && (
+                     <div className="absolute right-0 mt-3 w-48 origin-top-right bg-gray-800/90 backdrop-blur-sm border border-gray-700 rounded-lg shadow-lg transition-all ease-out duration-300 scale-100">
+                        <a href="/viewprofile" className="block px-4 py-3 text-sm text-white hover:bg-gray-700 rounded-md transition-colors">Profile</a>
+                        <a href="/login" onClick={handleLogout} className="block px-4 py-3 text-sm text-red-400 hover:bg-red-700 hover:text-white rounded-md transition-colors">Logout</a>
+                     </div>
+                  )}
+               </div>
+            )}
+</div>
+</div>
 
         {/* Mobile Menu Button */}
         <button
