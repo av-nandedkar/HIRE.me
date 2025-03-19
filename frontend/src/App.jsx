@@ -11,6 +11,8 @@ import Dashboard from './components/Dashboards/dashboard';
 import JobForm from './components/Provider/Jobpost';
 import ViewProfile from './components/Login/ViewProfile';
 import ForgotPassword from './components/Login/forgotpassword';
+import JobSearch from './components/Seeker/jobSearch';
+
 function App() {
   return (
 
@@ -28,7 +30,7 @@ function App() {
           <Route path="/jobpost" element={<JobForm/>}></Route>
           <Route path="/viewprofile" element={<ViewProfile/>}></Route>
           <Route path="/forgotpassword" element={<ForgotPassword/>}></Route>
-
+          <Route path="/jobsearch" element={<JobSearch/>}></Route>
 
         </Routes>
         <Footer/>

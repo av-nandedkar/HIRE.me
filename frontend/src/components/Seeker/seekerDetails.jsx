@@ -27,9 +27,35 @@ const SeekerForm = () => {
     experienceYears: "",
     location: "",
     pincode: "",
+    latitude: null,
+    longitude: null,
     expectedPayRange: "",
 
   });
+
+  const fetchCoordinates = async (pincode) => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${pincode}`
+      );
+      const data = await response.json();
+      if (data.length > 0) {
+        const { lat, lon } = data[0];
+        const latitude = lat;
+        const longitude = lon;
+        console.log("latitude and longitude", latitude,longitude);
+        return { latitude,longitude}; // Return coordinates
+      } else {
+        toast.error("Location not found. Please enter a valid location and pincode.");
+        return { latitude: null, longitude: null };
+
+      }
+    } catch (error) {
+      toast.error("Failed to fetch location coordinates.");
+      console.error("Geocoding Error:", error);
+      return { latitude: null, longitude: null };
+    }
+  };
 
   const skillOptions = [
     "Plumber", "Electrician", "Painter", "Electronics Repairs", "Mechanic", 
@@ -73,7 +99,7 @@ const SeekerForm = () => {
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const requiredFields = ["fullName", "phoneNumber", "skills", "experienceYears", "location", "pincode", "expectedPayRange"];
   
@@ -84,6 +110,10 @@ const SeekerForm = () => {
       }
     }
   
+    // Fetch coordinates before submitting
+  const { latitude, longitude } =  await fetchCoordinates(formData.pincode);
+  console.log("lat and long", latitude,longitude);
+  
     // Fetch email from local storage and format it
     const storedEmail = localStorage.getItem("email");
     const formattedEmail = storedEmail.replace(/\./g, ",");
@@ -93,6 +123,8 @@ const SeekerForm = () => {
       ...formData,
       email: storedEmail,
       userType: "seeker",
+      latitude,
+    longitude,
     };
   
     // Use child() to store data using the formatted email as key

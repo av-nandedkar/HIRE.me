@@ -19,6 +19,8 @@ const JobForm = () => {
     budgetRange: "",
     location: "",
     pincode: "",
+    latitude: null,
+  longitude: null,
     jobDate: "",
     applyBy: "",
     description: "",
@@ -26,10 +28,37 @@ const JobForm = () => {
     contactPersonPhone: "",
   });
 
+  const fetchCoordinates = async ( pincode) => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${pincode}`
+      );
+      const data = await response.json();
+      if (data.length > 0) {
+        const { lat, lon } = data[0];
+        const latitude = lat;
+        const longitude = lon;
+        console.log("latitude and longitude", latitude,longitude);
+        return { latitude,longitude}; // Return coordinates
+      } else {
+        toast.error("Location not found. Please enter a valid location and pincode.");
+        return { latitude: null, longitude: null };
+
+      }
+    } catch (error) {
+      toast.error("Failed to fetch location coordinates.");
+      console.error("Geocoding Error:", error);
+      return { latitude: null, longitude: null };
+    }
+  };
+  
+
   // Handle form input changes
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+  
+  
   const handleSkillChange = (e) => {
     const selectedSkills = Array.from(e.target.selectedOptions, option => option.value);
     setFormData({ ...formData, skills: selectedSkills });
@@ -44,8 +73,11 @@ const JobForm = () => {
       }));
     }
   }, []);
+
+
+
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const requiredFields = [
@@ -78,13 +110,21 @@ for (const field of requiredFields) {
     }
   }
   
+ // Fetch coordinates before submitting
+ const { latitude, longitude } =  await fetchCoordinates(formData.pincode);
+console.log("lat and long", latitude,longitude);
+ const jobData = {
+   ...formData,
+   latitude,
+   longitude,
+ };
     const jobsRef = ref(database, "jobs");
 
     // Push job data to Firebase
-    push(jobsRef, formData)
+    push(jobsRef, jobData)
       .then(() => {
         toast.success("Job posted successfully!");
-        console.log("Job Data Stored:", formData);
+        console.log("Job Data Stored:", jobData);
 
         // Reset form after submission
         setFormData({
@@ -96,6 +136,8 @@ for (const field of requiredFields) {
           budgetRange: "",
           location: "",
           pincode: "",
+          latitude: null,
+        longitude: null,
           jobDate: "",
           applyBy: "",
           description: "",
