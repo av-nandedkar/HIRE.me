@@ -127,7 +127,7 @@ const Login = () => {
       } else if (error.code === "auth/user-not-found") {
         toast.error("No account found with this email. Please register.");
       } else if (error.code === "auth/invalid-credential") {
-        toast.error("This account might be registered with Google. Try logging in with Google.");
+        toast.error("Check Password Or Try logging in with Google.");
       } else {
         toast.error("An error occurred. Please try again.");
       }

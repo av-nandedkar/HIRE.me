@@ -5,8 +5,8 @@ import { getDatabase, ref, push ,set , child } from "firebase/database";
 import { app } from '../../firebase';
 import { useNavigate } from "react-router-dom";
 
-const CLOUDINARY_UPLOAD_URL = "https://api.cloudinary.com/v1_1/dmcngv1j0/image/upload";
-const CLOUDINARY_UPLOAD_PRESET = "init squad";
+const CLOUDINARY_UPLOAD_URL = "https://api.cloudinary.com/v1_1/dbshuwmvx/image/upload";
+const CLOUDINARY_UPLOAD_PRESET = "Hire.me";
 
 const database = getDatabase(app);
 
@@ -23,7 +23,6 @@ const SeekerForm = () => {
     phoneNumber: "",
     profilePicture: null,
     dateOfBirth: "",
-    professionalDetails: "",
     skills: [],
     experienceYears: "",
     location: "",
@@ -109,8 +108,6 @@ const SeekerForm = () => {
           email: "",
           phoneNumber: "",
           profilePicture: null,
-          dateOfBirth: "",
-          professionalDetails: "",
           skills: [],
           experienceYears: "",
           location: "",
@@ -132,11 +129,8 @@ const SeekerForm = () => {
           email: "",
           phoneNumber: "",
           profilePicture: null,
-          dateOfBirth: "",
-          professionalDetails: "",
           skills: [],
           experienceYears: "",
-    
           location: "",
           pincode: "",
           expectedPayRange: "",

@@ -100,7 +100,7 @@ const ViewProfile = () => {
             { label: "Communication Method", name: "communicationMethod", isDropdown: true },
             { label: "User Type", name: "userType" },],
         seeker: [
-          { label: "profilePicture", name: "profilePicture" },
+        
             { label: "Full Name", name: "fullName" },
             { label: "Phone Number", name: "phoneNumber" },
             { label: "Email", name: "email" },

@@ -4,16 +4,21 @@ import { getDatabase, ref, push , set, child } from "firebase/database";
 import { app } from '../../firebase';
 import { useNavigate } from "react-router-dom";
 
+const CLOUDINARY_UPLOAD_URL = "https://api.cloudinary.com/v1_1/dbshuwmvx/image/upload";
+const CLOUDINARY_UPLOAD_PRESET = "Hire.me";
+
 const database = getDatabase(app);
 
 const  ProviderForm = () => {
   const [step, setStep] = useState(1);
+  const [imageUploading, setImageUploading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: "",
     organizationName: "",
+    profilePicture: null,
     phoneNumber: "",
-    professionalDetails: "",
     location: "",
     pincode: "",
      businessType: "",
@@ -31,6 +36,35 @@ const  ProviderForm = () => {
   };
 
 
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploading(true);
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+    try {
+      const response = await fetch(CLOUDINARY_UPLOAD_URL, {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+      if (data.secure_url) {
+        setFormData((prev) => ({ ...prev, profilePicture: data.secure_url }));
+        toast.success("Image uploaded successfully!");
+      } else {
+        throw new Error("Upload failed");
+      }
+    } catch (error) {
+      toast.error("Image upload failed: " + error.message);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
@@ -65,6 +99,7 @@ const  ProviderForm = () => {
         setFormData({
           fullName: "",
           organizationName: "",
+          profilePicture: null,
           phoneNumber: "",
           location: "",
           pincode: "",
@@ -84,6 +119,7 @@ const  ProviderForm = () => {
       setFormData({
         fullName: "",
           organizationName: "",
+          profilePicture: null,
           phoneNumber: "",
           location: "",
           pincode: "",
@@ -128,7 +164,10 @@ const  ProviderForm = () => {
 
           {step === 2 && (
             <div>
-             
+                 <label className="block text-sm font-medium text-gray-700 mb-1 mt-2">Profile Picture</label>
+              <input type="file" name="profilePicture" onChange={handleFileChange} className="text-xs w-full p-2 border border-gray-300 rounded focus:border-blue-600 outline-none" disabled={imageUploading} />
+              {imageUploading && <p className="text-blue-500">Uploading...</p>}
+
               <label className="block text-sm font-medium text-gray-700 mt-4">Organisation Name (Optional)</label>
               <input type="organizationName" name="organizationName" value={formData.organizationName} onChange={handleChange} className="text-sm w-full p-2 border-b-2 border-gray-300 rounded focus:border-blue-600 outline-none" />
               <label className="block text-sm font-medium text-gray-700 mt-4">Business Type (Optional)</label>
