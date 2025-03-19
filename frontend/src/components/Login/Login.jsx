@@ -196,7 +196,7 @@ const Login = () => {
               <label className="flex items-center text-gray-600">
                 <input type="checkbox" className="mr-2" /> Remember me
               </label>
-              <a href="#" className="text-blue-400 text-sm hover:underline">Forgot password?</a>
+              <a href="/forgotpassword" className="text-blue-400 text-sm hover:underline">Forgot password?</a>
             </div>
 
             <button type="submit" disabled={loading} className={`w-full py-2 rounded-2xl transition cursor-pointer ${loading ? "bg-gray-500" : "bg-gray-800 hover:bg-blue-700 text-white"}`}>
