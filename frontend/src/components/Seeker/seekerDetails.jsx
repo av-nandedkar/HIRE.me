@@ -5,11 +5,18 @@ import { getDatabase, ref, push ,set , child } from "firebase/database";
 import { app } from '../../firebase';
 import { useNavigate } from "react-router-dom";
 
+const CLOUDINARY_UPLOAD_URL = "https://api.cloudinary.com/v1_1/dmcngv1j0/image/upload";
+const CLOUDINARY_UPLOAD_PRESET = "init squad";
+
 const database = getDatabase(app);
 
 const SeekerForm = () => {
   const [step, setStep] = useState(1);
   const navigate = useNavigate();
+  const [imageUploading, setImageUploading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -34,14 +41,35 @@ const SeekerForm = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleFileChange = (e) => {
-    setFormData({ ...formData, profilePicture: e.target.files[0] });
-  };
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-  // const handleSkillChange = (e) => {
-  //   const selectedSkills = Array.from(e.target.selectedOptions, option => option.value);
-  //   setFormData({ ...formData, skills: selectedSkills });
-  // };
+    setUploading(true);
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+    try {
+      const response = await fetch(CLOUDINARY_UPLOAD_URL, {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+      if (data.secure_url) {
+        setFormData((prev) => ({ ...prev, profilePicture: data.secure_url }));
+        toast.success("Image uploaded successfully!");
+      } else {
+        throw new Error("Upload failed");
+      }
+    } catch (error) {
+      toast.error("Image upload failed: " + error.message);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
@@ -154,7 +182,9 @@ const SeekerForm = () => {
           {step === 2 && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1 mt-2">Profile Picture</label>
-              <input type="file" name="profilePicture" onChange={handleFileChange} className="text-xs w-full p-2 border border-gray-300 rounded focus:border-blue-600 outline-none" />
+              <input type="file" name="profilePicture" onChange={handleFileChange} className="text-xs w-full p-2 border border-gray-300 rounded focus:border-blue-600 outline-none" disabled={imageUploading} />
+              {imageUploading && <p className="text-blue-500">Uploading...</p>}
+
               <label className="block text-sm font-medium text-gray-700 mb-1 mt-3">Skills/Expertise *</label>
               <Select
                 isMulti

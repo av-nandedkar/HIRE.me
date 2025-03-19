@@ -100,6 +100,7 @@ const ViewProfile = () => {
             { label: "Communication Method", name: "communicationMethod", isDropdown: true },
             { label: "User Type", name: "userType" },],
         seeker: [
+          { label: "profilePicture", name: "profilePicture" },
             { label: "Full Name", name: "fullName" },
             { label: "Phone Number", name: "phoneNumber" },
             { label: "Email", name: "email" },
@@ -120,12 +121,14 @@ const ViewProfile = () => {
           <div className="bg-white shadow-xl rounded-lg overflow-hidden flex flex-col md:flex-row w-full md:w-[700px]">
            {/* Left Section */}
 <div className="bg-gradient-to-b from-orange-400 to-pink-400 p-6 flex flex-col items-center text-center text-white md:w-1/3">
-  <div className="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center mb-4">
-  <div className="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center mb-4">
-  <FaUserCircle className="text-6xl text-white" /> {/* Adjust size and color as needed */}
-</div>
+  <div className="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center mb-4 overflow-hidden">
+    {profileData?.profilePicture ? (
+      <img src={profileData.profilePicture} alt="Profile" className="w-full h-full object-cover" />
+    ) : (
+      <FaUserCircle className="text-6xl text-white" /> 
+    )}
   </div>
-  <h2 className="text-xl md:text-base font-medium	 text-black mb-1">{profileData?.fullName || profileData?.organizationName || "N/A"}</h2>
+  <h2 className="text-xl md:text-base font-medium text-black mb-1">{profileData?.fullName || profileData?.organizationName || "N/A"}</h2>
   <p className="text-sm mb-4">{userRole.toUpperCase()}</p>
   <button
     onClick={handleEditToggle}
@@ -134,6 +137,7 @@ const ViewProfile = () => {
     {isEditing ? "Cancel" : "Edit Profile"}
   </button>
 </div>
+
 
     
             {/* Right Section */}
