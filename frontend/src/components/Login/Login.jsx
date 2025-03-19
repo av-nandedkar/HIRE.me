@@ -48,18 +48,7 @@ const Login = () => {
   // Step 3 & 4: Handle Authentication Entry
   const handleAuthEntry = async (email) => {
     const authRef = ref(database, `authentication/${email.replace('.', ',')}`);
-    // const authSnapshot = await get(authRef);
-
-    // // Step 3: If entry exists, delete it
-    // if (authSnapshot.exists()) {
-    //   await remove(authRef);
-    // }
-
-    // // Step 4: Create a new entry
-    // await set(authRef, {
-    //   email,
-    //   timestamp: new Date().toISOString(),
-    // });
+   
   };
 
   // Step 5: Save necessary items to localStorage
@@ -67,6 +56,17 @@ const Login = () => {
     localStorage.setItem('authToken', auth.currentUser?.accessToken || '');
     localStorage.setItem('userRole', user.userType);
     localStorage.setItem('email', user.email);
+  };
+  const saveToLocalStoragebymail = (user) => {
+    // Generate a random token
+    const randomToken = Math.random().toString(36).substr(2) + Date.now().toString(36);
+  
+    // Store in localStorage
+    localStorage.setItem("authToken", randomToken);
+    localStorage.setItem("userRole", user.userType);
+    localStorage.setItem("email", user.email);
+  
+    console.log("Generated Auth Token:", randomToken);
   };
 
   // Google Login - Follows Steps 1, 3, 4, 5
@@ -122,38 +122,17 @@ const Login = () => {
     // Step 2: Validate password using bcrypt
 const isPasswordCorrect = await bcrypt.compare(password, registeredUser.password); // No need to hash 'password' again
 
-console.log("Hashed Password from DB:", isPasswordCorrect);
-console.log("Entered Plain Password:", password);
-
 if (!isPasswordCorrect) {
   toast.error('Incorrect password.');
   setLoading(false);
   return false;  // Proper return for incorrect password
 }
 
-
-    // // Step 3: Check and handle Authentication Entry
-    // const authRef = ref(database, `authentication/${email.replace('.', ',')}`);
-    // const authSnapshot = await get(authRef);
-
-    // if (authSnapshot.exists()) {
-    //   await remove(authRef);  // Delete existing entry if it exists
-    // }
-
-    // // Add new authentication entry with updated form values
-    // await set(authRef, {
-    //   email,
-    //   password,
-    //   timestamp: new Date().toISOString(),
-    // });
-
-    // Step 4: Firebase Authentication and save to localStorage
-    // await signInWithEmailAndPassword(auth, email, password);
-    saveToLocalStorage(registeredUser);
+    saveToLocalStoragebymail(registeredUser);
 
     toast.success('Login successful!');
     navigate('/dashboard');
-    window.location.reload();  // Ensure fresh state
+    window.location.reload(); // Ensure fresh state
     return true;  // Proper return for successful login
   } catch (error) {
     console.error("Error during form login:", error);
