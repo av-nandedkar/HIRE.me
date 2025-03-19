@@ -81,7 +81,7 @@ const Navbar = () => {
          <li>
   <a 
     href={authToken ? "/dashboard" : "/login"}
-    onClick={() => !authToken && localStorage.setItem("authToken", true)}
+    onClick={() => !authToken }
     className="relative hover:text-[#ff347f] transition duration-300 
                after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] 
                after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full"
@@ -114,8 +114,11 @@ const Navbar = () => {
           </li>
         </ul>
 
-        {/* Profile Dropdown */}
-        <div className="relative hidden md:block">
+{/* Profile Dropdown */}
+{authToken && (
+  <div className="relative hidden md:block">
+
+
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
             className="flex items-center space-x-2 bg-gray-800 px-4 py-2 rounded-full hover:bg-gray-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -131,7 +134,8 @@ const Navbar = () => {
               <a href="/login" onClick={handleLogout} className="block px-4 py-3 text-sm text-red-400 hover:bg-red-700 hover:text-white rounded-md transition-colors">Logout</a>
             </div>
           )}
-        </div>
+      </div>
+)}
 
         {/* Mobile Menu Button */}
         <button
@@ -150,7 +154,7 @@ const Navbar = () => {
       <div className={`md:hidden bg-gray-900/90 p-5 absolute top-16 left-0 w-full flex flex-col items-center space-y-4 transition-all duration-300 ease-in-out ${menuOpen ? "opacity-100 visible scale-100" : "opacity-0 invisible scale-95"}`}>
         <a href="/" className="hover:text-[#ff347f] transition duration-300">Home</a>  <a 
     href={authToken ? "/dashboard" : "/login"}
-    onClick={() => !authToken && localStorage.setItem("authToken", true)}
+    onClick={() => !authToken }
    className="hover:text-[#ff347f] transition duration-300"
   >
     {authToken ? "Dashboard" : "Login"}
@@ -160,8 +164,10 @@ const Navbar = () => {
         <a href="/pricing" className="hover:text-[#ff347f] transition duration-300">Part-time</a>
         <a href="/contact" className="hover:text-[#ff347f] transition duration-300">Services</a>
 
-        {/* Mobile Profile Dropdown */}
-        <div className="relative">
+{/* Mobile Profile Dropdown */}
+{authToken && (
+  <div className="relative">
+
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
             className="flex items-center space-x-2 bg-gray-800 px-4 py-2 rounded-full hover:bg-gray-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -177,7 +183,9 @@ const Navbar = () => {
               <a href="/login" onClick={handleLogout} className="block px-4 py-3 text-sm text-red-400 hover:bg-red-700 hover:text-white rounded-md transition-colors">Logout</a>
             </div>
           )}
-        </div>
+</div>
+)}
+
 
         {/* Mobile Language Dropdown */}
         <div className="relative w-full flex justify-center">
