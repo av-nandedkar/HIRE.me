@@ -126,7 +126,7 @@ const Register = () => {
           },
         }}
       />
-      <div className="flex items-center px-8 justify-center min-h-screen bg-gray-900">
+      <div className="flex items-center mt-10 px-8 justify-center min-h-screen bg-gray-900">
         <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-xl xl:max-w-xl">
           <div className="flex justify-center mb-2">
             <a href="/">

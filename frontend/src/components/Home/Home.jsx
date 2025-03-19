@@ -1,8 +1,18 @@
 import React from "react";
 import { ShieldCheck, Cog, Headset, Users,TrendingUp, Star,Clock } from "lucide-react";
 import { Typewriter } from "react-simple-typewriter";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedEmail = localStorage.getItem("email");
+    if (storedEmail) setIsLoggedIn(true);
+  }, []);
+
   return (
     <div className="pt-30 bg-gray-900  relative  text-white min-h-screen flex flex-col justify-center items-center px-6 md:px-12">
       {/* Background Overlay with Red Lines Effect */}
@@ -41,14 +51,26 @@ const Home = () => {
       </div>
       
       <div className="relative flex gap-4 mt-10 z-10 mb-25">
-        <a href="/register"><button className="bg-[black] hover:bg-[#ff347f] cursor-pointer text-white px-6 py-3 rounded-lg font-medium transition">
-          Join HIRE.me
-        </button></a>
-        <a href="/contact"><button className="border border-white px-6 py-3 rounded-lg font-medium transition hover:bg-gray-800 cursor-pointer">
+      {isLoggedIn ? (
+        <button
+          onClick={() => navigate("/dashboard")}
+          className="bg-[black] hover:bg-[#ff347f] cursor-pointer text-white px-6 py-3 rounded-lg font-medium transition"
+        >
+          Dashboard
+        </button>
+      ) : (
+        <a href="/register">
+          <button className="bg-[black] hover:bg-[#ff347f] cursor-pointer text-white px-6 py-3 rounded-lg font-medium transition">
+            Join HIRE.me
+          </button>
+        </a>
+      )}
+      <a href="/contact">
+        <button className="border border-white px-6 py-3 rounded-lg font-medium transition hover:bg-gray-800 cursor-pointer">
           Contact Us
-        </button></a>
-      </div>
-      
+        </button>
+      </a>
+    </div>
       {/* Features Section */}
         <div className="relative z-10 mt-5 w-full text-center">
         <h2 className="text-3xl font-bold">Why Choose HIRE.me?</h2>

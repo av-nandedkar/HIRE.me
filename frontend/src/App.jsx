@@ -4,11 +4,12 @@ import {Navbar,Footer} from './components/Navbar/Navbar'
 import Login from './components/Login/Login';
 import Register from './components/Login/Register';
 import Home from './components/Home/Home'
-import WorkProviderForm from './components/Provider/provider';
-import SeekerForm from './components/Seeker/seeker';
+import WorkProviderForm from './components/Provider/providerDetails';
+import SeekerForm from './components/Seeker/seekerDetails';
 import Contact from './components/Forms/contact';
 import Dashboard from './components/Dashboards/dashboard';
-import JobForm from './components/Provider/Jobpost'
+import JobForm from './components/Provider/Jobpost';
+import ViewProfile from './components/Login/ViewProfile';
 function App() {
   return (
 
@@ -18,12 +19,14 @@ function App() {
         <Routes>
           <Route path="/" element={<Home/>}></Route>
           <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/workproviderform" element={<WorkProviderForm />} />
-          <Route path="/seekerform" element={<SeekerForm/>}></Route>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/providerprofile" element={<WorkProviderForm />} />
+          <Route path="/seekerprofile" element={<SeekerForm/>}></Route>
           <Route path="/contact" element={<Contact/>}></Route>
           <Route path="/jobpost" element={<JobForm/>}></Route>
+          <Route path="/viewprofile" element={<ViewProfile/>}></Route>
+
         </Routes>
         <Footer/>
       </div>

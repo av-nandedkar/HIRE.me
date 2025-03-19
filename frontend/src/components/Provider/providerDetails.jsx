@@ -1,33 +1,24 @@
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
-import Select from "react-select";
-import { getDatabase, ref, push } from "firebase/database";
+import { getDatabase, ref, push , set, child } from "firebase/database";
 import { app } from '../../firebase';
+import { useNavigate } from "react-router-dom";
+
 const database = getDatabase(app);
 
-const SeekerForm = () => {
+const  ProviderForm = () => {
   const [step, setStep] = useState(1);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: "",
-    email: "",
+    organizationName: "",
     phoneNumber: "",
-    profilePicture: null,
-    dateOfBirth: "",
     professionalDetails: "",
-    skills: [],
-    experienceYears: "",
-    certifications: [],
-    projectImages: [],
-    availability: {
-      workHours: "",
-      daysAvailable: "",
-      onDemand: false,
-    },
     location: "",
     pincode: "",
-    expectedPayRange: "",
+     businessType: "",
+     communicationMethod: "",
     identityVerification: null,
-    languagesKnown: "",
   });
 
   const skillOptions = [
@@ -39,21 +30,14 @@ const SeekerForm = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleFileChange = (e) => {
-    setFormData({ ...formData, profilePicture: e.target.files[0] });
-  };
 
-  const handleSkillChange = (e) => {
-    const selectedSkills = Array.from(e.target.selectedOptions, option => option.value);
-    setFormData({ ...formData, skills: selectedSkills });
-  };
 
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const requiredFields = ["fullName", "phoneNumber", "skills", "experienceYears", "location", "pincode", "expectedPayRange"];
+    const requiredFields = ["fullName", "phoneNumber", "location", "pincode", "businessType", "communicationMethod"];
     
     for (const field of requiredFields) {
       if (!formData[field] || (Array.isArray(formData[field]) && formData[field].length === 0)) {
@@ -61,33 +45,33 @@ const SeekerForm = () => {
         return;
       }
     }
-
-    const professionalsRef = ref(database, "user-metadata/seeker");
-    push(professionalsRef, formData)
+  
+    const storedEmail = localStorage.getItem("email");
+    if (!storedEmail) {
+      toast.error("Email not found! Please log in again.");
+      return;
+    }
+  
+    // Replace `.` with `,` to avoid Firebase key issues
+    const emailKey = storedEmail.replace('.', ',');
+    const professionalsRef = ref(database, "user-metadata/provider");
+    const userRef = child(professionalsRef, emailKey);
+  
+    // Add userType: 'provider' to the submitted data
+    set(userRef, { ...formData, email: storedEmail, userType: "provider" })
       .then(() => {
         toast.success("Profile submitted successfully!");
+        navigate("/viewprofile");
         setFormData({
           fullName: "",
-          email: "",
+          organizationName: "",
           phoneNumber: "",
-          profilePicture: null,
-          dateOfBirth: "",
-          professionalDetails: "",
-          skills: [],
-          experienceYears: "",
-          certifications: [],
-          projectImages: [],
-          availability: {
-            workHours: "",
-            daysAvailable: "",
-            onDemand: false,
-          },
           location: "",
           pincode: "",
-          expectedPayRange: "",
-          identityVerification: null,
-          languagesKnown: "",
+          businessType: "",
+          communicationMethod: "",
         });
+        setStep(1); // Reset to the first step
       })
       .catch((error) => {
         toast.error("Error submitting profile: " + error.message);
@@ -96,28 +80,15 @@ const SeekerForm = () => {
 
   const handleClose = () => {
     if (window.confirm("Are you sure you want to close the form? All progress will be lost.")) {
-      setStep(1);
+     navigate("/dashboard");
       setFormData({
         fullName: "",
-          email: "",
+          organizationName: "",
           phoneNumber: "",
-          profilePicture: null,
-          dateOfBirth: "",
-          professionalDetails: "",
-          skills: [],
-          experienceYears: "",
-          certifications: [],
-          projectImages: [],
-          availability: {
-            workHours: "",
-            daysAvailable: "",
-            onDemand: false,
-          },
           location: "",
           pincode: "",
-          expectedPayRange: "",
-          identityVerification: null,
-          languagesKnown: "",
+           businessType: "",
+           communicationMethod : "",
       });
       toast.error("Form reset!");
     }
@@ -130,16 +101,15 @@ const SeekerForm = () => {
         <div className="text-center mb-4">
           <span className="text-gray-500">Step {step} of 3</span>
         </div>
-        <h2 className="text-2xl font-bold text-center mb-5 text-gray-800">Seeker Registration Form</h2>
+        <h2 className="text-2xl font-bold text-center mb-5 text-gray-800"> Provider Registration Form</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           {step === 1 && (
             <div>
+             
               <label className="block text-sm font-medium text-gray-700 mt-1">Full Name *</label>
               <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} required className="text-sm w-full p-2 border-b-2 border-gray-300 rounded focus:border-blue-600 outline-none" />
 
-              <label className="block text-sm font-medium text-gray-700 mt-4">Email Address (Optional)</label>
-              <input type="email" name="email" value={formData.email} onChange={handleChange} className="text-sm w-full p-2 border-b-2 border-gray-300 rounded focus:border-blue-600 outline-none" />
-
+           
               <label className="block text-sm font-medium text-gray-700 mt-4">Phone Number *</label>
               <input type="text" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} required className="text-sm w-full p-2 border-b-2 border-gray-300 rounded focus:border-blue-600 outline-none" />
 
@@ -158,26 +128,11 @@ const SeekerForm = () => {
 
           {step === 2 && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1 mt-2">Profile Picture</label>
-              <input type="file" name="profilePicture" onChange={handleFileChange} className="text-xs w-full p-2 border border-gray-300 rounded focus:border-blue-600 outline-none" />
-              <label className="block text-sm font-medium text-gray-700 mb-1 mt-3">Skills/Expertise *</label>
-              <Select
-                isMulti
-                name="skills"
-                options={skillOptions.map(skill => ({ value: skill, label: skill }))}
-                className="w-full"
-                classNamePrefix="select"
-                value={formData.skills.map(skill => ({ value: skill, label: skill }))}
-                onChange={(selectedOptions) =>
-                  setFormData({
-                    ...formData,
-                    skills: selectedOptions.map(option => option.value),
-                  })
-                }
-              />
-
-              <label className="block text-sm font-medium text-gray-700  mt-3">Years of Experience *</label>
-              <input type="text" name="experienceYears" value={formData.experienceYears} onChange={handleChange} required className="w-full p-2 border-b-2 border-gray-300 rounded focus:border-blue-600 outline-none" />
+             
+              <label className="block text-sm font-medium text-gray-700 mt-4">Organisation Name (Optional)</label>
+              <input type="organizationName" name="organizationName" value={formData.organizationName} onChange={handleChange} className="text-sm w-full p-2 border-b-2 border-gray-300 rounded focus:border-blue-600 outline-none" />
+              <label className="block text-sm font-medium text-gray-700 mt-4">Business Type (Optional)</label>
+              <input type="businessType" name="businessType" value={formData.businessType} onChange={handleChange} className="text-sm w-full p-2 border-b-2 border-gray-300 rounded focus:border-blue-600 outline-none" />
 
               <div className="flex justify-between">
                 <button type="button" onClick={prevStep} className="bg-gray-600 text-white py-2 px-4 rounded-3xl hover:bg-gray-700 transition mt-4">« Back</button>
@@ -194,8 +149,25 @@ const SeekerForm = () => {
               <label className="block text-sm font-medium text-gray-700 mt-4">Pincode *</label>
               <input type="text" name="pincode" value={formData.pincode} onChange={handleChange} required className="w-full p-2 border-b-2 border-gray-300 rounded focus:border-blue-600 outline-none" />
 
-              <label className="block text-sm font-medium text-gray-700 mt-4">Expected Pay Range *</label>
-              <input type="text" name="expectedPayRange" value={formData.expectedPayRange} onChange={handleChange} required className="w-full p-2 border-b-2 border-gray-300 rounded focus:border-blue-600 outline-none" />
+           
+
+              <div className="flex flex-col">
+  <label className="block text-sm font-medium text-gray-700 mt-4">
+    Communication Type *
+  </label>
+  <select
+    name="communicationMethod"
+    value={formData.communicationMethod}
+    onChange={handleChange}
+    required
+    className="w-full p-2 border-b-2 border-gray-300 rounded focus:border-blue-600 outline-none bg-gray-400 text-white"
+  >
+    <option value="">Select Communication Type</option>
+    <option value="Email">Email</option>
+    <option value="Phone">Phone</option>
+    <option value="Video Call">Message</option>
+  </select>
+</div>
 
               <div className="flex justify-between">
                 <button type="button" onClick={prevStep} className="bg-gray-600 text-white py-2 px-4 rounded-3xl hover:bg-gray-700 transition mt-4">« Back</button>
@@ -209,4 +181,4 @@ const SeekerForm = () => {
   );
 };
 
-export default SeekerForm;
+export default  ProviderForm;

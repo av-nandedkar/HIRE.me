@@ -57,7 +57,8 @@ const Login = () => {
       localStorage.setItem("email", usermail);
       toast.success("Login successful!");
       navigate("/dashboard");
-    
+      window.location.reload();
+
   
     } catch (error) {
       toast.error(error.message || "Google login failed.");
@@ -117,6 +118,8 @@ const Login = () => {
   
       toast.success("Login successful!");
       navigate("/dashboard");
+      window.location.reload();
+     
   
     } catch (error) {
       if (error.code === "auth/wrong-password") {
@@ -140,7 +143,7 @@ const Login = () => {
     <>
       <Toaster position="top-center" toastOptions={{ style: { fontSize: '1rem', padding: '10px 20px', maxWidth: '500px', borderRadius: '40px', marginTop: '30px' } }} />
 
-      <div className="flex items-center p-8 justify-center min-h-screen bg-gray-900">
+      <div className="flex items-center mt-10 p-8 justify-center min-h-screen bg-gray-900">
         <div className="bg-white mt-12 p-8 rounded-3xl shadow-lg w-full max-w-md">
           <h2 className="text-black text-2xl font-bold text-center mb-6">Welcome to</h2>
           <div className="flex justify-center mb-6">

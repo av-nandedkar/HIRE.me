@@ -5,6 +5,13 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [languageOpen, setLanguageOpen] = useState(false);
+  const [authToken, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const userLoggedIn = localStorage.getItem("authToken");
+    setIsAuthenticated(Boolean(userLoggedIn)); // true if logged in
+  }, []);
+  
   useEffect(() => {
     // Function to initialize Google Translate with the stored language
     window.googleTranslateElementInit = () => {
@@ -52,10 +59,10 @@ const Navbar = () => {
   }, [languageOpen]);
   
   const handleLogout = () => {
-    localStorage.clear(); // Removes all localStorage items
-    navigate("/login");
-  };
-  
+  localStorage.clear();
+  setIsAuthenticated(false);
+  navigate("/login");
+};
 
   return (
     <nav className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white p-4 fixed top-0 w-full z-50 shadow-lg">
@@ -71,9 +78,18 @@ const Navbar = () => {
           <li><a href="/" className="relative hover:text-[#ff347f] transition duration-300 
                after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] 
                after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full">Home</a></li>
-          <li><a href="/login" className="relative hover:text-[#ff347f] transition duration-300 
+         <li>
+  <a 
+    href={authToken ? "/dashboard" : "/login"}
+    onClick={() => !authToken && localStorage.setItem("authToken", true)}
+    className="relative hover:text-[#ff347f] transition duration-300 
                after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] 
-               after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full">Login</a></li>
+               after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full"
+  >
+    {authToken ? "Dashboard" : "Login"}
+  </a>
+</li>
+
           <li><a href="/companies" className="relative hover:text-[#ff347f] transition duration-300 
                after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] 
                after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full">Jobs</a></li>
@@ -110,8 +126,8 @@ const Navbar = () => {
 
           {dropdownOpen && (
             <div className="absolute right-0 mt-3 w-48 origin-top-right bg-gray-800/90 backdrop-blur-sm border border-gray-700 rounded-lg shadow-lg transition-all ease-out duration-300 scale-100">
-              <a href="/dashboard" className="block px-4 py-3 text-sm text-white hover:bg-gray-700 rounded-md transition-colors">Dashboard</a>
-              <a href="/settings" className="block px-4 py-3 text-sm text-white hover:bg-gray-700 rounded-md transition-colors">Settings</a>
+              <a href="/viewprofile" className="block px-4 py-3 text-sm text-white hover:bg-gray-700 rounded-md transition-colors">Profile</a>
+              {/* <a href="/settings" className="block px-4 py-3 text-sm text-white hover:bg-gray-700 rounded-md transition-colors">Settings</a> */}
               <a href="/login" onClick={handleLogout} className="block px-4 py-3 text-sm text-red-400 hover:bg-red-700 hover:text-white rounded-md transition-colors">Logout</a>
             </div>
           )}
@@ -132,8 +148,14 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       <div className={`md:hidden bg-gray-900/90 p-5 absolute top-16 left-0 w-full flex flex-col items-center space-y-4 transition-all duration-300 ease-in-out ${menuOpen ? "opacity-100 visible scale-100" : "opacity-0 invisible scale-95"}`}>
-        <a href="/" className="hover:text-[#ff347f] transition duration-300">Home</a>
-        <a href="/login" className="hover:text-[#ff347f] transition duration-300">Login</a>
+        <a href="/" className="hover:text-[#ff347f] transition duration-300">Home</a>  <a 
+    href={authToken ? "/dashboard" : "/login"}
+    onClick={() => !authToken && localStorage.setItem("authToken", true)}
+   className="hover:text-[#ff347f] transition duration-300"
+  >
+    {authToken ? "Dashboard" : "Login"}
+  </a>
+    
         <a href="/companies" className="hover:text-[#ff347f] transition duration-300">Jobs</a>
         <a href="/pricing" className="hover:text-[#ff347f] transition duration-300">Part-time</a>
         <a href="/contact" className="hover:text-[#ff347f] transition duration-300">Services</a>
@@ -149,9 +171,9 @@ const Navbar = () => {
           </button>
 
           {dropdownOpen && (
-            <div className="absolute right-0 mt-3 w-48 origin-top-right bg-gray-800/90 backdrop-blur-sm border border-gray-700 rounded-lg shadow-lg transition-all ease-out duration-300 scale-100">
-              <a href="/dashboard" className="block px-4 py-3 text-sm text-white hover:bg-gray-700 rounded-md transition-colors">Dashboard</a>
-              <a href="/settings" className="block px-4 py-3 text-sm text-white hover:bg-gray-700 rounded-md transition-colors">Settings</a>
+            <div className="absolute right-0 mt-3 w-48 origin-top-right bg-gray-800/90 backdrop-blur-sm border border-gray-700 rounded-lg shadow-lg transition-all ease-out duration-300 scale-100 z-20">
+            <a href="/viewprofile" className="block px-4 py-3 text-sm text-white hover:bg-gray-700 rounded-md transition-colors">Profile</a>
+              {/* <a href="/settings" className="block px-4 py-3 text-sm text-white hover:bg-gray-700 rounded-md transition-colors">Settings</a> */}
               <a href="/login" onClick={handleLogout} className="block px-4 py-3 text-sm text-red-400 hover:bg-red-700 hover:text-white rounded-md transition-colors">Logout</a>
             </div>
           )}

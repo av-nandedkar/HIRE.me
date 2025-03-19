@@ -42,6 +42,7 @@ const Dashboard = () => {
   const handleLogout = () => {
     localStorage.clear(); // Removes all localStorage items
     navigate("/login");
+    window.location.reload();
   };
   
   if (loading) {
@@ -49,14 +50,14 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center p-6">
+    <div className="min-h-screen py-25 bg-gray-900 text-white flex flex-col items-center p-6">
       <h2 className="text-3xl font-bold mb-6">Welcome to Your Dashboard</h2>
       {userRole === "provider" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-4xl">
           {/* Post a Job */}
           <button
             className="bg-blue-600 hover:bg-blue-700 p-4 rounded-lg flex items-center justify-center gap-2"
-            onClick={() => handleNavigation("/workproviderform")}
+            onClick={() => handleNavigation("/providerprofile")}
           >
             <PlusCircle /> post a job
           </button>
@@ -64,7 +65,7 @@ const Dashboard = () => {
           {/* View Applications */}
           <button
             className="bg-green-600 hover:bg-green-700 p-4 rounded-lg flex items-center justify-center gap-2"
-            onClick={() => handleNavigation("/workproviderform/applications")}
+            onClick={() => handleNavigation("/providerprofile/applications")}
           >
             <FileText /> View Applications
           </button>
@@ -73,7 +74,7 @@ const Dashboard = () => {
           <button
             className="bg-purple-600 hover:bg-purple-700 p-4 rounded-lg flex items-center justify-center gap-2"
             onClick={() =>
-              handleNavigation("/workproviderform/manage-listings")
+              handleNavigation("/providerprofile/manage-listings")
             }
           >
             <Briefcase /> Manage Listings
@@ -83,7 +84,7 @@ const Dashboard = () => {
           <button
             className="bg-teal-600 hover:bg-teal-700 p-4 rounded-lg flex items-center justify-center gap-2"
             onClick={() =>
-              handleNavigation("/workproviderform/schedule-interview")
+              handleNavigation("/providerprofile/schedule-interview")
             }
           >
             <CalendarClock /> Interview Scheduling
@@ -110,7 +111,7 @@ const Dashboard = () => {
           {/* Apply for Jobs */}
           <button
             className="bg-blue-600 hover:bg-blue-700 p-4 rounded-lg flex items-center justify-center gap-2"
-            onClick={() => handleNavigation("/seekerform")}
+            onClick={() => handleNavigation("/seekerprofile")}
           >
             <UserCheck /> Apply for Jobs
           </button>
@@ -118,7 +119,7 @@ const Dashboard = () => {
           {/* View Saved Jobs */}
           <button
             className="bg-green-600 hover:bg-green-700 p-4 rounded-lg flex items-center justify-center gap-2"
-            onClick={() => handleNavigation("/seekerform/saved-jobs")}
+            onClick={() => handleNavigation("/seekerprofile/saved-jobs")}
           >
             <FileText /> View Saved Jobs
           </button>
@@ -126,7 +127,7 @@ const Dashboard = () => {
           {/* Manage Profile */}
           <button
             className="bg-purple-600 hover:bg-purple-700 p-4 rounded-lg flex items-center justify-center gap-2"
-            onClick={() => handleNavigation("/seekerform/profile")}
+            onClick={() => handleNavigation("/seekerprofile/profile")}
           >
             <UserPlus /> Manage Profile
           </button>
@@ -134,7 +135,7 @@ const Dashboard = () => {
           {/* Interview Scheduling */}
           <button
             className="bg-teal-600 hover:bg-teal-700 p-4 rounded-lg flex items-center justify-center gap-2"
-            onClick={() => handleNavigation("/seekerform/interviews")}
+            onClick={() => handleNavigation("/seekerprofile/interviews")}
           >
             <CalendarClock /> My Interviews
           </button>
