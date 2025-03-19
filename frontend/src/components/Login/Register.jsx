@@ -1,11 +1,11 @@
 import React, { useState } from "react";
+import bcrypt from "bcryptjs";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { toast } from "react-hot-toast";
-import { Toaster } from "react-hot-toast";
+import { toast, Toaster } from "react-hot-toast";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
-import {app} from "../../firebase";
 import { getDatabase, ref, set } from "firebase/database";
+import { app } from "../../firebase";
 
 const auth = getAuth(app);
 
@@ -26,14 +26,26 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  // General Input Handler
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Password Validation
+  const validatePassword = (password) => {
+    const strongPasswordRegex =
+      /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%?&])[A-Za-z\d@$!%?&]{8,}$/;
+    setPasswordError(
+      strongPasswordRegex.test(password)
+        ? ""
+        : "Password must be 8+ characters with uppercase, lowercase, number, and special character."
+    );
   };
 
   const handlePasswordChange = (e) => {
     const newPassword = e.target.value;
-    setFormData({ ...formData, password: newPassword });
+    setFormData((prev) => ({ ...prev, password: newPassword }));
     validatePassword(newPassword);
   };
 
@@ -41,32 +53,13 @@ const Register = () => {
     setConfirmPassword(e.target.value);
   };
 
-  const validatePassword = (password) => {
-    const strongPasswordRegex =
-      /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%?&])[A-Za-z\d@$!%?&]{8,}$/;
-    if (!strongPasswordRegex.test(password)) {
-      setPasswordError(
-        "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character."
-      );
-    } else {
-      setPasswordError("");
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    setIsSubmitting(true);
-    setTimeout(() => setIsSubmitting(false), 3000);
-
-    if (
-      !formData.userType ||
-      !formData.name ||
-      !formData.email ||
-      !formData.password ||
-      !confirmPassword ||
-      !formData.phone 
-    ) {
+  
+    if (isSubmitting) return; // Prevent double submission
+  
+    // Validate inputs
+    if (Object.values(formData).some((field) => !field) || !confirmPassword) {
       toast.error("Please fill all required fields.");
       return;
     }
@@ -80,36 +73,47 @@ const Register = () => {
       toast.error("Passwords do not match!");
       return;
     }
-    const phoneRegex = /^[0-9]{10}$/;
-    if (!phoneRegex.test(formData.phone)) {
+  
+    if (!/^[0-9]{10}$/.test(formData.phone)) {
       toast.error("Please enter a valid 10-digit phone number.");
       return;
     }
   
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+      setIsSubmitting(true);
+  
+      // Hash the password before saving
+      const hashedPassword = await bcrypt.hash(formData.password, 10); // Salt rounds = 10
+  
+      // Register user in Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
       const user = userCredential.user;
-      
+  
+      // Store additional user details along with hashed password in Firebase Realtime Database
       const db = getDatabase(app);
       await set(ref(db, `registrationdetails/${user.uid}`), {
         userType: formData.userType,
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
+        password: hashedPassword, // Store the hashed password
       });
   
+      // Save user role & Navigate
       localStorage.setItem("userRole", formData.userType);
       toast.success("Registration successful!");
-     
-        navigate("/login");
-      
+      navigate("/login");
     } catch (error) {
-      console.error("Registration Error:", error); // Add this line for debugging
-      toast.error(`Registration failed: ${error.message}`); // Show error message
+      console.error("Registration Error:", error);
+      toast.error(`Registration failed: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
-  
-  
 
   return (
     <>

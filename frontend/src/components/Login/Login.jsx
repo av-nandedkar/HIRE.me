@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
+import bcrypt from 'bcryptjs';  // Import bcryptjs
 import { FaGoogle, FaEye, FaEyeSlash } from 'react-icons/fa';
-import { toast, Toaster } from "react-hot-toast";
-import { getAuth,signInWithEmailAndPassword,GoogleAuthProvider ,signInWithPopup } from 'firebase/auth';
-import {app}from '../../firebase';
-import { getDatabase, ref, get } from "firebase/database";
-import { useNavigate } from "react-router-dom";
+import { toast, Toaster } from 'react-hot-toast';
+import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, deleteUser } from 'firebase/auth';
+import { app } from '../../firebase';
+import { getDatabase, ref, get, set, remove } from 'firebase/database';
+import { useNavigate } from 'react-router-dom';
 
-const auth=getAuth(app);
+const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 const database = getDatabase(app);
 
@@ -15,154 +16,195 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-
   const navigate = useNavigate();
-  const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const isValidPassword = (password) => /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/.test(password);
 
+  // Check user existence in registrationdetails
+  const checkUserInRegistrationDetails = async (email) => {
+    try {
+      const userRef = ref(database, 'registrationdetails');
+      const snapshot = await get(userRef);
+  
+      if (!snapshot.exists()) {
+        return null; // No users found
+      }
+  
+      let userFound = null;
+  
+      snapshot.forEach((childSnapshot) => {
+        const userData = childSnapshot.val();
+        if (userData.email?.toLowerCase() === email.toLowerCase()) {
+          userFound = { ...userData, uid: childSnapshot.key }; // Match found
+        }
+      });
+  
+      return userFound;
+    } catch (error) {
+      console.error("Error fetching registration details:", error);
+      return null;
+    }
+  };
+  
+
+  // Step 3 & 4: Handle Authentication Entry
+  const handleAuthEntry = async (email) => {
+    const authRef = ref(database, `authentication/${email.replace('.', ',')}`);
+    // const authSnapshot = await get(authRef);
+
+    // // Step 3: If entry exists, delete it
+    // if (authSnapshot.exists()) {
+    //   await remove(authRef);
+    // }
+
+    // // Step 4: Create a new entry
+    // await set(authRef, {
+    //   email,
+    //   timestamp: new Date().toISOString(),
+    // });
+  };
+
+  // Step 5: Save necessary items to localStorage
+  const saveToLocalStorage = (user) => {
+    localStorage.setItem('authToken', auth.currentUser?.accessToken || '');
+    localStorage.setItem('userRole', user.userType);
+    localStorage.setItem('email', user.email);
+  };
+
+  // Google Login - Follows Steps 1, 3, 4, 5
   const handleGoogleLogin = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-      const userRef = ref(database, `registrationdetails/${user.uid}`);
-      const snapshot = await get(userRef);
   
-      if (!snapshot.exists()) {
-        await user.delete();
-        await auth.signOut();
-        toast.error("User does not exist. Please register first.");
-        return;
-      }
-     
-      const userData = snapshot.val();
-    const userRole = userData.userType 
-    const usermail = userData.email
-    
-      try {
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        await user.linkWithCredential(credential); 
-      } catch (error) { 
-        if (error.code === "auth/credential-already-in-use") {
-          
-          toast.error("This account is already registered with an email and password. Please log in using email/password.");
-          await auth.signOut();
-          return;
-        }
-        console.warn("User account might already be linked.");
+      // Step 1: Check registration details
+      const registeredUser = await checkUserInRegistrationDetails(user.email);
+  
+      if (!registeredUser) {
+        await deleteUser(user);  // Delete unauthorized user
+        toast.error('User not registered. Redirecting to registration page.');
+        navigate('/register');
+        return false;  // Proper return for unsuccessful login
       }
   
-      const token = await user.getIdToken();
-      localStorage.setItem("authToken", token);
-      localStorage.setItem("userRole", userRole);
-      localStorage.setItem("email", usermail);
-      toast.success("Login successful!");
-      navigate("/dashboard");
-      window.location.reload();
-
+      // Step 3 & 4: Handle Authentication Entry
+      await handleAuthEntry(user.email);
   
+      // Step 5: Save necessary items to localStorage
+      saveToLocalStorage(registeredUser);
+  
+      toast.success('Login successful!');
+      navigate('/dashboard');
+      window.location.reload();  // Ensure a fresh start
+      return true;  // Proper return for successful login
     } catch (error) {
-      toast.error(error.message || "Google login failed.");
+      toast.error('Google login failed. Please try again.');
+      return false;  // Proper return for error
     }
   };
   
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    if (loading) return;
-  
-    setLoading(true);
-    const trimmedEmail = email.trim();
-    const trimmedPassword = password.trim();
-  
-    if (!trimmedEmail || !trimmedPassword) {
-      toast.error("Please enter both email and password.");
-      setLoading(false);
-      return;
-    }
-  
-    if (!isValidEmail(trimmedEmail)) {
-      toast.error("Please enter a valid email.");
-      setLoading(false);
-      return;
-    }
-  
-    if (!isValidPassword(trimmedPassword)) {
-      toast.error("Password must have at least 6 characters, 1 uppercase, 1 number, and 1 special character.");
-      setLoading(false);
-      return;
-    }
-  
-    try {
-      // Sign in the user with email and password
-      const userCredential = await signInWithEmailAndPassword(auth, trimmedEmail, trimmedPassword);
-      const user = userCredential.user;
-  
-      // Fetch user data from Firebase Realtime Database
-      const userRef = ref(database, `registrationdetails/${user.uid}`);
-      const snapshot = await get(userRef);
-  
-      if (!snapshot.exists()) {
-        toast.error("User not found in the database. Please register first.");
-        setLoading(false);
-        return;
-      }
-  
-      const userData = snapshot.val();
-      const userRole = userData.userType; // Fetching the userType
-      const usermail = userData.email
+ // Form Login - Follows Steps 1, 2, 3, 4, 5
+ const handleFormLogin = async (e) => {
+  e.preventDefault();
+  if (loading) return false;  // Prevent multiple submissions
 
-      // Store token and user role
-      const token = await user.getIdToken();
-      localStorage.setItem("authToken", token);
-      localStorage.setItem("userRole", userRole);
-      localStorage.setItem("email", usermail);
-  
-      toast.success("Login successful!");
-      navigate("/dashboard");
-      window.location.reload();
-     
-  
-    } catch (error) {
-      if (error.code === "auth/wrong-password") {
-        toast.error("Incorrect password. Try again or reset your password.");
-      } else if (error.code === "auth/user-not-found") {
-        toast.error("No account found with this email. Please register.");
-      } else if (error.code === "auth/invalid-credential") {
-        toast.error("Check Password Or Try logging in with Google.");
-      } else {
-        toast.error("An error occurred. Please try again.");
-      }
-    } finally {
+  setLoading(true);
+
+  try {
+    // Step 1: Check registration details
+    const registeredUser = await checkUserInRegistrationDetails(email);
+
+    if (!registeredUser) {
+      toast.error('User not registered. Redirecting to registration page.');
+      navigate('/register');
       setLoading(false);
+      return false;  // Proper return for unsuccessful login
     }
-  };
-  
-  
-  
+
+    // Step 2: Validate password using bcrypt
+const isPasswordCorrect = await bcrypt.compare(password, registeredUser.password); // No need to hash 'password' again
+
+console.log("Hashed Password from DB:", isPasswordCorrect);
+console.log("Entered Plain Password:", password);
+
+if (!isPasswordCorrect) {
+  toast.error('Incorrect password.');
+  setLoading(false);
+  return false;  // Proper return for incorrect password
+}
+
+
+    // // Step 3: Check and handle Authentication Entry
+    // const authRef = ref(database, `authentication/${email.replace('.', ',')}`);
+    // const authSnapshot = await get(authRef);
+
+    // if (authSnapshot.exists()) {
+    //   await remove(authRef);  // Delete existing entry if it exists
+    // }
+
+    // // Add new authentication entry with updated form values
+    // await set(authRef, {
+    //   email,
+    //   password,
+    //   timestamp: new Date().toISOString(),
+    // });
+
+    // Step 4: Firebase Authentication and save to localStorage
+    // await signInWithEmailAndPassword(auth, email, password);
+    saveToLocalStorage(registeredUser);
+
+    toast.success('Login successful!');
+    navigate('/dashboard');
+    window.location.reload();  // Ensure fresh state
+    return true;  // Proper return for successful login
+  } catch (error) {
+    console.error("Error during form login:", error);
+    toast.error('Login failed. Please try again.');
+    return false;  // Proper return for any other error
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <>
       <Toaster position="top-center" toastOptions={{ style: { fontSize: '1rem', padding: '10px 20px', maxWidth: '500px', borderRadius: '40px', marginTop: '30px' } }} />
-
+  
       <div className="flex items-center mt-10 p-8 justify-center min-h-screen bg-gray-900">
         <div className="bg-white mt-12 p-8 rounded-3xl shadow-lg w-full max-w-md">
           <h2 className="text-black text-2xl font-bold text-center mb-6">Welcome to</h2>
           <div className="flex justify-center mb-6">
             <a href='/'> <img src="/HIRE.me-blue.png" alt="HIRE.me Logo" className="h-12" /></a>
           </div>
-
+  
           <div className="flex gap-2 mb-4">
-            <button onClick={handleGoogleLogin} className="flex items-center justify-center w-full px-4 py-3 bg-gray-100 text-black rounded-2xl hover:bg-gray-300 cursor-pointer">
+            <button
+              onClick={async () => {
+                const result = await handleGoogleLogin();
+                // if (!result) {
+                //   toast.error('Google login failed or user not registered.');
+                // }
+              }}
+              className="flex items-center justify-center w-full px-4 py-3 bg-gray-100 text-black rounded-2xl hover:bg-gray-300 cursor-pointer"
+            >
               <FaGoogle className="mr-2 w-5 h-5" /> Log in with Google
             </button>
           </div>
-
+  
           <div className="flex items-center my-4">
             <hr className="flex-grow border-gray-600" />
             <span className="text-gray-700 px-2">or</span>
             <hr className="flex-grow border-gray-600" />
           </div>
-
-          <form onSubmit={handleLogin}>
+  
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const result = await handleFormLogin(e);
+              // if (!result) {
+              //   toast.error('Login failed or user not registered.');
+              // }
+            }}
+          >
             <div className="mb-4">
               <label className="block text-gray-600 mb-1">Email</label>
               <input
@@ -175,7 +217,7 @@ const Login = () => {
                 aria-label="Email address"
               />
             </div>
-
+  
             <div className="mb-4 relative">
               <label className="block text-gray-600 mb-1">Password</label>
               <input
@@ -187,23 +229,31 @@ const Login = () => {
                 required
                 aria-label="Password"
               />
-              <span className="absolute right-3 top-10 cursor-pointer" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? "Hide password" : "Show password"}>
+              <span
+                className="absolute right-3 top-10 cursor-pointer"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </span>
             </div>
-
+  
             <div className="flex justify-between items-center mb-4">
               <label className="flex items-center text-gray-600">
                 <input type="checkbox" className="mr-2" /> Remember me
               </label>
               <a href="/forgotpassword" className="text-blue-400 text-sm hover:underline">Forgot password?</a>
             </div>
-
-            <button type="submit" disabled={loading} className={`w-full py-2 rounded-2xl transition cursor-pointer ${loading ? "bg-gray-500" : "bg-gray-800 hover:bg-blue-700 text-white"}`}>
-              {loading ? "Signing in..." : "Sign in to your account"}
+  
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full py-2 rounded-2xl transition cursor-pointer ${loading ? "bg-gray-500" : "bg-gray-800 hover:bg-blue-700 text-white"}`}
+            >
+              {loading ? 'Signing in...' : 'Sign in to your account'}
             </button>
           </form>
-
+  
           <p className="text-gray-600 text-sm text-center mt-4">
             Don’t have an account yet? <a href="/register" className="text-blue-400 hover:underline">Sign up here</a>
           </p>
@@ -211,6 +261,7 @@ const Login = () => {
       </div>
     </>
   );
+  
 };
 
 export default Login;
