@@ -266,7 +266,7 @@ const  ProviderForm = () => {
     <option value="">Select Communication Type</option>
     <option value="Email">Email</option>
     <option value="Phone">Phone</option>
-    <option value="Video Call">Message</option>
+    <option value="Message">Message</option>
   </select>
 </div>
 
