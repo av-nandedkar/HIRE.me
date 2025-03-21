@@ -135,7 +135,7 @@ const JobForm = () => {
 const randomNum = Date.now().toString() + Math.floor(100000 + Math.random() * 900000).toString();
 
 // Replace spaces and special characters in job title to create a valid Firebase key
-const jobTitleKey = `${formData.jobTitle.replace(/\s+/g, "_").replace(/[^a-zA-Z0-9_]/g, "")}-${randomNum}`;
+const jobTitleKey = `${formData.jobTitle.replace(/\s+/g, "_").replace(/[^a-zA-Z0-9_]/g, "")}-${formData.city}-${randomNum}`;
 
     const jobData = {
         ...formData,
