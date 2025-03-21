@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { v4 as uuidv4 } from 'uuid';
 import { getDatabase, ref, onValue } from "firebase/database";
 import { app } from "../../firebase";
 import Select from "react-select";
@@ -11,15 +12,13 @@ const JobSearch = () => {
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [selectedSkill, setSelectedSkill] = useState(null);
   const [sortOrder, setSortOrder] = useState("newest");
-
   const [seekerLocation, setSeekerLocation] = useState(null);
 
- // Fetch Seekers' Location from Firebase
- useEffect(() => {
-    const seekerEmail = localStorage.getItem("email"); 
+  useEffect(() => {
+    const seekerEmail = localStorage.getItem("email");
     if (!seekerEmail) return;
 
-    const encodedEmail = seekerEmail.replace(/\./g, ","); // Firebase keys can't contain dots
+    const encodedEmail = seekerEmail.replace(/\./g, ",");
     const seekerRef = ref(database, `user-metadata/seeker/${encodedEmail}`);
 
     onValue(seekerRef, (snapshot) => {
@@ -32,30 +31,40 @@ const JobSearch = () => {
       }
     });
   }, []);
+
+  const fetchOlaDistance = async (origin, destination) => {
+    const apiKey = "9QqEQDVDfqLRFOPZzKsMqNn9tOWca999Ujqe09mN"; // Replace with your actual API key
+    const requestId = uuidv4(); // Generates a unique request ID
+  // console.log("b",origin,destination);
+    const url = `https://api.olamaps.io/routing/v1/directions?origin=${origin.lat},${origin.lng}&destination=${destination.lat},${destination.lng}&api_key=${apiKey}`;
   
-
-  const haversineDistance = (lat1, lon1, lat2, lon2) => {
-    if (lat1 == null || lon1 == null || lat2 == null || lon2 == null) return null; // Handle missing values
-
-    const toRad = (value) => (value * Math.PI) / 180;
-    const R = 6371000; // Earth's radius in meters
-
-    const dLat = toRad(lat2 - lat1);
-    const dLon = toRad(lon2 - lon1);
-    const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c; // Distance in meters
-};
-
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "X-Request-Id": requestId, // Unique request ID
+        },
+      });
   
+      const data = await response.json();
+  console.log("c",data);
+      if (data.routes && data.routes.length > 0) {
+        const distanceMeters = data.routes[0].legs[0].distance;
+        const distanceKm = (distanceMeters / 1000).toFixed(2); // Convert meters to km
+        console.log("Exact Road Distance:", distanceKm, "km");
+        return distanceKm;
+      } else {
+        console.error("No route found.");
+        return null;
+      }
+    } catch (error) {
+      console.error("Ola API Error:", error);
+      return null;
+    }
+  };
 
   useEffect(() => {
     const jobsRef = ref(database, "jobs");
-
     onValue(jobsRef, (snapshot) => {
       const jobsData = snapshot.val();
       if (jobsData) {
@@ -77,8 +86,6 @@ const JobSearch = () => {
     "Housemaid", "Cleaning Worker"
   ].map(skill => ({ value: skill, label: skill }));
 
-  // Filter jobs by selected skill
-  // Filter & Sort Jobs by Skill and Location
   useEffect(() => {
     let filtered = [...jobs];
 
@@ -88,115 +95,92 @@ const JobSearch = () => {
         );
     }
 
-    // Add distance calculation to all jobs
-    filtered = filtered.map(job => {
-        const jobLat = parseFloat(job.latitude);
-        const jobLon = parseFloat(job.longitude);
+    const updateJobDistances = async () => {
         const seekerLat = seekerLocation?.latitude;
         const seekerLon = seekerLocation?.longitude;
 
-        let distance = null;
-        if (!isNaN(jobLat) && !isNaN(jobLon) && seekerLat && seekerLon) {
-            distance = haversineDistance(seekerLat, seekerLon, jobLat, jobLon) / 1000; // Convert to km
+        if (!seekerLat || !seekerLon) {
+            setFilteredJobs(filtered);
+            return;
         }
 
-        return { ...job, distance: distance !== null ? distance.toFixed(2) : "N/A" };
-    });
+        const updatedJobs = await Promise.all(
+            filtered.map(async (job) => {
+                const jobLat = parseFloat(job.latitude);
+                const jobLon = parseFloat(job.longitude);
 
-    // Sort jobs by distance first, then by date
-    filtered.sort((a, b) => {
-        if (a.distance !== "N/A" && b.distance !== "N/A") {
-            return parseFloat(a.distance) - parseFloat(b.distance); // Closest jobs first
-        }
-        if (sortOrder === "newest") {
-            return new Date(b.jobDate) - new Date(a.jobDate);
-        }
-        return new Date(a.jobDate) - new Date(b.jobDate);
-    });
+                let distance = "N/A";
+                if (!isNaN(jobLat) && !isNaN(jobLon)) {
+                    distance = await fetchOlaDistance(
+                        { lat: seekerLat, lng: seekerLon },
+                        { lat: jobLat, lng: jobLon }
+                       
+                    );
+                    // console.log("a",seekerLat,seekerLon,jobLat,jobLon);
+                }
 
-    setFilteredJobs(filtered);
+                return { ...job, distance: distance ? `${distance} km` : "N/A" };
+            })
+        );
+
+        updatedJobs.sort((a, b) => {
+            if (a.distance !== "N/A" && b.distance !== "N/A") {
+                return parseFloat(a.distance) - parseFloat(b.distance);
+            }
+            if (sortOrder === "newest") {
+                return new Date(b.jobDate) - new Date(a.jobDate);
+            }
+            return new Date(a.jobDate) - new Date(b.jobDate);
+        });
+
+        setFilteredJobs(updatedJobs);
+    };
+
+    updateJobDistances();
 }, [selectedSkill, sortOrder, jobs, seekerLocation]);
 
-
-
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-white p-6">
       <Toaster />
-      <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg">
-        <h2 className="text-2xl font-bold text-gray-800 text-center mb-6 mt-20">
-          Job Search
-        </h2>
-
-        {/* Filters */}
-        <div className="flex flex-col md:flex-row justify-between gap-4 mb-6">
-          {/* Skill Filter */}
-          <div className="w-full md:w-1/2">
-            <label className="block text-gray-700 font-medium mb-1">
-              Filter by Profession/Skill
-            </label>
-            <Select
-              options={skillOptions}
-              value={selectedSkill}
-              onChange={setSelectedSkill}
-              className="w-full"
-              placeholder="Select Skill"
-              isClearable
-            />
-          </div>
-
-          {/* Sort Dropdown */}
-          <div className="w-full md:w-1/2">
-            <label className="block text-gray-700 font-medium mb-1">
-              Sort By
-            </label>
-            <select
-              className="w-full p-2 border border-gray-300 rounded-lg"
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
-            >
-              <option value="newest">Newest First</option>
-              <option value="oldest">Oldest First</option>
-            </select>
-          </div>
+      <div className="flex gap-6">
+        <div className="w-1/4 bg-gray-100 p-6 rounded-lg shadow-md">
+          <h2 className="text-xl font-bold mb-4">Filter Options</h2>
+          <label className="block text-gray-700 mb-2">Profession/Skill</label>
+          <Select
+            options={skillOptions}
+            value={selectedSkill}
+            onChange={setSelectedSkill}
+            className="mb-4"
+            placeholder="Select Skill"
+            isClearable
+          />
+          <label className="block text-gray-700 mb-2">Sort By</label>
+          <select
+            className="w-full p-2 border border-gray-300 rounded-lg"
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+          >
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+          </select>
         </div>
-
-        {/* Job Listings */}
-        <div className="grid gap-6">
+        <div className="w-3/4 grid grid-cols-2 gap-6">
           {filteredJobs.length > 0 ? (
             filteredJobs.map((job) => (
-              <div key={job.id} className="bg-gray-50 p-4 rounded-lg shadow-md">
-                <h3 className="text-xl font-bold text-gray-800">
-                  {job.jobTitle}
-                </h3>
-                <p className="text-gray-600">
-                  <strong>Category:</strong> {job.categories}
-                </p>
-                <p className="text-gray-600">
-                  <strong>Location:</strong> {job.location}, {job.pincode}
-                </p>
-                <p className="text-gray-600">
-                  <strong>Budget:</strong> {job.budgetRange}
-                </p>
-                <p className="text-gray-600">
-                  <strong>Job Date:</strong> {job.jobDate}
-                </p>
-                <p className="text-gray-600">
-                  <strong>Apply By:</strong> {job.applyBy}
-                </p>
-                <p className="text-gray-600">
-                  <strong>Skills Required:</strong> {job.skillsRequired?.join(", ")}
-                </p>
-                <p className="text-gray-600">
-                  <strong>Contact:</strong> {job.contactPersonName} - {job.contactPersonPhone}
-                </p>
-                <p className="text-gray-600">
-                    <strong>Distance:</strong> {job.distance ? `${job.distance} km` : "N/A"}
-                </p>
-
+              <div key={job.id} className="bg-white p-4 rounded-lg shadow-md">
+                <h3 className="text-lg font-bold">{job.jobTitle}</h3>
+                <p className="text-gray-600">Category: {job.categories}</p>
+                <p className="text-gray-600">Location: {job.location}, {job.pincode}</p>
+                <p className="text-gray-600">Budget: {job.budgetRange}</p>
+                <p className="text-gray-600">Job Date: {job.jobDate}</p>
+                <p className="text-gray-600">Apply By: {job.applyBy}</p>
+                <p className="text-gray-600">Skills: {job.skillsRequired?.join(", ")}</p>
+                <p className="text-gray-600">Contact: {job.contactPersonName} - {job.contactPersonPhone}</p>
+                <p className="text-gray-600">Distance: {job.distance}</p>
               </div>
             ))
           ) : (
-            <p className="text-center text-gray-600">No jobs found.</p>
+            <p className="text-center text-gray-600 col-span-2">No jobs found.</p>
           )}
         </div>
       </div>

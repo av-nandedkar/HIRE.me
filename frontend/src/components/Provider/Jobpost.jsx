@@ -1,6 +1,7 @@
 import { useState,useEffect } from "react";
+import { v4 as uuidv4 } from 'uuid';
 import toast, { Toaster } from "react-hot-toast";
-import { getDatabase, ref, push } from "firebase/database";
+import { getDatabase, ref, push ,set, child} from "firebase/database";
 import { app } from "../../firebase";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -28,36 +29,53 @@ const JobForm = () => {
     contactPersonPhone: "",
   });
 
-  const fetchCoordinates = async ( pincode) => {
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${pincode}`
-      );
-      const data = await response.json();
-      if (data.length > 0) {
-        const { lat, lon } = data[0];
-        const latitude = lat;
-        const longitude = lon;
-        console.log("latitude and longitude", latitude,longitude);
-        return { latitude,longitude}; // Return coordinates
-      } else {
-        toast.error("Location not found. Please enter a valid location and pincode.");
-        return { latitude: null, longitude: null };
+  const fetchCoordinates = async (address, pincode) => {
+    const apiKey = "9QqEQDVDfqLRFOPZzKsMqNn9tOWca999Ujqe09mN"; // Replace with your actual API key
+    const requestId = uuidv4();
+    const fullAddress = `${address}, ${pincode}, India`;
+    const url = `https://api.olamaps.io/places/v1/geocode?address=${encodeURIComponent(fullAddress)}&language=en&api_key=${apiKey}`;
 
+    try {
+      const response = await fetch(url, {
+        headers: {
+          "X-Request-Id": requestId, // Replace with a unique request ID
+        },
+      });
+
+      const data = await response.json();
+      console.log("object", data);
+      console.log("Nearest", data.geocodingResults[1].formatted_address);
+      if (data.geocodingResults && data.geocodingResults.length > 0) {
+        const latitude = data.geocodingResults[0].geometry.location.lat;
+        const longitude = data.geocodingResults[0].geometry.location.lng;
+        return { latitude, longitude };
+      } else {
+        console.error("Location not found.");
+        return { latitude: null, longitude: null };
       }
     } catch (error) {
-      toast.error("Failed to fetch location coordinates.");
       console.error("Geocoding Error:", error);
       return { latitude: null, longitude: null };
     }
   };
-  
+
 
   // Handle form input changes
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-  
+    const { name, value } = e.target;
+
+    setFormData((prev) => {
+        const updatedForm = { ...prev, [name]: value };
+
+        // If any location-related field is updated, update the 'location' field
+        if (["street", "landmark", "locality", "city", "state", "pincode"].includes(name)) {
+            updatedForm.location = `${updatedForm.street || ""}, ${updatedForm.locality || ""}, ${updatedForm.city || ""}, ${updatedForm.state || ""}`.replace(/(,\s?)+/g, ", ").trim();
+        }
+
+        return updatedForm;
+    });
+};
+
   
   const handleSkillChange = (e) => {
     const selectedSkills = Array.from(e.target.selectedOptions, option => option.value);
@@ -81,76 +99,81 @@ const JobForm = () => {
     e.preventDefault();
 
     const requiredFields = [
-      "jobTitle",
-      "jobType",
-      "categories",
-      "skillsRequired",
-      "budgetRange",
-      "location",
-      "pincode",
-      "jobDate",
-      "applyBy",
-      "description",
-      "contactPersonPhone",
-      "contactPersonName",
+        "jobTitle",
+        "jobType",
+        "categories",
+        "skillsRequired",
+        "budgetRange",
+        "location",
+        "pincode",
+        "jobDate",
+        "applyBy",
+        "description",
+        "contactPersonPhone",
+        "contactPersonName",
     ];
 
     // Validate required fields
-    // Validate required fields
-for (const field of requiredFields) {
-    const value = formData[field];
-  
-    if (
-      (typeof value === "string" && !value.trim()) || // Check for empty strings
-      (Array.isArray(value) && value.length === 0) || // Check for empty arrays
-      (typeof value === "object" && value === null) // Check for null objects (dates)
-    ) {
-      toast.error(`Please fill in the required field: ${field}`);
-      return;
+    for (const field of requiredFields) {
+        const value = formData[field];
+
+        if (
+            (typeof value === "string" && !value.trim()) || // Check for empty strings
+            (Array.isArray(value) && value.length === 0) || // Check for empty arrays
+            (typeof value === "object" && value === null) // Check for null objects (dates)
+        ) {
+            toast.error(`Please fill in the required field: ${field}`);
+            return;
+        }
     }
-  }
-  
- // Fetch coordinates before submitting
- const { latitude, longitude } =  await fetchCoordinates(formData.pincode);
-console.log("lat and long", latitude,longitude);
- const jobData = {
-   ...formData,
-   latitude,
-   longitude,
- };
-    const jobsRef = ref(database, "jobs");
 
-    // Push job data to Firebase
-    push(jobsRef, jobData)
-      .then(() => {
-        toast.success("Job posted successfully!");
-        console.log("Job Data Stored:", jobData);
+    // Fetch coordinates before submitting
+    const { latitude, longitude } = await fetchCoordinates(formData.location, formData.pincode);
+    console.log("lat and long", latitude, longitude);
 
-        // Reset form after submission
-        setFormData({
-          jobTitle: "",
-          jobType: "",
-          categories: "",
-          skillsRequired: [],
-          experienceLevel: "",
-          budgetRange: "",
-          location: "",
-          pincode: "",
-          latitude: null,
-        longitude: null,
-          jobDate: "",
-          applyBy: "",
-          description: "",
-          contactPersonName: "",
-          contactPersonPhone: "",
+    // Replace spaces and special characters in job title to create a valid Firebase key
+    const jobTitleKey = formData.jobTitle.replace(/\s+/g, "_").replace(/[^a-zA-Z0-9_]/g, "");
+
+    const jobData = {
+        ...formData,
+        latitude,
+        longitude,
+    };
+
+    const jobRef = child(ref(database, "jobs"), jobTitleKey);
+
+    // Store job data in Firebase using the job title as the key
+    set(jobRef, jobData)
+        .then(() => {
+            toast.success("Job posted successfully!");
+            console.log("Job Data Stored:", jobData);
+
+            // Reset form after submission
+            setFormData({
+                jobTitle: "",
+                jobType: "",
+                categories: "",
+                skillsRequired: [],
+                experienceLevel: "",
+                budgetRange: "",
+                location: "",
+                pincode: "",
+                latitude: null,
+                longitude: null,
+                jobDate: "",
+                applyBy: "",
+                description: "",
+                contactPersonName: "",
+                contactPersonPhone: "",
+            });
+            setStep(1);
+        })
+        .catch((error) => {
+            toast.error("Error posting job: " + error.message);
+            console.error("Firebase Error:", error);
         });
-        setStep(1);
-      })
-      .catch((error) => {
-        toast.error("Error posting job: " + error.message);
-        console.error("Firebase Error:", error);
-      });
-  };
+};
+
 
   const skillOptions = [
     "Plumber", "Electrician", "Painter", "Electronics Repairs", "Mechanic", 
@@ -240,7 +263,7 @@ console.log("lat and long", latitude,longitude);
                 name="categories"
                 value={formData.categories}
                 onChange={handleChange}
-                placeholder="E.g., IT, Healthcare, Construction"
+                placeholder="eg. IT, Healthcare, Construction"
                 className="w-full mt-1 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none"
                 required
               />
@@ -254,7 +277,7 @@ console.log("lat and long", latitude,longitude);
                 name="experienceLevel"
                 value={formData.experienceLevel}
                 onChange={handleChange}
-                placeholder="years months"
+                placeholder="eg. years,months"
                 className="w-full mt-1 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none"
                 required
               />
@@ -269,7 +292,7 @@ console.log("lat and long", latitude,longitude);
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
-                placeholder=".."
+                placeholder=""
                 className="w-full mt-1 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none"
                 required
               />
@@ -322,73 +345,75 @@ console.log("lat and long", latitude,longitude);
                 name="budgetRange"
                 value={formData.budgetRange}
                 onChange={handleChange}
-                placeholder="$1000 - $1500"
+                placeholder="₹1000 - ₹1500"
                 className="w-full mt-1 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none"
                 required
               />
             </div>
 
             <div className="mb-5">
-              <label className="block text-sm font-medium text-gray-700">
-                Job Location *
-              </label>
-              <input
-                type="text"
-                name="location"
-                value={formData.location}
-                onChange={handleChange}
-                className="w-full mt-1 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none"
-                required
-              />
-            </div>
-   
-            <div className="mb-5">
-              <label className="block text-sm font-medium text-gray-700">
-                pincode *
-              </label>
-              <input
-                type="text"
-                name="pincode"
-                value={formData.pincode}
-                onChange={handleChange}
-                className="w-full mt-1 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none"
-                required
-              />
-            </div>
-                        <div className="mb-5">
-            <label className="block text-sm font-medium text-gray-700">
-                Job Date *
-            </label>
-            <input
-            type="date"
-            name="jobDate"
-            value={formData.jobDate}
-            onChange={(e) =>
-                setFormData({ ...formData, jobDate: e.target.value })
-            }
-            className="w-full mt-1 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none rounded-md"
-            required
-            />
-            </div>
+    <label className="block text-sm font-medium text-gray-700">
+        Job Location *
+    </label>
 
+    {/* Street Address */}
+    <input
+        type="text"
+        name="street"
+        value={formData.street}
+        onChange={handleChange}
+        placeholder="Street Address"
+        className="w-full mt-1 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none"
+        required
+    />
 
-            <div className="mb-5">
-  <label className="block text-sm font-medium text-gray-700">
-    Job Deadline *
-  </label>
-  <input
-    type="date"
-    name="applyBy"
-    value={formData.applyBy}
-    onChange={(e) =>
-      setFormData({ ...formData, applyBy: e.target.value })
-    }
-    className="w-full mt-1 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none rounded-md"
-    placeholder="YYYY-MM-DD"
-    required
-  />
+    {/* Locality */}
+    <input
+        type="text"
+        name="locality"
+        value={formData.locality}
+        onChange={handleChange}
+        placeholder="Locality / Area"
+        className="w-full mt-2 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none"
+        required
+    />
+
+    {/* City */}
+    <input
+        type="text"
+        name="city"
+        value={formData.city}
+        onChange={handleChange}
+        placeholder="City"
+        className="w-full mt-2 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none"
+        required
+    />
+
+    {/* State */}
+    <input
+        type="text"
+        name="state"
+        value={formData.state}
+        onChange={handleChange}
+        placeholder="State"
+        className="w-full mt-2 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none"
+        required
+    />
+
+    {/* Pincode */}
+    <input
+        type="text"
+        name="pincode"
+        value={formData.pincode}
+        onChange={handleChange}
+        placeholder="Pincode"
+        className="w-full mt-2 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none"
+        required
+    />
 </div>
 
+            
+      
             <div className="mt-4 flex justify-between">
               <button
                 onClick={() => setStep(1)}
@@ -409,6 +434,40 @@ console.log("lat and long", latitude,longitude);
         {/* STEP 3 - Contact and Submit */}
         {step === 3 && (
           <>
+                <div className="mb-5">
+  <label className="block text-sm font-medium text-gray-700">
+    Job Application Deadline *
+  </label>
+  <input
+    type="date"
+    name="applyBy"
+    value={formData.applyBy}
+    onChange={(e) =>
+      setFormData({ ...formData, applyBy: e.target.value })
+    }
+    className="w-full mt-1 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none rounded-md"
+    placeholder="YYYY-MM-DD"
+    required
+  />
+</div>
+
+                        <div className="mb-5">
+            <label className="block text-sm font-medium text-gray-700">
+                Job Start Date *
+            </label>
+            <input
+            type="date"
+            name="jobDate"
+            value={formData.jobDate}
+            onChange={(e) =>
+                setFormData({ ...formData, jobDate: e.target.value })
+            }
+            className="w-full mt-1 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none rounded-md"
+            required
+            />
+            </div>
+
+
             <div className="mb-5">
               <label className="block text-sm font-medium text-gray-700">
                 Contact Person Name *

@@ -93,8 +93,19 @@ const  ProviderForm = () => {
   ];
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+    const { name, value } = e.target;
+
+    setFormData((prev) => {
+        const updatedForm = { ...prev, [name]: value };
+
+        // If any location-related field is updated, update the 'location' field
+        if (["street", "landmark", "locality", "city", "state", "pincode"].includes(name)) {
+            updatedForm.location = `${updatedForm.street || ""}, ${updatedForm.locality || ""}, ${updatedForm.city || ""}, ${updatedForm.state || ""}`.replace(/(,\s?)+/g, ", ").trim();
+        }
+
+        return updatedForm;
+    });
+};
 
 
   const handleFileChange = async (e) => {
@@ -244,13 +255,68 @@ const  ProviderForm = () => {
 
           {step === 3 && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mt-2">Location *</label>
-              <input type="text" name="location" value={formData.location} onChange={handleChange} required className="w-full p-2 border-b-2 border-gray-300 rounded focus:border-blue-600 outline-none" />
+            <div className="mb-5">
+    <label className="block text-sm font-medium text-gray-700">
+        Job Location *
+    </label>
 
-              <label className="block text-sm font-medium text-gray-700 mt-4">Pincode *</label>
-              <input type="text" name="pincode" value={formData.pincode} onChange={handleChange} required className="w-full p-2 border-b-2 border-gray-300 rounded focus:border-blue-600 outline-none" />
+    {/* Street Address */}
+    <input
+        type="text"
+        name="street"
+        value={formData.street}
+        onChange={handleChange}
+        placeholder="Street Address"
+        className="w-full mt-1 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none"
+        required
+    />
 
-           
+  
+
+    {/* Locality */}
+    <input
+        type="text"
+        name="locality"
+        value={formData.locality}
+        onChange={handleChange}
+        placeholder="Locality / Area"
+        className="w-full mt-2 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none"
+        required
+    />
+
+    {/* City */}
+    <input
+        type="text"
+        name="city"
+        value={formData.city}
+        onChange={handleChange}
+        placeholder="City"
+        className="w-full mt-2 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none"
+        required
+    />
+
+    {/* State */}
+    <input
+        type="text"
+        name="state"
+        value={formData.state}
+        onChange={handleChange}
+        placeholder="State"
+        className="w-full mt-2 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none"
+        required
+    />
+
+    {/* Pincode */}
+    <input
+        type="text"
+        name="pincode"
+        value={formData.pincode}
+        onChange={handleChange}
+        placeholder="Pincode"
+        className="w-full mt-2 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none"
+        required
+    />
+</div>
 
               <div className="flex flex-col">
   <label className="block text-sm font-medium text-gray-700 mt-4">

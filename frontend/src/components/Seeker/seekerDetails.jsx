@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { v4 as uuidv4 } from 'uuid';
 import toast, { Toaster } from "react-hot-toast";
 import Select from "react-select";
 import { getDatabase, ref, push ,set ,get,  child } from "firebase/database";
@@ -95,29 +96,36 @@ const SeekerForm = () => {
     );
     
   }
-  const fetchCoordinates = async (pincode) => {
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${pincode}`
-      );
-      const data = await response.json();
-      if (data.length > 0) {
-        const { lat, lon } = data[0];
-        const latitude = lat;
-        const longitude = lon;
-        console.log("latitude and longitude", latitude,longitude);
-        return { latitude,longitude}; // Return coordinates
-      } else {
-        toast.error("Location not found. Please enter a valid location and pincode.");
-        return { latitude: null, longitude: null };
+  const fetchCoordinates = async (address, pincode) => {
+    const apiKey = "9QqEQDVDfqLRFOPZzKsMqNn9tOWca999Ujqe09mN"; // Replace with your actual API key
+    const requestId = uuidv4();
+    const fullAddress = `${address}, ${pincode}, India`;
+    const url = `https://api.olamaps.io/places/v1/geocode?address=${encodeURIComponent(fullAddress)}&language=en&api_key=${apiKey}`;
 
+    try {
+      const response = await fetch(url, {
+        headers: {
+          "X-Request-Id": requestId, // Replace with a unique request ID
+        },
+      });
+
+      const data = await response.json();
+      console.log("object", data);
+      console.log("Nearest", data.geocodingResults[1].formatted_address);
+      if (data.geocodingResults && data.geocodingResults.length > 0) {
+        const latitude = data.geocodingResults[0].geometry.location.lat;
+        const longitude = data.geocodingResults[0].geometry.location.lng;
+        return { latitude, longitude };
+      } else {
+        console.error("Location not found.");
+        return { latitude: null, longitude: null };
       }
     } catch (error) {
-      toast.error("Failed to fetch location coordinates.");
       console.error("Geocoding Error:", error);
       return { latitude: null, longitude: null };
     }
   };
+
 
   const skillOptions = [
     "Plumber", "Electrician", "Painter", "Electronics Repairs", "Mechanic", 
@@ -125,8 +133,20 @@ const SeekerForm = () => {
   ];
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+    const { name, value } = e.target;
+
+    setFormData((prev) => {
+        const updatedForm = { ...prev, [name]: value };
+
+        // If any location-related field is updated, update the 'location' field
+        if (["street", "landmark", "locality", "city", "state", "pincode"].includes(name)) {
+            updatedForm.location = `${updatedForm.street || ""}, ${updatedForm.locality || ""}, ${updatedForm.city || ""}, ${updatedForm.state || ""}`.replace(/(,\s?)+/g, ", ").trim();
+        }
+
+        return updatedForm;
+    });
+};
+
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
@@ -175,7 +195,7 @@ const SeekerForm = () => {
       }
     }
   
-    const { latitude, longitude } = await fetchCoordinates(formData.pincode);
+    const { latitude, longitude } = await fetchCoordinates(formData.location,formData.pincode);
     
     const storedEmail = localStorage.getItem("email");
     const formattedEmail = storedEmail.replace(/\./g, ",");
@@ -308,11 +328,68 @@ const SeekerForm = () => {
 
           {step === 3 && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mt-2">Location *</label>
-              <input type="text" name="location" value={formData.location} onChange={handleChange} required className="w-full p-2 border-b-2 border-gray-300 rounded focus:border-blue-600 outline-none" />
+            <div className="mb-5">
+    <label className="block text-sm font-medium text-gray-700">
+        Job Location *
+    </label>
 
-              <label className="block text-sm font-medium text-gray-700 mt-4">Pincode *</label>
-              <input type="text" name="pincode" value={formData.pincode} onChange={handleChange} required className="w-full p-2 border-b-2 border-gray-300 rounded focus:border-blue-600 outline-none" />
+    {/* Street Address */}
+    <input
+        type="text"
+        name="street"
+        value={formData.street}
+        onChange={handleChange}
+        placeholder="Street Address"
+        className="w-full mt-1 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none"
+        required
+    />
+
+  
+
+    {/* Locality */}
+    <input
+        type="text"
+        name="locality"
+        value={formData.locality}
+        onChange={handleChange}
+        placeholder="Locality / Area"
+        className="w-full mt-2 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none"
+        required
+    />
+
+    {/* City */}
+    <input
+        type="text"
+        name="city"
+        value={formData.city}
+        onChange={handleChange}
+        placeholder="City"
+        className="w-full mt-2 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none"
+        required
+    />
+
+    {/* State */}
+    <input
+        type="text"
+        name="state"
+        value={formData.state}
+        onChange={handleChange}
+        placeholder="State"
+        className="w-full mt-2 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none"
+        required
+    />
+
+    {/* Pincode */}
+    <input
+        type="text"
+        name="pincode"
+        value={formData.pincode}
+        onChange={handleChange}
+        placeholder="Pincode"
+        className="w-full mt-2 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none"
+        required
+    />
+</div>
 
               <label className="block text-sm font-medium text-gray-700 mt-4">Expected Pay Range *</label>
               <input type="text" name="expectedPayRange" value={formData.expectedPayRange} onChange={handleChange} required className="w-full p-2 border-b-2 border-gray-300 rounded focus:border-blue-600 outline-none" />
