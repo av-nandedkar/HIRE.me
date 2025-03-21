@@ -15,6 +15,7 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -57,17 +58,29 @@ const Login = () => {
     localStorage.setItem('userRole', user.userType);
     localStorage.setItem('email', user.email);
   };
-  const saveToLocalStoragebymail = (user) => {
-    // Generate a random token
-    const randomToken = Math.random().toString(36).substr(2) + Date.now().toString(36) + Math.random().toString(36).substr(2) + Math.random().toString(36).substr(2) + Date.now().toString(36) + Math.random().toString(36).substr(2);
-  
-    // Store in localStorage
-    localStorage.setItem("authToken", randomToken);
-    localStorage.setItem("userRole", user.userType);
-    localStorage.setItem("email", user.email);
-  
+
+  const saveToLocalStoragebymail = (user, rememberMe) => {
+    const randomToken = Math.random().toString(36).substr(2) + Date.now().toString(36) + Math.random().toString(36).substr(2);
+
+    if (rememberMe) {
+        // Store in both localStorage & sessionStorage
+        localStorage.setItem("authToken", randomToken);
+        localStorage.setItem("userRole", user.userType);
+        localStorage.setItem("email", user.email);
+
+        sessionStorage.setItem("authToken", randomToken);
+        sessionStorage.setItem("userRole", user.userType);
+        sessionStorage.setItem("email", user.email);
+    } else {
+        // Store only in localStorage
+        localStorage.setItem("authToken", randomToken);
+        localStorage.setItem("userRole", user.userType);
+        localStorage.setItem("email", user.email);
+    }
+
     console.log("Generated Auth Token:", randomToken);
-  };
+};
+
 
   // Google Login - Follows Steps 1, 3, 4, 5
   const handleGoogleLogin = async () => {
@@ -128,7 +141,7 @@ if (!isPasswordCorrect) {
   return false;  // Proper return for incorrect password
 }
 
-    saveToLocalStoragebymail(registeredUser);
+    saveToLocalStoragebymail(registeredUser, rememberMe);
 
     toast.success('Login successful!');
     navigate('/dashboard');
@@ -218,9 +231,13 @@ if (!isPasswordCorrect) {
             </div>
   
             <div className="flex justify-between items-center mb-4">
-              <label className="flex items-center text-gray-600">
-                <input type="checkbox" className="mr-2" /> Remember me
-              </label>
+            <label className='text-sm'><input
+  type="checkbox"
+  className="mr-2"
+  checked={rememberMe}
+  onChange={(e) => setRememberMe(e.target.checked)}
+/>Remember Me</label>
+
               <a href="/forgotpassword" className="text-blue-400 text-sm hover:underline">Forgot password?</a>
             </div>
   

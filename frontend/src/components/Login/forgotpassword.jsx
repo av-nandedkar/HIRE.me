@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast, Toaster } from 'react-hot-toast';
 import { getAuth, sendPasswordResetEmail } from 'firebase/auth';
+import { getDatabase, ref, child, get ,set } from "firebase/database";
 import { app } from '../../firebase';
 
 const auth = getAuth(app);
@@ -16,22 +17,37 @@ const ForgotPassword = () => {
     setIsSubmitting(true);
 
     if (!email) {
-      toast.error('Please enter your email address.');
-      setIsSubmitting(false);
-      return;
+        toast.error('Please enter your email address.');
+        setIsSubmitting(false);
+        return;
     }
 
     try {
-      await sendPasswordResetEmail(auth, email);
-      toast.success('Password reset link sent to your email.');
-      navigate('/login');
+        // Format email to match Firebase key format
+        const formattedEmail = email.replace(/\./g, ",");
+        const db = getDatabase(app);
+        const userRef = ref(db, `registrationdetails/${formattedEmail}`);
+
+        // Check if the user exists
+        const snapshot = await get(userRef);
+        if (!snapshot.exists()) {
+            toast.error('Email not registered. Register First ! ');
+            navigate('/register');
+            setIsSubmitting(false);
+            return;
+        }
+
+        // Send password reset email
+        await sendPasswordResetEmail(auth, email);
+        toast.success('Password reset link sent to your email.');
+        navigate('/login');
     } catch (error) {
-      console.error('Error sending reset email:', error);
-      toast.error('Failed to send password reset email.');
+        console.error('Error sending reset email:', error);
+        toast.error('Failed to send password reset email.');
     } finally {
-      setIsSubmitting(false);
+        setIsSubmitting(false);
     }
-  };
+};
 
   return (
     <>

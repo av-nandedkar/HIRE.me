@@ -131,8 +131,11 @@ const JobForm = () => {
     const { latitude, longitude } = await fetchCoordinates(formData.location, formData.pincode);
     console.log("lat and long", latitude, longitude);
 
-    // Replace spaces and special characters in job title to create a valid Firebase key
-    const jobTitleKey = formData.jobTitle.replace(/\s+/g, "_").replace(/[^a-zA-Z0-9_]/g, "");
+  // Generate a large random number (e.g., 13-digit timestamp + random 6-digit number)
+const randomNum = Date.now().toString() + Math.floor(100000 + Math.random() * 900000).toString();
+
+// Replace spaces and special characters in job title to create a valid Firebase key
+const jobTitleKey = `${formData.jobTitle.replace(/\s+/g, "_").replace(/[^a-zA-Z0-9_]/g, "")}-${randomNum}`;
 
     const jobData = {
         ...formData,

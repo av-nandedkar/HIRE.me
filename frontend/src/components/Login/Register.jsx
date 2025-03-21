@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { toast, Toaster } from "react-hot-toast";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
-import { getDatabase, ref, set } from "firebase/database";
+import { getDatabase, ref, child, get ,set } from "firebase/database";
 import { app } from "../../firebase";
 
 const auth = getAuth(app);
@@ -55,65 +55,82 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (isSubmitting) return; // Prevent double submission
-  
+
     // Validate inputs
     if (Object.values(formData).some((field) => !field) || !confirmPassword) {
-      toast.error("Please fill all required fields.");
-      return;
+        toast.error("Please fill all required fields.");
+        return;
     }
-  
+
     if (passwordError) {
-      toast.error(passwordError);
-      return;
+        toast.error(passwordError);
+        return;
     }
-  
+
     if (formData.password !== confirmPassword) {
-      toast.error("Passwords do not match!");
-      return;
+        toast.error("Passwords do not match!");
+        return;
     }
-  
+
     if (!/^[0-9]{10}$/.test(formData.phone)) {
-      toast.error("Please enter a valid 10-digit phone number.");
-      return;
+        toast.error("Please enter a valid 10-digit phone number.");
+        return;
     }
-  
+
     try {
-      setIsSubmitting(true);
-  
-      // Hash the password before saving
-      const hashedPassword = await bcrypt.hash(formData.password, 10); // Salt rounds = 10
-  
-      // Register user in Firebase Auth
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        formData.email,
-        formData.password
-      );
-      const user = userCredential.user;
-  
-      // Store additional user details along with hashed password in Firebase Realtime Database
-      const db = getDatabase(app);
-      await set(ref(db, `registrationdetails/${user.uid}`), {
-        userType: formData.userType,
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        password: hashedPassword, // Store the hashed password
-      });
-  
-      // Save user role & Navigate
-      localStorage.setItem("userRole", formData.userType);
-      toast.success("Registration successful!");
-      navigate("/login");
+        setIsSubmitting(true);
+
+        // Check if user already exists
+        const formattedEmail = formData.email.replace(/\./g, ",");
+        const db = getDatabase(app);
+        const userRef = ref(db, `registrationdetails/${formattedEmail}`);
+
+        const snapshot = await get(userRef);
+        if (snapshot.exists()) {
+            toast.error("User already registered! Redirecting to login...");
+            navigate("/login");
+            return;
+        }
+
+        // Hash the password before saving
+        const hashedPassword = await bcrypt.hash(formData.password, 10); // Salt rounds = 10
+
+        // Register user in Firebase Auth
+        const userCredential = await createUserWithEmailAndPassword(
+            auth,
+            formData.email,
+            formData.password
+        );
+        const user = userCredential.user;
+
+        // Store additional user details along with hashed password in Firebase Realtime Database
+        await set(userRef, {
+            userType: formData.userType,
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            password: hashedPassword, // Store the hashed password
+        });
+
+        // Save user role & Navigate
+        localStorage.setItem("userRole", formData.userType);
+        toast.success("Registration successful!");
+        navigate("/login");
     } catch (error) {
-      console.error("Registration Error:", error);
-      toast.error(`Registration failed: ${error.message}`);
+        if (error.code === "auth/email-already-in-use") {
+            toast.error("User already registered! Redirecting to login...");
+            navigate("/login");
+        } else {
+            console.error("Registration Error:", error);
+            toast.error(`Registration failed: ${error.message}`);
+        }
     } finally {
-      setIsSubmitting(false);
+        setIsSubmitting(false);
     }
-  };
+};
+
 
   return (
     <>
@@ -152,7 +169,7 @@ const Register = () => {
             <p className="text-gray-600 text-sm text-center mt-4">
               <strong>Already a Member?</strong>{" "}
               <a href="/login" className="text-blue-400 hover:underline">
-                <strong>Sign In here</strong>
+               Sign In here
               </a>
             </p>
             <div className="flex items-center my-4">
