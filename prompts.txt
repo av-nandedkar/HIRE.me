@@ -1,0 +1,4 @@
+change css and make it best and responsive , make fully responsive , use animations , effects , shadows , glow , transition everywhere and make it best .
+
+
+button css : className="bg-purple-900 text-white font-medium px-5 py-2 rounded-3xl shadow-lg transform transition-transform duration-300 hover:scale-105 hover:shadow-purple-500 active:scale-95"
