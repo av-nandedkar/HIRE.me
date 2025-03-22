@@ -51,7 +51,9 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen py-25 bg-gray-900 text-white flex flex-col items-center p-6">
-      <h2 className="text-3xl font-bold mb-6">Welcome to Your Dashboard</h2>
+      <h2 className="text-3xl font-bold ">Welcome to Your Dashboard</h2>
+      <img src="/1.gif" alt="Profile Image" className="h-24 mt-3 mb-3 sm:h-32 md:h-40 rounded-3xl lg:h-48 xl:h-65 object-contain" />
+
       {userRole === "provider" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-4xl">
           {/* Post a Job */}

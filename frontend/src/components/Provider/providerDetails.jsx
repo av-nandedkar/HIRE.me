@@ -61,10 +61,13 @@ const  ProviderForm = () => {
     }
 
     if (formData.formSubmitted) {
-      return (
+      return (<> 
+
         <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white px-4">
           <div className="bg-white text-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-md text-center">
-            <h2 className="text-3xl text-gray-900">🎉 Profile Completed </h2>
+          <div className="flex justify-center items-center w-full">
+  <img src="/profile.png" alt="Profile Image" className="h-24 sm:h-32 md:h-40 lg:h-48 xl:h-35 object-contain" />
+</div>          <h2 className="text-3xl text-gray-900">🎉 Profile Completed </h2>
             <p className="mt-3 text-gray-600">Post job opportunities now!</p>
       
             <div className="mt-6 flex flex-col gap-4">
@@ -83,6 +86,7 @@ const  ProviderForm = () => {
             </div>
           </div>
         </div>
+        </>
       );
       
     }

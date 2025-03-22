@@ -49,8 +49,10 @@ const Home = () => {
           <p className="text-gray-300">Job Matche</p>
         </div>
       </div>
-      
-      <div className="relative flex gap-4 mt-10 z-10 mb-25">
+      <div className="flex justify-center items-center w-full"  > { !isLoggedIn ?(<img src="/handshake3.gif" alt="Profile Image" className="h-24 mt-5 sm:h-32 md:h-40 lg:h-48 xl:h-35 object-contain" />):(<></>)}
+  
+</div>
+      <div className="relative flex gap-4 mt-5 z-10 mb-25">
       {isLoggedIn ? (
         <button
           onClick={() => navigate("/dashboard")}
