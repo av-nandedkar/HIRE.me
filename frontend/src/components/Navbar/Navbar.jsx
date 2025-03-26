@@ -96,7 +96,7 @@ const Navbar = () => {
     </a>
   </li>
   <li>
-    <a href="/companies" className="relative hover:text-[#ff347f] transition duration-300 
+    <a href="/jobrecommendations" className="relative hover:text-[#ff347f] transition duration-300 
        after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] 
        after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full">
       Jobs

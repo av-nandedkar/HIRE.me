@@ -17,8 +17,11 @@ import Dashboard from "./components/Dashboards/dashboard";
 import JobForm from "./components/Provider/Jobpost";
 import ViewProfile from "./components/Login/ViewProfile";
 import ForgotPassword from "./components/Login/forgotpassword";
-import JobSearch from "./components/Seeker/jobSearch";
-
+import JobSearch from "./components/Seeker/JobSearch";
+import JobRecommendations from "./components/Seeker/JobRecommendations";
+import ApplyForm from "./components/Seeker/ApplyForm";
+import JobList from "./components/Provider/JobList";
+import ApplicationsList from "./components/Provider/ApplicatiosList"
 function App() {
   return (
     <Router>
@@ -32,7 +35,10 @@ function App() {
           <Route path="/forgotpassword" element={<ForgotPassword />}></Route>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/viewprofile" element={<ViewProfile />}></Route>
-
+          <Route path="/jobrecommendations" element={<JobRecommendations/>}></Route>
+          <Route path="/applyform" element={< ApplyForm/>}></Route>
+          <Route path="providerprofile/joblist" element={< JobList/>}></Route>
+          <Route path="providerprofile/applications" element={< ApplicationsList/>}></Route>
           {/* Provider-only Routes */}
           <Route
             path="/providerprofile"

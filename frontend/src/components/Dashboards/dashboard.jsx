@@ -76,7 +76,7 @@ const Dashboard = () => {
           <button
             className="bg-purple-600 hover:bg-purple-700 p-4 rounded-lg flex items-center justify-center gap-2"
             onClick={() =>
-              handleNavigation("/providerprofile/manage-listings")
+              handleNavigation("/providerprofile/joblist")
             }
           >
             <Briefcase /> Manage Listings

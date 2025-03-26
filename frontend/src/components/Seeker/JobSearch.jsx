@@ -5,7 +5,7 @@ import { app } from "../../firebase";
 import Select from "react-select";
 import toast, { Toaster } from "react-hot-toast";
 import { motion } from "framer-motion";
-
+import { useNavigate } from "react-router-dom";
 
 const database = getDatabase(app);
 
@@ -17,7 +17,8 @@ const JobSearch = () => {
   const [flipped, setFlipped] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
   const [seekerLocation, setSeekerLocation] = useState(null);
-
+  
+  const navigate = useNavigate();
   useEffect(() => {
     const seekerEmail = localStorage.getItem("email");
     if (!seekerEmail) return;
@@ -293,11 +294,11 @@ const JobSearch = () => {
                     Back
                   </button>
                   <button
-                    className="bg-purple-900 text-white font-medium px-5 py-2 rounded-3xl shadow-lg transform transition-transform duration-300 hover:scale-105 hover:shadow-purple-500 active:scale-95"
-                    onClick={() => console.log("Applying for", selectedJob.jobTitle)}
-                  >
-                    Apply Now
-                  </button>
+                 className="bg-purple-900 text-white font-medium px-5 py-2 rounded-3xl shadow-lg transform transition-transform duration-300 hover:scale-105 hover:shadow-purple-500 active:scale-95"
+                 onClick={() => navigate(`/applyform?jobId=${selectedJob.id}`)} // Navigates to ApplyForm with jobId
+               >
+                 Apply Now
+               </button>
                 </div>
 
               </motion.div>
