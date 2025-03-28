@@ -1,0 +1,50 @@
+JOBS SCHEMA :
+https://hireme-5716f-default-rtdb.firebaseio.com/
+	jobs	
+		{
+            "id": "CAR_WASHER-1742592709571659934",
+            "applyBy": "2025-03-06",
+            "budgetRange": "1000",
+            "categories": "CLEANING",
+            "city": "Nanded",
+            "contactPersonName": "AADARSH NANDEDKAR",
+            "contactPersonPhone": "8888970560",
+            "description": "CAR WASHER NEEDED",
+            "experienceLevel": "2 Years",
+            "jobDate": "2025-03-20",
+            "jobTitle": "CAR WASHER",
+            "jobType": "Full-time",
+            "latitude": 19.33546,
+            "locality": "LAHAN",
+            "location": "plot no 127 , Ambegaon , Post Lahan , Tq. Ardhapur, LAHAN, Nanded, Maharashtra",
+            "longitude": 77.38777,
+            "pincode": "431704",
+            "skillsRequired": ["PLUMBER", "PIPE FITTING", "ETC"],
+            "state": "Maharashtra",
+            "street": "plot no 127 , Ambegaon , Post Lahan , Tq. Ardhapur"
+        }
+
+JOB SEEKER :
+user-metadata
+	seeker
+    {
+       "id": "aadarshnandedkar@gmail.com",
+        "city": "Nanded",
+        "dateOfBirth": "",
+        "expectedPayRange": "56000",
+        "experienceYears": "6",
+        "formSubmitted": true 
+  		"fullName": "Aadarsh Venkatesh Nandedkar",
+  		"latitude": 19.16391,
+  		"locality": "NEW MONDHA",
+  		"location": "Near Brilliant Commerce Academy , Maganpura, NEW MONDHA, Nanded, Maharashtra",
+  		"longitude": 77.30539,
+  		"phoneNumber": "8888970560",
+  		"pincode": "431602",
+  		"profilePicture": "https://res.cloudinary.com/dbshuwmvx/image/upload/v1742588446/3-1_dfvnn2.jpg",
+  		"skills": [],
+  		"state": "Maharashtra",
+ 		"street": "Near Brilliant Commerce Academy ,Maganpura ,New Mondha",
+ 		"userType": "seeker"
+    }
+		
