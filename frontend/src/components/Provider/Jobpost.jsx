@@ -320,24 +320,28 @@ const jobTitleKey = `${formData.jobTitle.replace(/\s+/g, "_").replace(/[^a-zA-Z0
         {/* STEP 2 - Job Specifications */}
         {step === 2 && (
           <>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1 mt-3">Skills/Expertise *</label>
-              <Select
-                isMulti
-                name="skills"
-                options={skillOptions.map(skill => ({ value: skill, label: skill }))}
-                className="w-full"
-                classNamePrefix="select"
-                value={formData.skillsRequired.map(skill => ({ value: skill, label: skill }))}
-                onChange={(selectedOptions) =>
-                  setFormData({
-                    ...formData,
-                    skillsRequired: selectedOptions.map(option => option.value),
-                  })
-                }
-              />
-
-            </div>
+         <div>
+  <label className="block text-sm font-medium text-gray-700 mb-1 mt-3">
+    Skills/Expertise *
+  </label>
+  <Select
+    name="skills"
+    options={skillOptions.map(skill => ({ value: skill, label: skill }))}
+    className="w-full"
+    classNamePrefix="select"
+    value={
+      formData.skillsRequired
+        ? { value: formData.skillsRequired, label: formData.skillsRequired }
+        : null
+    }
+    onChange={(selectedOption) =>
+      setFormData({
+        ...formData,
+        skillsRequired: selectedOption ? selectedOption.value : "",
+      })
+    }
+  />
+</div>
 
             <div className="mb-5">
               <label className="block text-sm font-medium text-gray-700">
