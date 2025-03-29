@@ -149,7 +149,7 @@ const Home = () => {
     <img src="https://i.pravatar.cc/150?img=52" alt="Amit Kumar" className="rounded-full" />
   </div>
   <h3 className="text-lg sm:text-xl font-semibold">Amit Kumar</h3>
-  <p className="text-gray-400 text-xs sm:text-sm">Electrician, Bangalore</p>
+  <p className="text-gray-400 text-xs sm:text-sm">Electrician,Bangalore</p>
   <p className="text-gray-300 mt-3 sm:mt-4 text-sm sm:text-base">
     "WorkConnect helped me find jobs in my area without any middlemen. I get instant notifications about new job postings, and the rating system has helped me build trust with employers."
   </p>
