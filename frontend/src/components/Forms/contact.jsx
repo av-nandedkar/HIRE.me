@@ -29,7 +29,7 @@ const Contact = () => {
       });
       event.target.reset();
     } else {
-      console.log("Error", data);
+      // console.log("Error", data);
       setResult(data.message);
     }
   };

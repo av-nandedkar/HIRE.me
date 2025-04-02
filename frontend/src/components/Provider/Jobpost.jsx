@@ -43,8 +43,8 @@ const JobForm = () => {
       });
 
       const data = await response.json();
-      console.log("object", data);
-      console.log("Nearest", data.geocodingResults[1].formatted_address);
+      // console.log("object", data);
+      // console.log("Nearest", data.geocodingResults[1].formatted_address);
       if (data.geocodingResults && data.geocodingResults.length > 0) {
         const latitude = data.geocodingResults[0].geometry.location.lat;
         const longitude = data.geocodingResults[0].geometry.location.lng;
@@ -129,7 +129,7 @@ const JobForm = () => {
 
     // Fetch coordinates before submitting
     const { latitude, longitude } = await fetchCoordinates(formData.location, formData.pincode);
-    console.log("lat and long", latitude, longitude);
+    // console.log("lat and long", latitude, longitude);
 
   // Generate a large random number (e.g., 13-digit timestamp + random 6-digit number)
 const randomNum = Date.now().toString() + Math.floor(100000 + Math.random() * 900000).toString();
@@ -149,7 +149,7 @@ const jobTitleKey = `${formData.jobTitle.replace(/\s+/g, "_").replace(/[^a-zA-Z0
     set(jobRef, jobData)
         .then(() => {
             toast.success("Job posted successfully!");
-            console.log("Job Data Stored:", jobData);
+            // console.log("Job Data Stored:", jobData);
 
             // Reset form after submission
             setFormData({

@@ -31,8 +31,8 @@ const JobList = () => {
       });
 
       const data = await response.json();
-      console.log("object", data);
-      console.log("Nearest", data.geocodingResults[1].formatted_address);
+      // console.log("object", data);
+      // console.log("Nearest", data.geocodingResults[1].formatted_address);
       if (data.geocodingResults && data.geocodingResults.length > 0) {
         const latitude = data.geocodingResults[0].geometry.location.lat;
         const longitude = data.geocodingResults[0].geometry.location.lng;

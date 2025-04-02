@@ -78,7 +78,7 @@ const Login = () => {
         localStorage.setItem("email", user.email);
     }
 
-    console.log("Generated Auth Token:", randomToken);
+    // console.log("Generated Auth Token:", randomToken);
 };
 
 

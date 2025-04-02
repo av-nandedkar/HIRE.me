@@ -41,7 +41,7 @@ const  ProviderForm = () => {
           if (snapshot.exists()) {
             const userData = snapshot.val();
             setFormData(userData);
-            console.log("flag", userData.formSubmitted);
+            // console.log("flag", userData.formSubmitted);
             if (userData.formSubmitted) {
               setLoading(false);
             }
