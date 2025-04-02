@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { v4 as uuidv4 } from 'uuid';
 import { getDatabase, ref, onValue, remove, update } from "firebase/database";
 import { app } from "../../firebase";
 import toast, { Toaster } from "react-hot-toast";
@@ -13,7 +14,38 @@ const JobList = () => {
   const [editData, setEditData] = useState({});
   const [expandedJob, setExpandedJob] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [editModalOpen, setEditModalOpen] = useState(false);
   const jobsPerPage = 6;
+
+  const fetchCoordinates = async (address, pincode) => {
+    const apiKey = "9QqEQDVDfqLRFOPZzKsMqNn9tOWca999Ujqe09mN"; // Replace with your actual API key
+    const requestId = uuidv4();
+    const fullAddress = `${address}, ${pincode}, India`;
+    const url = `https://api.olamaps.io/places/v1/geocode?address=${encodeURIComponent(fullAddress)}&language=en&api_key=${apiKey}`;
+
+    try {
+      const response = await fetch(url, {
+        headers: {
+          "X-Request-Id": requestId, // Replace with a unique request ID
+        },
+      });
+
+      const data = await response.json();
+      console.log("object", data);
+      console.log("Nearest", data.geocodingResults[1].formatted_address);
+      if (data.geocodingResults && data.geocodingResults.length > 0) {
+        const latitude = data.geocodingResults[0].geometry.location.lat;
+        const longitude = data.geocodingResults[0].geometry.location.lng;
+        return { latitude, longitude };
+      } else {
+        console.error("Location not found.");
+        return { latitude: null, longitude: null };
+      }
+    } catch (error) {
+      console.error("Geocoding Error:", error);
+      return { latitude: null, longitude: null };
+    }
+  };
 
   // ✅ Fetch Jobs from Firebase
   useEffect(() => {
@@ -55,16 +87,28 @@ const JobList = () => {
     setEditData(job); // Copy all job data to editData
   };
 
-  // ✅ Save Edited Job
   const handleSave = async (jobId) => {
     try {
-      await update(ref(database, `jobs/${jobId}`), editData);
+      let updatedData = { ...editData };
+  
+      // Check if location or pincode has changed
+      if (
+        editData.location !== jobs.find((job) => job.id === jobId)?.location ||
+        editData.pincode !== jobs.find((job) => job.id === jobId)?.pincode
+      ) {
+        const coordinates = await fetchCoordinates(editData.location, editData.pincode);
+        updatedData.latitude = coordinates.latitude;
+        updatedData.longitude = coordinates.longitude;
+      }
+  
+      await update(ref(database, `jobs/${jobId}`), updatedData);
       toast.success("Job updated successfully!");
       setEditMode(null);
     } catch (error) {
       toast.error("Error updating job: " + error.message);
     }
   };
+  
 
   // ✅ Handle Input Change
   const handleChange = (e) => {
@@ -138,6 +182,7 @@ const JobList = () => {
               {/* ✅ Edit Mode */}
               {editMode === job.id ? (
                 <div>
+                  <label htmlFor="">Job</label>
                   <input
                     name="jobTitle"
                     value={editData.jobTitle || ""}
@@ -145,6 +190,7 @@ const JobList = () => {
                     className="w-full p-3 border rounded-md mb-3 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
                     placeholder="Job Title"
                   />
+                  <label htmlFor="">Job type</label>
                   <input
                     name="jobType"
                     value={editData.jobType || ""}
@@ -152,6 +198,7 @@ const JobList = () => {
                     className="w-full p-3 border rounded-md mb-3 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
                     placeholder="Job Type"
                   />
+                  <label htmlFor="">Job Location</label>
                   <input
                     name="location"
                     value={editData.location || ""}
@@ -159,6 +206,80 @@ const JobList = () => {
                     className="w-full p-3 border rounded-md mb-3 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
                     placeholder="Location"
                   />
+                  <label htmlFor="">Pincode</label>
+                  <input
+                    name="pincode"
+                    value={editData.pincode || ""}
+                    onChange={handleChange}
+                    className="w-full p-3 border rounded-md mb-3 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                    placeholder="pincode"
+                  />
+                  <label htmlFor="">Job category</label>
+                  <input
+                    name="categories"
+                    value={editData.categories || ""}
+                    onChange={handleChange}
+                    className="w-full p-3 border rounded-md mb-3 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                    placeholder="Categories"
+                  />
+                  <label htmlFor="">Skills</label>
+                  <input
+                    name="skillsRequired"
+                    value={editData.skillsRequired || ""}
+                    onChange={handleChange}
+                    className="w-full p-3 border rounded-md mb-3 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                    placeholder="Skills Required (comma separated)"
+                  />
+                  <label htmlFor="">Experience</label>
+                  <input
+                    name="experienceLevel"
+                    value={editData.experienceLevel || ""}
+                    onChange={handleChange}
+                    className="w-full p-3 border rounded-md mb-3 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                    placeholder="Experience Level"
+                  />
+                  <label htmlFor="">Budget Range</label>
+                  <input
+                    name="budgetRange"
+                    value={editData.budgetRange || ""}
+                    onChange={handleChange}
+                    className="w-full p-3 border rounded-md mb-3 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                    placeholder="Budget Range"
+                  />
+                  <label htmlFor="">Job Start date</label>
+                  <input
+                    name="jobDate"
+                    type="date"
+                    value={editData.jobDate || ""}
+                    onChange={handleChange}
+                    className="w-full p-3 border rounded-md mb-3 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                  />
+                  <label htmlFor="">Application deadline</label>
+                  <input
+                    name="applyBy"
+                    type="date"
+                    value={editData.applyBy || ""}
+                    onChange={handleChange}
+                    className="w-full p-3 border rounded-md mb-3 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                  />
+                  <label htmlFor="">Contact Person Name</label>
+                   <input
+                    name="contactPersonName"
+                    value={editData.contactPersonName || ""}
+                    onChange={handleChange}
+                    className="w-full p-3 border rounded-md mb-3 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                    placeholder="Contact Person Name"
+                  />
+                  <label htmlFor="">Contact Person Phone</label>
+                  <input
+                    name="contactPersonPhone"
+                    type="tel"
+                    value={editData.contactPersonPhone || ""}
+                    onChange={handleChange}
+                    className="w-full p-3 border rounded-md mb-3 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                    placeholder="Contact Person Phone"
+                  />
+                  <label htmlFor="">Job description</label>
                   <textarea
                     name="description"
                     value={editData.description || ""}
