@@ -90,39 +90,56 @@ const ViewProfile = () => {
 
   const handleInputChange = async (e) => {
     const { name, value } = e.target;
-
+  
+    setEditedData((prev) => ({
+      ...prev,
+      [name]: value,
+      ...(name === "location" && { pincode: "" }), // Clear pincode if location changes
+    }));
+  
     if (name === "skills") {
-      setEditedData({ ...editedData, [name]: value.split(",").map(skill => skill.trim()) });
-    } else if (name === "pincode" || name === "location") {
-      setEditedData({ ...editedData, [name]: value });
-
-      const location = name === "pincode" ? editedData.location : value;
-      const pincode = name === "location" ? editedData.pincode : value;
-
-      // Fetch coordinates only if both location and pincode are valid
-      if (location && /^\d{6}$/.test(pincode)) {
-        const coordinates = await fetchCoordinates(location, pincode);
-        // console.log("Coordinates", coordinates);
-
-        setEditedData((prev) => ({
-          ...prev,
-          latitude: coordinates.latitude,
-          longitude: coordinates.longitude,
-        }));
-      }
-    } else {
-      setEditedData({ ...editedData, [name]: value });
+      setEditedData((prev) => ({
+        ...prev,
+        skills: value.split(",").map(skill => skill.trim()),
+      }));
+    }
+  
+    // Fetch coordinates only if both location and pincode are valid
+    const location = name === "pincode" ? editedData.location : value;
+    const pincode = name === "location" ? editedData.pincode : value;
+  
+    if (location && /^\d{6}$/.test(pincode)) {
+      const coordinates = await fetchCoordinates(location, pincode);
+      setEditedData((prev) => ({
+        ...prev,
+        latitude: coordinates.latitude,
+        longitude: coordinates.longitude,
+      }));
     }
   };
-
+  
+  
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
   };
 
   const handleSave = () => {
+    const requiredFields = ["fullName", "phoneNumber", "location", "pincode"];
+    const emptyFields = requiredFields.filter(field => !editedData[field]?.trim());
+  
+    if (emptyFields.length > 0) {
+      toast.error(`Please fill all required fields: ${emptyFields.join(", ")}`);
+      return;
+    }
+  
     const userRef = ref(database, `user-metadata/${userRole}/${formattedEmail}`);
-    update(userRef, { ...editedData, latitude: editedData.latitude, longitude: editedData.longitude })
+  
+    // If userRole is "provider", exclude latitude & longitude
+    const { latitude, longitude, ...filteredData } = editedData;
+    const updatedData = userRole === "provider" ? filteredData : editedData;
+  
+    update(userRef, updatedData)
       .then(() => {
         toast.success("Profile updated successfully!");
         setProfileData(editedData);
@@ -133,6 +150,8 @@ const ViewProfile = () => {
         console.error("Error updating profile:", error);
       });
   };
+  
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center text-gray-700">
