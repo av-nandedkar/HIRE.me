@@ -264,7 +264,7 @@ const JobSearch = () => {
                   <p className="text-gray-700"><strong>Location:</strong> {selectedJob.location}</p>
                   <p className="text-gray-700"><strong>Distance:</strong> {selectedJob.distance}</p>
                   <p className="text-gray-700"><strong>City:</strong> {selectedJob.city}</p>
-                  <p className="text-gray-700"><strong>Skills Required:</strong> {selectedJob.skillsRequired?.join(", ")}</p>
+                  <p className="text-gray-700"><strong>Skills Required:</strong> {selectedJob.skillsRequired}</p>
                   <p className="text-gray-700"><strong>Contact:</strong> {selectedJob.contactPersonName} ({selectedJob.contactPersonPhone})</p>
                 </div>
 

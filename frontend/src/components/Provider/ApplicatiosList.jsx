@@ -117,18 +117,18 @@ const ApplicationList = () => {
   }
 
   return (
-    <div className="min-h-screen p-8 sm:p-12 bg-gradient-to-b from-indigo-900 to-gray-900">
+    <div className="min-h-screen p-8 sm:p-12 bg-gray-900">
       <Toaster />
-      <h2 className="text-4xl font-extrabold text-center mb-10 text-white tracking-wider pt-20">
+      <h2 className="text-3xl font-semibold text-center mb-10 text-white tracking-wider pt-20">
         Applications for Your Jobs
       </h2>
 
       {/* Status Filter */}
-      <div className="flex justify-center mb-6">
+      <div className="flex justify-center mb-6 text-white ">
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
-          className="p-2 border rounded-md"
+          className="p-2 border rounded-md bg-gray-800/90"
         >
           <option value="all">All</option>
           <option value="pending">Pending</option>

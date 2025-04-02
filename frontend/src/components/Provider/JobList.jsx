@@ -101,16 +101,16 @@ const JobList = () => {
 
   return (
     <div
-      className={`min-h-screen relative transition-all p-8 sm:p-12 ${
-        expandedJob ? "backdrop-blur-md bg-black/60" : ""
-      }`}
-      style={{
-        backgroundImage: "linear-gradient(to bottom, #0f0c29, #302b63, #24243e)",
-      }}
+    className={`
+      min-h-screen relative transition-all p-8 sm:p-12 
+      ${expandedJob ? "backdrop-blur-md bg-black/60" : ""}
+      bg-gray-900
+    `}
     >
+
       <Toaster />
       {/* ✅ Page Title */}
-      <h2 className="text-4xl font-extrabold text-center mb-10 text-white tracking-wider">
+      <h2 className="text-3xl pt-20 font-semibold text-center mb-10 text-white tracking-wider">
         Job Listings
       </h2>
 
