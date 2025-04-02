@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 const database = getDatabase(app);
 
 const JobSearch = () => {
+  const [loading, setLoading] = useState(true); // Loading state
   const [jobs, setJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [selectedSkill, setSelectedSkill] = useState(null);
@@ -19,6 +20,7 @@ const JobSearch = () => {
   const [seekerLocation, setSeekerLocation] = useState(null);
   
   const navigate = useNavigate();
+
   useEffect(() => {
     const seekerEmail = localStorage.getItem("email");
     if (!seekerEmail) {
@@ -88,12 +90,17 @@ const JobSearch = () => {
           id: key,
           ...jobsData[key],
         }));
+  
+        // // Sorting jobs by date before setting state
+        // jobsArray.sort((a, b) => new Date(b.jobDate) - new Date(a.jobDate));
+  
         setJobs(jobsArray);
         setFilteredJobs(jobsArray);
       } else {
         setJobs([]);
         setFilteredJobs([]);
       }
+      setLoading(false); // Stop loading after fetching
     });
   }, []);
 
@@ -197,7 +204,22 @@ const JobSearch = () => {
         <div className="w-full px-4 sm:px-0 flex flex-col items-center">
 
 
-          {filteredJobs.length > 0 ? (
+      {loading ? (
+  // Skeleton loader while jobs are loading
+  <div className="w-full flex flex-col items-center gap-4 mt-5">
+    {Array.from({ length: 3 }).map((_, index) => (
+      <div
+        key={index}
+        className="w-full max-w-4xl p-4 bg-gray-200 animate-pulse rounded-xl shadow-md"
+      >
+        <div className="h-6 w-3/4 bg-gray-300 rounded-md"></div>
+        <div className="h-4 w-1/2 bg-gray-300 rounded-md mt-2"></div>
+        <div className="h-4 w-1/3 bg-gray-300 rounded-md mt-2"></div>
+        <div className="h-10 w-1/4 bg-gray-300 rounded-md mt-4"></div>
+      </div>
+    ))}
+  </div>
+) :filteredJobs.length > 0 ? (
             filteredJobs.map((job) => (
               <div key={job.id} className="w-full pt-5 flex justify-center">
                 <div className="bg-white shadow-lg hover:shadow-2xl transition-shadow duration-300 rounded-2xl w-full max-w-4xl flex flex-col md:flex-row gap-1 md:gap-3 items-start md:items-center justify-between px-5 py-4 relative overflow-hidden border border-gray-200 aspect-w-16 aspect-h-9">
