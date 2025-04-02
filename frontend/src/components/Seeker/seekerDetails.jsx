@@ -51,7 +51,7 @@ const SeekerForm = () => {
         if (snapshot.exists()) {
           const userData = snapshot.val();
           setFormData(userData);
-          console.log("flag", userData.formSubmitted);
+          // console.log("flag", userData.formSubmitted);
           if (userData.formSubmitted) {
             setLoading(false);
           }
@@ -115,8 +115,8 @@ const SeekerForm = () => {
       });
 
       const data = await response.json();
-      console.log("object", data);
-      console.log("Nearest", data.geocodingResults[1].formatted_address);
+      // console.log("object", data);
+      // console.log("Nearest", data.geocodingResults[1].formatted_address);
       if (data.geocodingResults && data.geocodingResults.length > 0) {
         const latitude = data.geocodingResults[0].geometry.location.lat;
         const longitude = data.geocodingResults[0].geometry.location.lng;
@@ -188,7 +188,7 @@ const SeekerForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("formsubmitted", formData.formSubmitted);
+    // console.log("formsubmitted", formData.formSubmitted);
     
   
     const requiredFields = ["fullName", "phoneNumber", "skills", "experienceYears", "location", "pincode", "expectedPayRange"];

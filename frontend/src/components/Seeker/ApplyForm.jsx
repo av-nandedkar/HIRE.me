@@ -4,10 +4,12 @@ import { useLocation } from "react-router-dom";
 import { app } from "../../firebase";
 import toast, { Toaster } from "react-hot-toast";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const database = getDatabase(app);
 
 const ApplyForm = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const jobId = queryParams.get("jobId"); // Get jobId from URL params
@@ -151,12 +153,22 @@ const ApplyForm = () => {
   </div>
 )}
 
-
-        {alreadyApplied ? (
-          <p className="text-center text-green-600 font-semibold">
-            ✅ You have already applied for this job!
-          </p>
-        ) : jobId ? (
+{alreadyApplied ? (
+  <div className="flex flex-col items-center text-center">
+    <p className="text-green-600 font-semibold text-lg sm:text-xl">
+      ✅ You have already applied for this job!
+    </p>
+    <button 
+      onClick={() => navigate("/viewappliedjobs")} 
+      className="bg-purple-900 mt-5 text-white font-medium px-6 py-3 rounded-3xl shadow-lg 
+                 transition-transform duration-300 hover:scale-105 hover:shadow-purple-500 
+                 active:scale-95 w-full max-w-xs sm:max-w-md md:max-w-lg"
+    >
+      View Applied Jobs
+    </button>
+  </div>
+)
+ : jobId ? (
           <form onSubmit={handleSubmit}>
             {/* Contact Number */}
             <div className="mb-5">

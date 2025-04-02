@@ -22,14 +22,14 @@ const Dashboard = () => {
     const token = localStorage.getItem("authToken");
     const role = localStorage.getItem("userRole");
 
-    console.log("Token:", token);
-    console.log("Role:", role);
+    // console.log("Token:", token);
+    // console.log("Role:", role);
 
     if (!token || !role) {
       console.warn("Redirecting to /login due to missing token or role.");
       navigate("/login");
     } else {
-      console.log("User authenticated as:", role);
+      // console.log("User authenticated as:", role);
       setUserRole(role);
     }
     setLoading(false);

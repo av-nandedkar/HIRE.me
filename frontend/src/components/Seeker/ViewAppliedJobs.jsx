@@ -17,41 +17,55 @@ const AppliedJobs = () => {
 
   useEffect(() => {
     if (!sanitizedEmail) {
-      toast.dismiss(); // Clear previous toasts
       toast.error("User not logged in!");
       setLoading(false);
       return;
     }
-  
+
     const userRef = ref(database, `user-metadata/seeker/${sanitizedEmail}`);
-  
+
     get(userRef)
       .then((snapshot) => {
         if (snapshot.exists()) {
           const userData = snapshot.val();
           const appliedJobIds = userData.appliedJobs || [];
-  
+
           if (appliedJobIds.length === 0) {
-            toast.dismiss(); // Clear previous toasts
             toast("No applied jobs found.", { icon: "ℹ️" });
             setLoading(false);
             return;
           }
-  
+
+          // Fetch details for each applied job including status
+          Promise.all(
+            appliedJobIds.map(async (jobId) => {
+              const jobRef = ref(database, `jobs/${jobId}`);
+              const jobSnapshot = await get(jobRef);
+              const jobData = jobSnapshot.exists() ? { id: jobId, ...jobSnapshot.val() } : null;
+
+              // Fetch the status from `applications`
+              const statusRef = ref(database, `jobs/${jobId}/applications/${sanitizedEmail}`);
+              const statusSnapshot = await get(statusRef);
+              const status = statusSnapshot.exists() ? statusSnapshot.val().status || "Pending" : "Pending";
+
+              return jobData ? { ...jobData, status } : null;
+            })
+          ).then((jobs) => {
+            setAppliedJobs(jobs.filter((job) => job !== null));
+            setLoading(false);
+          });
         } else {
-          toast.dismiss(); // Clear previous toasts
           toast.error("User data not found!");
           setLoading(false);
         }
       })
       .catch((error) => {
         console.error("Error fetching applied jobs:", error);
-        toast.dismiss(); // Clear previous toasts
         toast.error("Failed to fetch applied jobs.");
         setLoading(false);
       });
   }, [sanitizedEmail]);
-  
+
   if (loading) {
     return (
       <motion.div

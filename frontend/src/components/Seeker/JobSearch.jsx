@@ -63,11 +63,11 @@ const JobSearch = () => {
       });
 
       const data = await response.json();
-      console.log("c", data);
+      // console.log("c", data);
       if (data.routes && data.routes.length > 0) {
         const distanceMeters = data.routes[0].legs[0].distance;
         const distanceKm = (distanceMeters / 1000).toFixed(2); // Convert meters to km
-        console.log("Exact Road Distance:", distanceKm, "km");
+        // console.log("Exact Road Distance:", distanceKm, "km");
         return distanceKm;
       } else {
         console.error("No route found.");
