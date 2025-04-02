@@ -89,6 +89,12 @@ const JobList = () => {
 
   const handleSave = async (jobId) => {
     try {
+      // Ensure all fields are filled
+      if (!editData.location || !editData.pincode) {
+        toast.error("All fields are required!");
+        return;
+      }
+  
       let updatedData = { ...editData };
   
       // Check if location or pincode has changed
@@ -113,11 +119,15 @@ const JobList = () => {
   // ✅ Handle Input Change
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setEditData({
-      ...editData,
-      [name]: value,
+  
+    setEditData((prevData) => {
+      if (name === "location") {
+        return { ...prevData, location: value, pincode: "" }; // Reset pincode when location changes
+      }
+      return { ...prevData, [name]: value.trim() }; // Trim spaces to prevent empty values
     });
   };
+  
 
   // ✅ Show Job Details
   const showDetails = (job) => {
@@ -190,14 +200,19 @@ const JobList = () => {
                     className="w-full p-3 border rounded-md mb-3 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
                     placeholder="Job Title"
                   />
-                  <label htmlFor="">Job type</label>
-                  <input
-                    name="jobType"
-                    value={editData.jobType || ""}
-                    onChange={handleChange}
-                    className="w-full p-3 border rounded-md mb-3 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                    placeholder="Job Type"
-                  />
+                <label htmlFor="jobType">Job Type</label>
+<select
+  name="jobType"
+  value={editData.jobType || ""}
+  onChange={handleChange}
+  className="w-full p-3 border rounded-md mb-3 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+>
+  <option value="">Select Job Type</option>
+  <option value="Full-time">Full-time</option>
+  <option value="Part-time">Part-time</option>
+  <option value="Contract">Contract</option>
+</select>
+
                   <label htmlFor="">Job Location</label>
                   <input
                     name="location"
