@@ -13,6 +13,7 @@ const ApplicationList = () => {
   const [filterStatus, setFilterStatus] = useState("all");
 
   useEffect(() => {
+    
     const fetchJobsWithApplications = async () => {
       const jobsRef = ref(database, "jobs");
       const currentUserEmail = localStorage.getItem("email");
@@ -48,6 +49,19 @@ const ApplicationList = () => {
     fetchJobsWithApplications();
   }, []);
 
+  if (loading) {
+    return (
+      <motion.div
+        className="fixed inset-0 bg-gray-800 bg-opacity-60 flex justify-center items-center z-50"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <div className="text-white text-xl sm:text-2xl font-semibold">Loading...</div>
+      </motion.div>
+    );
+  }
+  
   // Update application status
   const handleUpdateStatus = async (jobId, appId, status) => {
     try {
@@ -63,6 +77,7 @@ const ApplicationList = () => {
           ),
         }))
       );
+      window.location.reload();
     } catch (error) {
       toast.error("Error updating status: " + error.message);
     }
@@ -132,9 +147,9 @@ const ApplicationList = () => {
       className="p-2 border rounded-md bg-gray-800/90 w-1/2 sm:w-auto"
     >
       <option value="all">All</option>
-      <option value="pending">Pending</option>
-      <option value="approved">Approved</option>
-      <option value="rejected">Rejected</option>
+      <option value="Pending">Pending</option>
+      <option value="Approved">Approved</option>
+      <option value="Rejected">Rejected</option>
     </select>
   </div>
 
@@ -182,9 +197,9 @@ const ApplicationList = () => {
                       <p className="text-sm text-gray-500">Contact: {app.contactNumber || "N/A"}</p>
                       <span
                         className={`text-sm font-semibold px-2 py-1 rounded ${
-                          app.status === "approved"
+                          app.status === "Approved"
                             ? "bg-green-100 text-green-700"
-                            : app.status === "rejected"
+                            : app.status === "Rejected"
                             ? "bg-red-100 text-red-700"
                             : "bg-yellow-100 text-yellow-700"
                         }`}
@@ -194,13 +209,13 @@ const ApplicationList = () => {
                     </div>
                     <div className="flex flex-wrap gap-3 sm:gap-2 w-1/2 sm:w-auto">
                       <button
-                        onClick={() => handleUpdateStatus(job.id, app.id, "approved")}
+                        onClick={() => handleUpdateStatus(job.id, app.id, "Approved")}
                         className="bg-green-600 text-white px-3 py-1 rounded-md hover:shadow-lg w-full sm:w-auto"
                       >
                         Approve
                       </button>
                       <button
-                        onClick={() => handleUpdateStatus(job.id, app.id, "rejected")}
+                        onClick={() => handleUpdateStatus(job.id, app.id, "Rejected")}
                         className="bg-red-600 text-white px-3 py-1 rounded-md hover:shadow-lg w-full sm:w-auto"
                       >
                         Reject
@@ -268,9 +283,9 @@ const ApplicationList = () => {
                 </div>
                 <span
                   className={`text-sm font-semibold px-2 py-1 rounded ${
-                    app.status === "approved"
+                    app.status === "Approved"
                       ? "bg-green-100 text-green-700"
-                      : app.status === "rejected"
+                      : app.status === "Rejected"
                       ? "bg-red-100 text-red-700"
                       : "bg-yellow-100 text-yellow-700"
                   }`}

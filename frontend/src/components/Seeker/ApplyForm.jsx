@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { getDatabase, ref, set } from "firebase/database";
+import { getDatabase, ref, set, get, update, child } from "firebase/database";
 import { useLocation } from "react-router-dom";
 import { app } from "../../firebase";
 import toast, { Toaster } from "react-hot-toast";
+import { motion } from "framer-motion";
 
 const database = getDatabase(app);
 
@@ -10,17 +11,44 @@ const ApplyForm = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const jobId = queryParams.get("jobId"); // Get jobId from URL params
+  const email = localStorage.getItem("email");
 
   const [formData, setFormData] = useState({
-    applicantName: "",
-    applicantEmail: "",
-    coverLetter: "",
+    applicantEmail: email || "",
     contactNumber: "",
   });
 
   const [resume, setResume] = useState(null); // Base64 version
   const [resumeName, setResumeName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [alreadyApplied, setAlreadyApplied] = useState(false);
+
+  // Check if the user has already applied
+  useEffect(() => {
+    if (!jobId || !email) return;
+
+    const sanitizedEmail = email.replace(/\./g, ","); // Replace "." for Firebase path
+    const applicationRef = ref(database, `jobs/${jobId}/applications/${sanitizedEmail}`);
+
+    get(applicationRef).then((snapshot) => {
+      if (snapshot.exists()) {
+        setAlreadyApplied(true);
+      }
+    });
+  }, [jobId, email]);
+
+  if (loading) {
+    return (
+      <motion.div
+        className="fixed inset-0 bg-gray-800 bg-opacity-60 flex justify-center items-center z-50"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <div className="text-white text-xl sm:text-2xl font-semibold">Loading...</div>
+      </motion.div>
+    );
+  }
 
   // Handle input changes
   const handleChange = (e) => {
@@ -28,86 +56,61 @@ const ApplyForm = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle file selection and convert to Base64
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const allowedTypes = [
-        "application/pdf",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      ];
-      if (!allowedTypes.includes(file.type)) {
-        toast.error("Invalid file type. Please upload a PDF or DOCX file.");
-        return;
-      }
-
-      // Read file and convert to Base64
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setResume(reader.result); // Store Base64 string
-        setResumeName(file.name);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
-    const { applicantName, applicantEmail, coverLetter, contactNumber } =
-      formData;
-
-    // Validate jobId
+  
     if (!jobId) {
-      toast.error("Invalid or missing job ID. Unable to submit application.");
+      toast.error("Invalid or missing job ID.");
       setLoading(false);
       return;
     }
-
-    // Basic validation
-    if (
-      !applicantName.trim() ||
-      !applicantEmail.trim() ||
-      !coverLetter.trim() ||
-      !contactNumber.trim()
-    ) {
+  
+    if (!formData.contactNumber.trim()) {
       toast.error("All fields are required except Resume.");
       setLoading(false);
       return;
     }
-
-    // Validate contact number (10-15 digits)
-    if (!/^\d{10,15}$/.test(contactNumber)) {
+  
+    if (!/^\d{10,15}$/.test(formData.contactNumber)) {
       toast.error("Enter a valid contact number (10-15 digits).");
       setLoading(false);
       return;
     }
-
+  
     try {
-      const applicationId = `app-${Date.now()}-${Math.floor(
-        1000 + Math.random() * 9000
-      )}`;
-
-      // ✅ Prepare application data
-      const applicationData = {
+      const sanitizedEmail = email.replace(/\./g, ","); // Replace "." for Firebase path
+      const userRef = ref(database, `user-metadata/seeker/${sanitizedEmail}`);
+  
+      // Fetch user data to check appliedJobs
+      const userSnapshot = await get(userRef);
+      let appliedJobs = [];
+  
+      if (userSnapshot.exists()) {
+        const userData = userSnapshot.val();
+        appliedJobs = userData.appliedJobs || []; // Ensure appliedJobs exists as an array
+  
+        if (appliedJobs.includes(jobId)) {
+          toast.error("You have already applied for this job!");
+          setAlreadyApplied(true); // Update state
+          setLoading(false);
+          return;
+        }
+      }
+  
+      // Proceed with application submission
+      const applicationsRef = ref(database, `jobs/${jobId}/applications/${sanitizedEmail}`);
+      await set(applicationsRef, {
         ...formData,
         appliedAt: new Date().toISOString(),
-        resumeData: resume || null, // Base64 data (if provided)
-        resumeName: resumeName || null,
-      };
-
-      // ✅ Store application in Firebase Realtime Database
-      const applicationsRef = ref(
-        database,
-        `jobs/${jobId}/applications/${applicationId}`
-      );
-      await set(applicationsRef, applicationData);
-
+      });
+  
+      // Append jobId to appliedJobs and update Firebase
+      appliedJobs.push(jobId);
+      await update(userRef, { appliedJobs });
+  
       toast.success("Application submitted successfully! 🎉");
-
-      // ✅ Reset form after submission
+      setAlreadyApplied(true); // Prevent further submissions
       resetForm();
     } catch (error) {
       console.error("Error submitting application:", error);
@@ -116,13 +119,12 @@ const ApplyForm = () => {
       setLoading(false);
     }
   };
-
+  
+  
   // Reset form function
   const resetForm = () => {
     setFormData({
-      applicantName: "",
-      applicantEmail: "",
-      coverLetter: "",
+      applicantEmail: email || "",
       contactNumber: "",
     });
     setResume(null);
@@ -130,66 +132,36 @@ const ApplyForm = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 px-8">
+    <div className="flex items-center scale-100 justify-center min-h-screen bg-gray-100 px-8">
       <Toaster />
-      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl relative">
-        <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
-          {jobId
-            ? `Apply for Job ID: ${jobId}`
-            : "No Job ID Provided - Application Disabled"}
-        </h2>
+      <div className="bg-white p-8 rounded-xl scale-80 shadow-lg w-full max-w-2xl relative">
+      <h2 className="text-xl font-bold text-center mb-2 text-gray-800">
+  Apply for Job
+</h2>
 
-        {jobId ? (
+{/* Extract Job Details */}
+{jobId && (
+  <div className="text-center mb-2  text-gray-600">
+    <p className="text-lg font-semibold mb-2  text-blue-700">
+      {jobId.split("-").slice(0, -1).join(" ")} {/* Job Title & City */}
+    </p>
+    <p className="text-sm text-gray-500">
+      Job ID: <span className="font-mono text-gray-700">{jobId.split("-").pop()}</span>
+    </p>
+  </div>
+)}
+
+
+        {alreadyApplied ? (
+          <p className="text-center text-green-600 font-semibold">
+            ✅ You have already applied for this job!
+          </p>
+        ) : jobId ? (
           <form onSubmit={handleSubmit}>
-            {/* Applicant Name */}
-            <div className="mb-5">
-              <label className="block text-sm font-medium text-gray-700">
-                Applicant Name *
-              </label>
-              <input
-                type="text"
-                name="applicantName"
-                value={formData.applicantName}
-                onChange={handleChange}
-                className="w-full mt-1 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none"
-                required
-              />
-            </div>
-
-            {/* Email Address */}
-            <div className="mb-5">
-              <label className="block text-sm font-medium text-gray-700">
-                Email Address *
-              </label>
-              <input
-                type="email"
-                name="applicantEmail"
-                value={formData.applicantEmail}
-                onChange={handleChange}
-                className="w-full mt-1 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none"
-                required
-              />
-            </div>
-
-            {/* Cover Letter */}
-            <div className="mb-5">
-              <label className="block text-sm font-medium text-gray-700">
-                Cover Letter / Message *
-              </label>
-              <textarea
-                name="coverLetter"
-                value={formData.coverLetter}
-                onChange={handleChange}
-                rows="4"
-                className="w-full mt-1 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none"
-                required
-              ></textarea>
-            </div>
-
             {/* Contact Number */}
             <div className="mb-5">
               <label className="block text-sm font-medium text-gray-700">
-                Contact Number *
+                Your Preferred Contact Number *
               </label>
               <input
                 type="text"
@@ -201,24 +173,6 @@ const ApplyForm = () => {
               />
             </div>
 
-            {/* Resume Upload */}
-            <div className="mb-5">
-              <label className="block text-sm font-medium text-gray-700">
-                Upload Resume/CV (Optional)
-              </label>
-              <input
-                type="file"
-                accept=".pdf, .docx"
-                onChange={handleFileUpload}
-                className="w-full mt-1 p-2 border-b-2 border-gray-300 focus:border-blue-600 outline-none"
-              />
-              {resumeName && (
-                <p className="text-sm text-gray-500 mt-1">
-                  Selected: {resumeName}
-                </p>
-              )}
-            </div>
-
             {/* Submit Button */}
             <div className="mt-4 flex justify-center">
               <button
@@ -228,7 +182,7 @@ const ApplyForm = () => {
                   loading ? "opacity-70 cursor-not-allowed" : ""
                 }`}
               >
-                {loading ? "Submitting..." : "Submit Application"}
+                {loading ? "Submitting..." : "Apply"}
               </button>
             </div>
           </form>

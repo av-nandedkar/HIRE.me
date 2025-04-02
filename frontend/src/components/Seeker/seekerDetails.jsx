@@ -74,8 +74,8 @@ const SeekerForm = () => {
     return (<>
       <div className="flex items-center pt-15 justify-center min-h-screen bg-gray-900 text-white px-4">
      
-        <div className="bg-white text-gray-800 p-8 rounded-2xl shadow-2xl  w-full max-w-md text-center">
-        <div className="flex justify-center items-center w-full">
+        <div className="bg-white text-gray-800   scale-80  p-8 rounded-2xl shadow-2xl  w-full max-w-md text-center">
+        <div className="flex justify-center  items-center w-full">
   <img src="/profile.png" alt="Profile Image" className="h-24 sm:h-32 md:h-40 lg:h-48 xl:h-35 object-contain" />
 </div>
           <h2 className="text-2xl text-gray-900"> Profile Completed </h2>

@@ -82,13 +82,23 @@ const Dashboard = () => {
             <Briefcase /> Manage Listings
           </button>
 
+              {/* History */}
+          <button
+            className="bg-yellow-600 hover:bg-yellow-700 p-4 rounded-lg flex items-center justify-center gap-2"
+            onClick={() =>
+              handleNavigation("/pastjobs")
+            }
+          >
+            <CalendarClock /> Past Jobs
+          </button>
+          
         </div>
       ) : userRole === "seeker" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-4xl">
           {/* Apply for Jobs */}
           <button
             className="bg-blue-600 hover:bg-blue-700 p-4 rounded-lg flex items-center justify-center gap-2"
-            onClick={() => handleNavigation("/seekerprofile")}
+            onClick={() => handleNavigation("/jobsearch")}
           >
             <UserCheck /> Apply for Jobs
           </button>
@@ -96,15 +106,15 @@ const Dashboard = () => {
           {/* View Saved Jobs */}
           <button
             className="bg-green-600 hover:bg-green-700 p-4 rounded-lg flex items-center justify-center gap-2"
-            onClick={() => handleNavigation("/seekerprofile/saved-jobs")}
+            onClick={() => handleNavigation("/viewappliedjobs")}
           >
-            <FileText /> View Saved Jobs
+            <FileText /> View My Applied Jobs
           </button>
 
           {/* Manage Profile */}
           <button
             className="bg-purple-600 hover:bg-purple-700 p-4 rounded-lg flex items-center justify-center gap-2"
-            onClick={() => handleNavigation("/seekerprofile/profile")}
+            onClick={() => handleNavigation("/seekerprofile")}
           >
             <UserPlus /> Manage Profile
           </button>

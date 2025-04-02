@@ -18,16 +18,19 @@ import JobForm from "./components/Provider/Jobpost";
 import ViewProfile from "./components/Login/ViewProfile";
 import ForgotPassword from "./components/Login/forgotpassword";
 import JobSearch from "./components/Seeker/JobSearch";
-import JobRecommendations from "./components/Seeker/JobRecommendations";
 import ApplyForm from "./components/Seeker/ApplyForm";
 import JobList from "./components/Provider/JobList";
-import ApplicationsList from "./components/Provider/ApplicatiosList"
+import ApplicationsList from "./components/Provider/ApplicatiosList";
+import ViewAppliedJobs from "./components/Seeker/ViewAppliedJobs";
+import ExpiredJobs from "./components/Provider/PastJobs";
+
 function App() {
   return (
     <Router>
       <div>
         <Navbar />
         <Routes>
+             {/* OPEN  Routes */}
           <Route path="/" element={<Home />}></Route>
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
@@ -35,10 +38,8 @@ function App() {
           <Route path="/forgotpassword" element={<ForgotPassword />}></Route>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/viewprofile" element={<ViewProfile />}></Route>
-          <Route path="/jobrecommendations" element={<JobRecommendations/>}></Route>
-          <Route path="/applyform" element={< ApplyForm/>}></Route>
-          <Route path="providerprofile/joblist" element={< JobList/>}></Route>
-          <Route path="providerprofile/applications" element={< ApplicationsList/>}></Route>
+
+
           {/* Provider-only Routes */}
           <Route
             path="/providerprofile"
@@ -48,6 +49,14 @@ function App() {
               </ProtectRoutes>
             }
           />
+<Route
+          path = "/pastjobs"
+          element={
+            <ProtectRoutes allowedRoles={["provider"]}>
+              <ExpiredJobs/>
+            </ProtectRoutes>
+          }
+          />
           <Route
             path="/jobpost"
             element={
@@ -56,6 +65,24 @@ function App() {
               </ProtectRoutes>
             }
           />
+            
+             <Route
+            path="/providerprofile/joblist"
+            element={
+              <ProtectRoutes allowedRoles={["provider"]}>
+                <JobList />
+              </ProtectRoutes>
+            }
+          />
+              <Route
+            path="/providerprofile/applications"
+            element={
+              <ProtectRoutes allowedRoles={["provider"]}>
+                <ApplicationsList />
+              </ProtectRoutes>
+            }
+          />
+
 
           {/* Seeker-only Routes */}
           <Route
@@ -74,6 +101,25 @@ function App() {
               </ProtectRoutes>
             }
           />
+          <Route
+            path="/viewappliedjobs"
+            element={
+              <ProtectRoutes allowedRoles={["seeker"]}>
+                <ViewAppliedJobs />
+              </ProtectRoutes>
+            }
+          />
+             <Route
+            path="/applyform"
+            element={
+              <ProtectRoutes allowedRoles={["seeker"]}>
+                <ApplyForm />
+              </ProtectRoutes>
+            }
+          />
+
+
+
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         <Footer />

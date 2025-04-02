@@ -21,21 +21,32 @@ const JobSearch = () => {
   const navigate = useNavigate();
   useEffect(() => {
     const seekerEmail = localStorage.getItem("email");
-    if (!seekerEmail) return;
-
+    if (!seekerEmail) {
+      navigate("/seekerprofile");
+      return;
+    }
+  
     const encodedEmail = seekerEmail.replace(/\./g, ",");
     const seekerRef = ref(database, `user-metadata/seeker/${encodedEmail}`);
-
+  
     onValue(seekerRef, (snapshot) => {
       const seekerData = snapshot.val();
       if (seekerData) {
+        if (!seekerData.formSubmitted) {
+          navigate("/seekerprofile");
+          return;
+        }
+  
         setSeekerLocation({
           latitude: parseFloat(seekerData.latitude),
           longitude: parseFloat(seekerData.longitude),
         });
+      } else {
+        navigate("/seekerprofile");
       }
     });
   }, []);
+  
 
   const fetchOlaDistance = async (origin, destination) => {
     const apiKey = "9QqEQDVDfqLRFOPZzKsMqNn9tOWca999Ujqe09mN"; // Replace with your actual API key
