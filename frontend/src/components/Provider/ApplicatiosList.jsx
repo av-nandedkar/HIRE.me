@@ -119,7 +119,7 @@ const ApplicationList = () => {
   return (
     <div className="min-h-screen p-8 sm:p-12 bg-gradient-to-b from-indigo-900 to-gray-900">
       <Toaster />
-      <h2 className="text-4xl font-extrabold text-center mb-10 text-white tracking-wider">
+      <h2 className="text-4xl font-extrabold text-center mb-10 text-white tracking-wider pt-20">
         Applications for Your Jobs
       </h2>
 

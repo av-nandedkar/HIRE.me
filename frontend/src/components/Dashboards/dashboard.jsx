@@ -82,31 +82,6 @@ const Dashboard = () => {
             <Briefcase /> Manage Listings
           </button>
 
-          {/* Interview Scheduling */}
-          <button
-            className="bg-teal-600 hover:bg-teal-700 p-4 rounded-lg flex items-center justify-center gap-2"
-            onClick={() =>
-              handleNavigation("/providerprofile/schedule-interview")
-            }
-          >
-            <CalendarClock /> Interview Scheduling
-          </button>
-
-          {/* Notifications Center */}
-          <button
-            className="bg-yellow-600 hover:bg-yellow-700 p-4 rounded-lg flex items-center justify-center gap-2"
-            onClick={() => handleNavigation("/notifications")}
-          >
-            <Bell /> Notifications
-          </button>
-
-          {/* Announcements & Updates */}
-          <button
-            className="bg-pink-600 hover:bg-pink-700 p-4 rounded-lg flex items-center justify-center gap-2"
-            onClick={() => handleNavigation("/announcements")}
-          >
-            <Megaphone /> Announcements
-          </button>
         </div>
       ) : userRole === "seeker" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-4xl">
@@ -134,29 +109,6 @@ const Dashboard = () => {
             <UserPlus /> Manage Profile
           </button>
 
-          {/* Interview Scheduling */}
-          <button
-            className="bg-teal-600 hover:bg-teal-700 p-4 rounded-lg flex items-center justify-center gap-2"
-            onClick={() => handleNavigation("/seekerprofile/interviews")}
-          >
-            <CalendarClock /> My Interviews
-          </button>
-
-          {/* Notifications Center */}
-          <button
-            className="bg-yellow-600 hover:bg-yellow-700 p-4 rounded-lg flex items-center justify-center gap-2"
-            onClick={() => handleNavigation("/notifications")}
-          >
-            <Bell /> Notifications
-          </button>
-
-          {/* Announcements & Updates */}
-          <button
-            className="bg-pink-600 hover:bg-pink-700 p-4 rounded-lg flex items-center justify-center gap-2"
-            onClick={() => handleNavigation("/announcements")}
-          >
-            <Megaphone /> Announcements
-          </button>
         </div>
       ) : (
         <p className="text-gray-400">Loading...</p>
