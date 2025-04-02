@@ -235,7 +235,7 @@ const JobSearch = () => {
                       className="bg-purple-900 text-white font-medium px-4 md:px-5 py-2 rounded-3xl flex gap-2 justify-center items-center w-full md:w-auto shadow-lg transform transition-transform duration-300 hover:scale-105 hover:shadow-purple-500 active:scale-95 text-sm md:text-base"
                       onClick={() => setSelectedJob(job)}
                     >
-                      Apply Now
+                      View
                       <svg className="h-4 md:h-5 w-4 md:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                       </svg>
