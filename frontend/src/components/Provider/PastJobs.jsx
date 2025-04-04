@@ -15,7 +15,7 @@ const ExpiredJobs = () => {
       return;
     }
 
-    const jobsRef = ref(db, "jobs"); // Fetch all jobs
+    const jobsRef = ref(db, "jobs/completed"); // Fetch all jobs
 
     onValue(jobsRef, (snapshot) => {
       if (snapshot.exists()) {

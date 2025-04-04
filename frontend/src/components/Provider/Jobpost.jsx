@@ -143,7 +143,7 @@ const jobTitleKey = `${formData.jobTitle.replace(/\s+/g, "_").replace(/[^a-zA-Z0
         longitude,
     };
 
-    const jobRef = child(ref(database, "jobs"), jobTitleKey);
+    const jobRef = child(ref(database, "jobs/current"), jobTitleKey);
 
     // Store job data in Firebase using the job title as the key
     set(jobRef, jobData)
@@ -180,7 +180,7 @@ const jobTitleKey = `${formData.jobTitle.replace(/\s+/g, "_").replace(/[^a-zA-Z0
 
   const skillOptions = [
     "Plumber", "Electrician", "Painter", "Electronics Repairs", "Mechanic", 
-    "Housemaid", "Cleaning Worker"
+    "Housemaid", "Cleaning Worker","Agriculture","Poultry Farming","Fisheries","Construction", "Maintenance","Handicrafts"
   ];
   // Handle closing form
   const handleClose = () => {

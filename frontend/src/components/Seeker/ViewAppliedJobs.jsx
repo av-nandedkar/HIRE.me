@@ -39,12 +39,12 @@ const AppliedJobs = () => {
           // Fetch details for each applied job including status
           Promise.all(
             appliedJobIds.map(async (jobId) => {
-              const jobRef = ref(database, `jobs/${jobId}`);
+              const jobRef = ref(database, `jobs/current/${jobId}`);
               const jobSnapshot = await get(jobRef);
               const jobData = jobSnapshot.exists() ? { id: jobId, ...jobSnapshot.val() } : null;
 
               // Fetch the status from `applications`
-              const statusRef = ref(database, `jobs/${jobId}/applications/${sanitizedEmail}`);
+              const statusRef = ref(database, `jobs/current/${jobId}/applications/${sanitizedEmail}`);
               const statusSnapshot = await get(statusRef);
               const status = statusSnapshot.exists() ? statusSnapshot.val().status || "Pending" : "Pending";
 
@@ -82,7 +82,7 @@ const AppliedJobs = () => {
   return (
     <div className="min-h-screen mt-18 bg-gray-900 p-6 flex flex-col items-center">
       <Toaster />
-      <h1 className="text-3xl md:text-4xl font-extrabold text-center mb-6 text-indigo-400">
+      <h1 className="text-2xl md:text-3xl font-semibold text-center mb-6 text-indigo-400">
         My Applied Jobs
       </h1>
   
@@ -93,12 +93,12 @@ const AppliedJobs = () => {
           <div className="hidden md:block overflow-x-auto">
             <table className="w-full border-collapse border border-gray-700">
               <thead>
-                <tr className="bg-indigo-600 text-white text-sm md:text-base">
-                  <th className="py-3 px-4">Job Title</th>
+                <tr className="bg-blue-950 text-white text-sm md:text-base">
+                  <th className="py-3 px-4">Job Title</th>  
                   <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4 hidden md:table-cell">Job Type</th>
+                  <th className="py-3 px-4 hidden lg:table-cell">Job Type</th>
                   <th className="py-3 px-4">Experience</th>
-                  <th className="py-3 px-4 hidden md:table-cell">Budget</th>
+                  <th className="py-3 px-4 hidden lg:table-cell">Budget</th>
                   <th className="py-3 px-4">Location</th>
                   <th className="py-3 px-4 hidden lg:table-cell">Skills</th>
                   <th className="py-3 px-4 hidden lg:table-cell">Contact</th>

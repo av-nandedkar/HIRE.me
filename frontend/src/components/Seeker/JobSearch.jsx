@@ -82,7 +82,7 @@ const JobSearch = () => {
   };
 
   useEffect(() => {
-    const jobsRef = ref(database, "jobs");
+    const jobsRef = ref(database, "jobs/current");
     onValue(jobsRef, (snapshot) => {
       const jobsData = snapshot.val();
       if (jobsData) {
@@ -105,8 +105,8 @@ const JobSearch = () => {
   }, []);
 
   const skillOptions = [
-    "Plumber", "Electrician", "Painter", "Electronics Repairs", "Mechanic",
-    "Housemaid", "Cleaning Worker"
+    "Plumber", "Electrician", "Painter", "Electronics Repairs", "Mechanic", "Harvesting", "Feeding",
+    "Housemaid", "Cleaning Worker","Weaving","Brick Molding","Wood Cutting","Milking", "Crop Maintenance","Fishing"
   ].map(skill => ({ value: skill, label: skill }));
 
   useEffect(() => {
@@ -117,6 +117,7 @@ const JobSearch = () => {
         job.skillsRequired?.includes(selectedSkill.value)
       );
     }
+    
 
     const updateJobDistances = async () => {
       const seekerLat = seekerLocation?.latitude;
@@ -230,10 +231,10 @@ const JobSearch = () => {
                   {/* Job Info */}
                   <div className="flex-1">
                     <span className="text-purple-700 font-semibold text-xs md:text-sm tracking-wide">{job.categories}</span>
-                    <h3 className=" mt-2 text-base md:text-xl text-gray-800 transition-transform transform hover:scale-105">{job.jobTitle}</h3>
+                    <h3 className=" mt-2 text-base md:text-xl text-gray-800 transition-transform transform hover:scale-102">{job.jobTitle}</h3>
 
                     <div className="flex flex-wrap items-center gap-2 mt-2">
-                      <span className="bg-purple-100 text-purple-800 rounded-full px-3 py-1 text-xs md:text-sm font-medium shadow-md">₹{job.budgetRange}</span>
+                      <span className="bg-purple-100 text-purple-800 rounded-full px-3 py-1 text-xs md:text-sm font-medium shadow-md">{job.budgetRange}</span>
                       <span className="text-gray-600 text-xs md:text-sm flex gap-1 items-center">
                         <span className="text-gray-600 text-sm flex gap-1 items-center">
                           <svg className="h-5 w-5 text-purple-600 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">

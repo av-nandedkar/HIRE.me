@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from 'uuid';
-import { getDatabase, ref, onValue, remove, update } from "firebase/database";
+import { getDatabase, ref, onValue, remove, update, get,set } from "firebase/database";
 import { app } from "../../firebase";
 import toast, { Toaster } from "react-hot-toast";
 import { motion } from "framer-motion";
+import { useNavigate } from 'react-router-dom';
+
 
 const database = getDatabase(app);
 
@@ -18,6 +20,8 @@ const JobList = () => {
   const [showEditModal, setShowEditModal] = useState(false);
 
   const jobsPerPage = 6;
+  const navigate = useNavigate();
+  
 
   const fetchCoordinates = async (address, pincode) => {
     const apiKey = "9QqEQDVDfqLRFOPZzKsMqNn9tOWca999Ujqe09mN"; // Replace with your actual API key
@@ -49,9 +53,47 @@ const JobList = () => {
     }
   };
 
+  const handleMarkAsCompleted = async (jobId) => {
+    const confirmed = window.confirm("Are you sure ?");
+    if (!confirmed) return;
+  
+    try {
+      const db = getDatabase();
+  
+      // Step 1: Read existing job data
+      const jobRef = ref(db, `jobs/current/${jobId}`);
+      const snapshot = await get(jobRef);
+  
+      if (!snapshot.exists()) {
+        alert("Job not found!");
+        return;
+      }
+  
+      const jobData = snapshot.val();
+  
+      // Step 2: Write to completed path with 'jobCompleted: true'
+      const completedJobRef = ref(db, `jobs/completed/${jobId}`);
+      await set(completedJobRef, {
+        ...jobData,
+        jobCompleted: true,
+      });
+  
+      // Step 3: Remove from original jobs path
+      await remove(jobRef);
+      toast.success("Job Completed Successfully");
+      // navigate('/providerprofile/joblist');
+      window.location.reload();
+
+    } catch (error) {
+      console.error("Error moving job:", error);
+      alert("Failed to mark job as completed. Please try again.");
+      window.location.reload();
+    }
+  };
+
   // ✅ Fetch Jobs from Firebase
   useEffect(() => {
-    const jobsRef = ref(database, "jobs");
+    const jobsRef = ref(database, "jobs/current");
     const currentUserEmail = localStorage.getItem("email");
 
     onValue(jobsRef, (snapshot) => {
@@ -75,7 +117,7 @@ const JobList = () => {
   const handleDelete = async (jobId) => {
     if (window.confirm("Are you sure you want to delete this job?")) {
       try {
-        await remove(ref(database, `jobs/${jobId}`));
+        await remove(ref(database, `jobs/current/${jobId}`));
         toast.success("Job deleted successfully!");
       } catch (error) {
         toast.error("Error deleting job: " + error.message);
@@ -115,7 +157,7 @@ const JobList = () => {
         updatedData.longitude = coordinates.longitude;
       }
   
-      await update(ref(database, `jobs/${jobId}`), updatedData);
+      await update(ref(database, `jobs/current/${jobId}`), updatedData);
       toast.success("Job updated successfully!");
       setEditMode(null);
     } catch (error) {
@@ -157,6 +199,7 @@ const JobList = () => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
   
   return (
+    
     <div
       className={`
         min-h-screen relative transition-all p-8 sm:p-12 
@@ -164,7 +207,8 @@ const JobList = () => {
         bg-gray-900
       `}
     >
-      <Toaster />
+      <Toaster position="top-center" toastOptions={{ style: { fontSize: '1rem', padding: '10px 20px', maxWidth: '500px', borderRadius: '40px', marginTop: '70px' } }} />
+      
   
       {/* ✅ Page Title */}
       <h2 className="text-3xl pt-20 font-semibold text-center mb-10 text-white tracking-wider">
@@ -221,22 +265,28 @@ const JobList = () => {
                   {job.city}, {job.distance}
                 </span>
               </div>
-              <div className="flex justify-between items-center mt-4">
+              <div className="flex justify-between items-center mt-4 gap-3">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     handleEdit(job);
                   }}
-                  className="bg-purple-900 text-white px-5 py-2 rounded-md hover:shadow-purple-500 transition transform hover:scale-105"
+                  className="bg-purple-900 text-white px-5 py-2 rounded-3xl hover:shadow-purple-500 transition transform hover:scale-105"
                 >
                   Edit
+                </button>
+                <button
+                  onClick={() => handleMarkAsCompleted(job.id)}
+                  className="bg-green-600 text-white px-3 py-2 rounded-3xl md:scale-90 hover:shadow-purple-500 transition transform hover:scale-95 "
+                >
+                  Mark As Completed
                 </button>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     handleDelete(job.id);
                   }}
-                  className="bg-purple-900 text-white px-5 py-2 rounded-md hover:shadow-purple-500 transition transform hover:scale-105"
+                  className="bg-purple-900 text-white px-5 py-2 rounded-3xl hover:shadow-purple-500 transition transform hover:scale-105"
                 >
                   Delete
                 </button>

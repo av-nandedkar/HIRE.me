@@ -30,7 +30,7 @@ const ApplyForm = () => {
     if (!jobId || !email) return;
 
     const sanitizedEmail = email.replace(/\./g, ","); // Replace "." for Firebase path
-    const applicationRef = ref(database, `jobs/${jobId}/applications/${sanitizedEmail}`);
+    const applicationRef = ref(database, `jobs/current/${jobId}/applications/${sanitizedEmail}`);
 
     get(applicationRef).then((snapshot) => {
       if (snapshot.exists()) {
@@ -101,7 +101,7 @@ const ApplyForm = () => {
       }
   
       // Proceed with application submission
-      const applicationsRef = ref(database, `jobs/${jobId}/applications/${sanitizedEmail}`);
+      const applicationsRef = ref(database, `jobs/current/${jobId}/applications/${sanitizedEmail}`);
       await set(applicationsRef, {
         ...formData,
         appliedAt: new Date().toISOString(),

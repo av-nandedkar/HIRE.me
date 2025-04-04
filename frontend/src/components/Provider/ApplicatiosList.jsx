@@ -16,7 +16,7 @@ const [selectedApplicant, setSelectedApplicant] = useState(null);
   useEffect(() => {
     
     const fetchJobsWithApplications = async () => {
-      const jobsRef = ref(database, "jobs");
+      const jobsRef = ref(database, "jobs/current");
       const currentUserEmail = localStorage.getItem("email");
     
       onValue(jobsRef, async (jobsSnapshot) => {
@@ -89,7 +89,7 @@ const [selectedApplicant, setSelectedApplicant] = useState(null);
   // Update application status
   const handleUpdateStatus = async (jobId, appId, status) => {
     try {
-      await update(ref(database, `jobs/${jobId}/applications/${appId}`), {
+      await update(ref(database, `jobs/current/${jobId}/applications/${appId}`), {
         status,
       });
       toast.success(status ? `Application ${status}!` : "Application Reset");
