@@ -15,6 +15,8 @@ const JobList = () => {
   const [expandedJob, setExpandedJob] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+
   const jobsPerPage = 6;
 
   const fetchCoordinates = async (address, pincode) => {
@@ -85,7 +87,7 @@ const JobList = () => {
   const handleEdit = (job) => {
     setEditMode(job.id);
     setEditData(job); // Copy all job data to editData
-    setEditModalOpen(true);
+    setShowEditModal(true);
   };
 
   const closeEditModal = () => {
@@ -155,233 +157,95 @@ const JobList = () => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
   
   return (
-    
     <div
-    className={`
-      min-h-screen relative transition-all p-8 sm:p-12 
-      ${expandedJob ? "backdrop-blur-md bg-black/60" : ""}
-      bg-gray-900
-    `}
+      className={`
+        min-h-screen relative transition-all p-8 sm:p-12 
+        ${expandedJob ? "backdrop-blur-md bg-black/60" : ""}
+        bg-gray-900
+      `}
     >
-
       <Toaster />
+  
       {/* ✅ Page Title */}
       <h2 className="text-3xl pt-20 font-semibold text-center mb-10 text-white tracking-wider">
         Job Listings
       </h2>
-
+  
+      {/* ✅ Skeleton Loader */}
       {loading ? (
-  // Skeleton loader while jobs are loading
-  <div className="w-full flex flex-col items-center gap-4 mt-5">
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-6xl p-4">
-    {Array.from({ length: 5 }).map((_, index) => (
-      <div
-        key={index}
-        className="w-full max-w-4xl p-4 bg-gray-200 animate-pulse rounded-xl shadow-md"
-      >
-        <div className="h-6 w-3/4 bg-gray-300 rounded-md"></div>
-        <div className="h-4 w-1/2 bg-gray-300 rounded-md mt-2"></div>
-        <div className="h-4 w-1/3 bg-gray-300 rounded-md mt-2"></div>
-        <div className="h-10 w-1/4 bg-gray-300 rounded-md mt-4"></div>
-      </div>
-    ))}
-    </div>
-  </div>
-) :currentJobs.length === 0 ? (
+        <div className="w-full flex flex-col items-center gap-4 mt-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-6xl p-4">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <div
+                key={index}
+                className="w-full max-w-4xl p-4 bg-gray-200 animate-pulse rounded-xl shadow-md"
+              >
+                <div className="h-6 w-3/4 bg-gray-300 rounded-md"></div>
+                <div className="h-4 w-1/2 bg-gray-300 rounded-md mt-2"></div>
+                <div className="h-4 w-1/3 bg-gray-300 rounded-md mt-2"></div>
+                <div className="h-10 w-1/4 bg-gray-300 rounded-md mt-4"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : currentJobs.length === 0 ? (
         <p className="text-center text-gray-400 text-lg">
           No jobs available right now.
         </p>
       ) : (
         <div
-          className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 transition-all ${
+          className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 transition-all ${
             expandedJob ? "blur-sm pointer-events-none" : ""
           }`}
         >
-          {/* ✅ Job Cards */}
           {currentJobs.map((job) => (
             <motion.div
               key={job.id}
-              className="relative bg-white shadow-xl transition-all duration-300 rounded-2xl w-full max-w-3xl flex flex-col gap-4 p-6 border border-gray-200 transform hover:scale-105"
+              className="scale-90 relative bg-white shadow-xl transition-all duration-300 rounded-2xl w-full max-w-3xl flex flex-col gap-4 p-6 border border-gray-200 transform hover:scale-92"
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
               onClick={() => showDetails(job)}
             >
-              {/* ✅ Edit Mode */}
-              {editMode === job.id ? (
-                <div>
-                  <label htmlFor="">Job</label>
-                  <input
-                    name="jobTitle"
-                    value={editData.jobTitle || ""}
-                    onChange={handleChange}
-                    className="w-full p-3 border rounded-md mb-3 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                    placeholder="Job Title"
-                  />
-                <label htmlFor="jobType">Job Type</label>
-                <select
-                  name="jobType"
-                  value={editData.jobType || ""}
-                  onChange={handleChange}
-                  className="w-full p-3 border rounded-md mb-3 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+              <span className="text-purple-600 font-semibold text-xs md:text-sm tracking-wide">
+                {job.categories || "General"}
+              </span>
+              <h3 className="mt-2 text-base md:text-xl text-black font-bold">
+                {job.jobTitle}
+              </h3>
+              <div className="flex flex-wrap items-center gap-2 mt-2">
+                <span className="bg-purple-100 text-purple-800 rounded-full px-3 py-1 text-xs md:text-sm font-medium shadow-md">
+                  ₹{job.budgetRange}
+                </span>
+                <span className="text-gray-500 text-xs md:text-sm">
+                  {job.city}, {job.distance}
+                </span>
+              </div>
+              <div className="flex justify-between items-center mt-4">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleEdit(job);
+                  }}
+                  className="bg-purple-900 text-white px-5 py-2 rounded-md hover:shadow-purple-500 transition transform hover:scale-105"
                 >
-                  <option value="">Select Job Type</option>
-                  <option value="Full-time">Full-time</option>
-                  <option value="Part-time">Part-time</option>
-                  <option value="Contract">Contract</option>
-                </select>
-
-                  <label htmlFor="">Job Location</label>
-                  <input
-                    name="location"
-                    value={editData.location || ""}
-                    onChange={handleChange}
-                    className="w-full p-3 border rounded-md mb-3 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                    placeholder="Location"
-                  />
-                  <label htmlFor="">Pincode</label>
-                  <input
-                    name="pincode"
-                    value={editData.pincode || ""}
-                    onChange={handleChange}
-                    className="w-full p-3 border rounded-md mb-3 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                    placeholder="pincode"
-                  />
-                  <label htmlFor="">Job category</label>
-                  <input
-                    name="categories"
-                    value={editData.categories || ""}
-                    onChange={handleChange}
-                    className="w-full p-3 border rounded-md mb-3 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                    placeholder="Categories"
-                  />
-                  <label htmlFor="">Skills</label>
-                  <input
-                    name="skillsRequired"
-                    value={editData.skillsRequired || ""}
-                    onChange={handleChange}
-                    className="w-full p-3 border rounded-md mb-3 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                    placeholder="Skills Required (comma separated)"
-                  />
-                  <label htmlFor="">Experience</label>
-                  <input
-                    name="experienceLevel"
-                    value={editData.experienceLevel || ""}
-                    onChange={handleChange}
-                    className="w-full p-3 border rounded-md mb-3 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                    placeholder="Experience Level"
-                  />
-                  <label htmlFor="">Budget Range</label>
-                  <input
-                    name="budgetRange"
-                    value={editData.budgetRange || ""}
-                    onChange={handleChange}
-                    className="w-full p-3 border rounded-md mb-3 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                    placeholder="Budget Range"
-                  />
-                  <label htmlFor="">Job Start date</label>
-                  <input
-                    name="jobDate"
-                    type="date"
-                    value={editData.jobDate || ""}
-                    onChange={handleChange}
-                    className="w-full p-3 border rounded-md mb-3 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                  />
-                  <label htmlFor="">Application deadline</label>
-                  <input
-                    name="applyBy"
-                    type="date"
-                    value={editData.applyBy || ""}
-                    onChange={handleChange}
-                    className="w-full p-3 border rounded-md mb-3 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                  />
-                  <label htmlFor="">Contact Person Name</label>
-                   <input
-                    name="contactPersonName"
-                    value={editData.contactPersonName || ""}
-                    onChange={handleChange}
-                    className="w-full p-3 border rounded-md mb-3 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                    placeholder="Contact Person Name"
-                  />
-                  <label htmlFor="">Contact Person Phone</label>
-                  <input
-                    name="contactPersonPhone"
-                    type="tel"
-                    value={editData.contactPersonPhone || ""}
-                    onChange={handleChange}
-                    className="w-full p-3 border rounded-md mb-3 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                    placeholder="Contact Person Phone"
-                  />
-                  <label htmlFor="">Job description</label>
-                  <textarea
-                    name="description"
-                    value={editData.description || ""}
-                    onChange={handleChange}
-                    className="w-full p-3 border rounded-md mb-3 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                    placeholder="Description"
-                  />
-                  <div className="flex justify-between mt-4">
-                    <button
-                      onClick={() => handleSave(job.id)}
-                      className="bg-purple-900 text-white px-5 py-2 rounded-md hover:shadow-purple-500 transition transform hover:scale-105"
-                    >
-                      Save
-                    </button>
-                    <button
-                      onClick={() => setEditMode(null)}
-                      className="bg-gray-700 text-white px-5 py-2 rounded-md hover:shadow-purple-500 transition transform hover:scale-105"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                /* ✅ Job Info View */
-                <div>
-                  <span className="text-purple-600 font-semibold text-xs md:text-sm tracking-wide">
-                    {job.categories || "General"}
-                  </span>
-                  <h3 className="mt-2 text-base md:text-xl text-black font-bold">
-                    {job.jobTitle}
-                  </h3>
-
-                  <div className="flex flex-wrap items-center gap-2 mt-2">
-                    <span className="bg-purple-100 text-purple-800 rounded-full px-3 py-1 text-xs md:text-sm font-medium shadow-md">
-                      ₹{job.budgetRange}
-                    </span>
-                    <span className="text-gray-500 text-xs md:text-sm">
-                      {job.city}, {job.distance}
-                    </span>
-                  </div>
-
-                  {/* ✅ Edit/Delete Buttons */}
-                  <div className="flex justify-between items-center mt-4">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation(); // Prevent opening details
-                        handleEdit(job);
-                      }}
-                      className="bg-purple-900 text-white px-5 py-2 rounded-md hover:shadow-purple-500 transition transform hover:scale-105"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation(); // Prevent opening details
-                        handleDelete(job.id);
-                      }}
-                      className="bg-purple-900 text-white px-5 py-2 rounded-md hover:shadow-purple-500 transition transform hover:scale-105"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              )}
+                  Edit
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(job.id);
+                  }}
+                  className="bg-purple-900 text-white px-5 py-2 rounded-md hover:shadow-purple-500 transition transform hover:scale-105"
+                >
+                  Delete
+                </button>
+              </div>
             </motion.div>
           ))}
         </div>
       )}
-
+  
       {/* ✅ Pagination */}
       {!expandedJob && (
         <div className="flex justify-center mt-12">
@@ -402,8 +266,185 @@ const JobList = () => {
           )}
         </div>
       )}
+  
+  {showEditModal && (
+  <div className="fixed  inset-0 bg-opacity-30 backdrop-blur-md flex justify-center items-center z-50 px-4 sm:px-0">
+    <motion.div
+      className="scale-90 bg-white p-6 rounded-2xl shadow-2xl max-w-lg shadow-gray-900 transform transition-all duration-500 scale-95 animate-fadeIn relative border border-gray-200 overflow-y-auto w-full max-h-[90vh]"
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+    >
+      <div className="absolute inset-0 bg-gradient-to-r from-purple-50 to-transparent opacity-10 pointer-events-none"></div>
+
+      <h3 className="text-xl sm:text-2xl text-gray-900 font-bold mb-4">Edit Job</h3>
+
+      {/* 📝 Form */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm sm:text-base">
+        <div className="flex flex-col">
+          <label className="text-gray-700 mb-1">Job Title</label>
+          <input
+            name="jobTitle"
+            value={editData.jobTitle || ""}
+            onChange={handleChange}
+            className="p-3 border border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-gray-700 mb-1">Job Type</label>
+          <select
+            name="jobType"
+            value={editData.jobType || ""}
+            onChange={handleChange}
+            className="p-3 border border-gray-300 rounded-md"
+          >
+            <option value="">Select</option>
+            <option value="Full-time">Full-time</option>
+            <option value="Part-time">Part-time</option>
+            <option value="Contract">Contract</option>
+          </select>
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-gray-700 mb-1">Location</label>
+          <input
+            name="location"
+            value={editData.location || ""}
+            onChange={handleChange}
+            className="p-3 border border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-gray-700 mb-1">Pincode</label>
+          <input
+            name="pincode"
+            value={editData.pincode || ""}
+            onChange={handleChange}
+            className="p-3 border border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-gray-700 mb-1">Categories</label>
+          <input
+            name="categories"
+            value={editData.categories || ""}
+            onChange={handleChange}
+            className="p-3 border border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-gray-700 mb-1">Skills Required</label>
+          <input
+            name="skillsRequired"
+            value={editData.skillsRequired || ""}
+            onChange={handleChange}
+            className="p-3 border border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-gray-700 mb-1">Experience Level</label>
+          <input
+            name="experienceLevel"
+            value={editData.experienceLevel || ""}
+            onChange={handleChange}
+            className="p-3 border border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-gray-700 mb-1">Budget Range</label>
+          <input
+            name="budgetRange"
+            value={editData.budgetRange || ""}
+            onChange={handleChange}
+            className="p-3 border border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-gray-700 mb-1">Start Date</label>
+          <input
+            type="date"
+            name="jobDate"
+            value={editData.jobDate || ""}
+            onChange={handleChange}
+            className="p-3 border border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-gray-700 mb-1">Apply By</label>
+          <input
+            type="date"
+            name="applyBy"
+            value={editData.applyBy || ""}
+            onChange={handleChange}
+            className="p-3 border border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div className="flex flex-col sm:col-span-2">
+          <label className="text-gray-700 mb-1">Contact Person</label>
+          <input
+            name="contactPersonName"
+            value={editData.contactPersonName || ""}
+            onChange={handleChange}
+            className="p-3 border border-gray-300 rounded-md mb-2"
+            placeholder="Name"
+          />
+          <input
+            name="contactPersonPhone"
+            value={editData.contactPersonPhone || ""}
+            onChange={handleChange}
+            className="p-3 border border-gray-300 rounded-md"
+            placeholder="Phone"
+            type="tel"
+          />
+        </div>
+
+        <div className="flex flex-col sm:col-span-2">
+          <label className="text-gray-700 mb-1">Description</label>
+          <textarea
+            name="description"
+            value={editData.description || ""}
+            onChange={handleChange}
+            className="p-3 border border-gray-300 rounded-md min-h-[100px]"
+          />
+        </div>
+      </div>
+
+      {/* ✅ Buttons */}
+      <div className="flex flex-col sm:flex-row justify-end gap-4 mt-6">
+        <button
+          onClick={() => {
+            handleSave(editMode);
+            setShowEditModal(false);
+          }}
+          className="bg-purple-900 text-white font-medium px-5 py-2 rounded-3xl shadow-lg transition-transform transform hover:scale-105 hover:shadow-purple-500 active:scale-95"
+        >
+          Save
+        </button>
+        <button
+          onClick={() => {
+            setShowEditModal(false);
+            setEditMode(null);
+          }}
+          className="bg-gray-700 text-white font-medium px-5 py-2 rounded-3xl shadow-lg transition-transform transform hover:scale-105 hover:shadow-purple-500 active:scale-95"
+        >
+          Cancel
+        </button>
+      </div>
+    </motion.div>
+  </div>
+)}
+
     </div>
   );
+  
 };
 
 export default JobList;
