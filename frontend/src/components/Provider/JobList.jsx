@@ -85,13 +85,19 @@ const JobList = () => {
   const handleEdit = (job) => {
     setEditMode(job.id);
     setEditData(job); // Copy all job data to editData
+    setEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setEditModalOpen(false);
+    setEditMode(null); // Exit edit mode
   };
 
   const handleSave = async (jobId) => {
     try {
       // Ensure all fields are filled
       if (!editData.location || !editData.pincode) {
-        toast.error("All fields are required!");
+        toast.error("Please fill the pincode field");
         return;
       }
   
@@ -147,13 +153,9 @@ const JobList = () => {
   const currentJobs = jobs.slice(indexOfFirstJob, indexOfLastJob);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  // ✅ Loading State
-  if (loading) {
-    return <p className="text-center mt-5 text-gray-700">Loading jobs...</p>;
-  }
-
+  
   return (
+    
     <div
     className={`
       min-h-screen relative transition-all p-8 sm:p-12 
@@ -168,8 +170,24 @@ const JobList = () => {
         Job Listings
       </h2>
 
-      {/* ✅ No Jobs Available */}
-      {currentJobs.length === 0 ? (
+      {loading ? (
+  // Skeleton loader while jobs are loading
+  <div className="w-full flex flex-col items-center gap-4 mt-5">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-6xl p-4">
+    {Array.from({ length: 5 }).map((_, index) => (
+      <div
+        key={index}
+        className="w-full max-w-4xl p-4 bg-gray-200 animate-pulse rounded-xl shadow-md"
+      >
+        <div className="h-6 w-3/4 bg-gray-300 rounded-md"></div>
+        <div className="h-4 w-1/2 bg-gray-300 rounded-md mt-2"></div>
+        <div className="h-4 w-1/3 bg-gray-300 rounded-md mt-2"></div>
+        <div className="h-10 w-1/4 bg-gray-300 rounded-md mt-4"></div>
+      </div>
+    ))}
+    </div>
+  </div>
+) :currentJobs.length === 0 ? (
         <p className="text-center text-gray-400 text-lg">
           No jobs available right now.
         </p>
@@ -201,17 +219,17 @@ const JobList = () => {
                     placeholder="Job Title"
                   />
                 <label htmlFor="jobType">Job Type</label>
-<select
-  name="jobType"
-  value={editData.jobType || ""}
-  onChange={handleChange}
-  className="w-full p-3 border rounded-md mb-3 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
->
-  <option value="">Select Job Type</option>
-  <option value="Full-time">Full-time</option>
-  <option value="Part-time">Part-time</option>
-  <option value="Contract">Contract</option>
-</select>
+                <select
+                  name="jobType"
+                  value={editData.jobType || ""}
+                  onChange={handleChange}
+                  className="w-full p-3 border rounded-md mb-3 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                >
+                  <option value="">Select Job Type</option>
+                  <option value="Full-time">Full-time</option>
+                  <option value="Part-time">Part-time</option>
+                  <option value="Contract">Contract</option>
+                </select>
 
                   <label htmlFor="">Job Location</label>
                   <input
@@ -361,40 +379,6 @@ const JobList = () => {
               )}
             </motion.div>
           ))}
-        </div>
-      )}
-
-      {/* ✅ Expanded Job Modal */}
-      {expandedJob && (
-        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
-            className="bg-white p-8 rounded-lg shadow-2xl w-full max-w-2xl"
-          >
-            <h3 className="text-2xl font-bold mb-4">{expandedJob.jobTitle}</h3>
-            <p className="text-gray-700 mb-2">
-              <strong>Type:</strong> {expandedJob.jobType}
-            </p>
-            <p className="text-gray-700 mb-2">
-              <strong>Location:</strong> {expandedJob.location}
-            </p>
-            <p className="text-gray-700 mb-2">
-              <strong>Description:</strong> {expandedJob.description}
-            </p>
-            <p className="text-gray-700 mb-2">
-              <strong>Date:</strong> {expandedJob.jobDate}
-            </p>
-            <div className="flex justify-end mt-4">
-              <button
-                onClick={closeModal}
-                className="bg-purple-900 text-white px-5 py-2 rounded-md hover:shadow-purple-500 transition transform hover:scale-105"
-              >
-                Close
-              </button>
-            </div>
-          </motion.div>
         </div>
       )}
 

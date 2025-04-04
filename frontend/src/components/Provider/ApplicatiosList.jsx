@@ -73,18 +73,18 @@ const [selectedApplicant, setSelectedApplicant] = useState(null);
   };
   
 
-  if (loading) {
-    return (
-      <motion.div
-        className="fixed inset-0 bg-gray-800 bg-opacity-60 flex justify-center items-center z-50"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.3 }}
-      >
-        <div className="text-white text-xl sm:text-2xl font-semibold">Loading...</div>
-      </motion.div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <motion.div
+  //       className="fixed inset-0 bg-gray-800 bg-opacity-60 flex justify-center items-center z-50"
+  //       initial={{ opacity: 0 }}
+  //       animate={{ opacity: 1 }}
+  //       transition={{ duration: 0.3 }}
+  //     >
+  //       <div className="text-white text-xl sm:text-2xl font-semibold">Loading...</div>
+  //     </motion.div>
+  //   );
+  // }
   
   // Update application status
   const handleUpdateStatus = async (jobId, appId, status) => {
@@ -117,11 +117,11 @@ const [selectedApplicant, setSelectedApplicant] = useState(null);
     setSelectedApplicant(null);
   }; 
 
-  if (loading) {
-    return (
-      <p className="text-center mt-5 text-gray-700">Loading applications...</p>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <p className="text-center mt-5 text-gray-700">Loading applications...</p>
+  //   );
+  // }
 
   return (
     <div className="pt-10 min-h-screen px-4 sm:px-8 md:px-12 lg:px-16 bg-gray-900 pb-10">
@@ -145,7 +145,22 @@ const [selectedApplicant, setSelectedApplicant] = useState(null);
         </select>
       </div>
   
-      {jobsWithApplications.length === 0 ? (
+      {loading ? (
+  // Skeleton loader while jobs are loading
+  <div className="w-full flex flex-col items-center gap-4 mt-5">
+    {Array.from({ length: 5 }).map((_, index) => (
+      <div
+        key={index}
+        className="w-full max-w-4xl p-4 bg-gray-200 animate-pulse rounded-xl shadow-md"
+      >
+        <div className="h-6 w-3/4 bg-gray-300 rounded-md"></div>
+        <div className="h-4 w-1/2 bg-gray-300 rounded-md mt-2"></div>
+        <div className="h-4 w-1/3 bg-gray-300 rounded-md mt-2"></div>
+        <div className="h-10 w-1/4 bg-gray-300 rounded-md mt-4"></div>
+      </div>
+    ))}
+  </div>
+) :jobsWithApplications.length === 0 ? (
   <p className="text-center text-gray-400 text-base sm:text-lg">No applications available.</p>
 ) : (
   <div className="space-y-5 sm:space-y-7">
