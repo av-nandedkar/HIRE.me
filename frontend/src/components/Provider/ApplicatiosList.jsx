@@ -47,6 +47,12 @@ const [selectedApplicant, setSelectedApplicant] = useState(null);
             })
           );
     
+          jobsWithApps.sort((a, b) => {
+            const hasAppsA = a.applications && a.applications.length > 0;
+            const hasAppsB = b.applications && b.applications.length > 0;
+            return hasAppsB - hasAppsA; // true > false => puts jobs with apps on top
+          });
+          
           setJobsWithApplications(jobsWithApps);
         } else {
           setJobsWithApplications([]);
