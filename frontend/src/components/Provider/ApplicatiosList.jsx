@@ -282,9 +282,11 @@ const [selectedApplicant, setSelectedApplicant] = useState(null);
         <p className="text-gray-700"><strong>Location:</strong> {selectedApplicant.location || "N/A"}</p>
         <p className="text-gray-700"><strong>Experience:</strong> {selectedApplicant.experienceYears || "N/A"} years</p>
         <p className="text-gray-700"><strong>Expected Pay:</strong> {selectedApplicant.expectedPayRange || "N/A"}</p>
+        <p className="text-gray-700"><strong>Rating :</strong> {selectedApplicant.rating || "N/A"}⭐</p>
         <p className="text-gray-700 col-span-1 sm:col-span-2">
           <strong>Skills:</strong> {selectedApplicant.skills?.join(", ") || "N/A"}
         </p>
+        
       </div>
 
       {/* Action Buttons */}

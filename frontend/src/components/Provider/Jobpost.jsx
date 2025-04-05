@@ -1,11 +1,13 @@
 import { useState,useEffect } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import toast, { Toaster } from "react-hot-toast";
-import { getDatabase, ref, push ,set, child} from "firebase/database";
+import { getDatabase, ref, push ,set, child, onValue} from "firebase/database";
 import { app } from "../../firebase";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Select from "react-select";
+import { useNavigate } from "react-router-dom";
+
 
 const database = getDatabase(app);
 
@@ -28,6 +30,39 @@ const JobForm = () => {
     contactPersonName: "",
     contactPersonPhone: "",
   });
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const providerEmail = localStorage.getItem("email");
+    if (!providerEmail) {
+      navigate("/providerprofile");
+      return;
+    }
+  
+    const encodedEmail = providerEmail.replace(/\./g, ",");
+    const providerRef = ref(database, `user-metadata/provider/${encodedEmail}`);
+  
+    let handled = false;
+  
+    const unsubscribe = onValue(providerRef, (snapshot) => {
+      if (handled) return;
+      handled = true;
+  
+      const providerData = snapshot.val();
+      if (providerData) {
+        if (!providerData.formSubmitted) {
+          toast.error('Please complete your profile first');
+          navigate("/providerprofile");
+        }
+      } else {
+        navigate("/jobpost");
+      }
+    });
+  
+    // Clean up listener on unmount
+    return () => unsubscribe();
+  }, []);
+  
 
   const fetchCoordinates = async (address, pincode) => {
     const apiKey = "9QqEQDVDfqLRFOPZzKsMqNn9tOWca999Ujqe09mN"; // Replace with your actual API key

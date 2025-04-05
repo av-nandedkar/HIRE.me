@@ -49,89 +49,87 @@ const Dashboard = () => {
     return <p className="text-gray-400">Loading...</p>;
   }
 
+  const GlassButton = ({ onClick, children, color }) => (
+    <button
+      onClick={onClick}
+      className={`backdrop-blur-md bg-${color}-600/70 hover:bg-${color}-700/80 p-4 rounded-2xl flex items-center justify-center gap-3 text-white shadow-md transition-transform duration-300 hover:scale-105`}
+    >
+      {children}
+    </button>
+  );
+  
+
   return (
-    <div className="min-h-screen py-25 bg-gray-900 text-white flex flex-col items-center p-6">
-      <h2 className="text-3xl font-bold ">Welcome to Your Dashboard</h2>
-      <img src="/1.gif" alt="Profile Image" className="h-24 mt-3 mb-3 sm:h-32 md:h-40 rounded-3xl lg:h-48 xl:h-65 object-contain" />
+    <div className="min-h-screen py-30 bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white flex flex-col items-center p-6">
+  <h2 className="text-4xl font-semibold mb-4 text-center drop-shadow-md transition-all duration-500 ease-in-out">
+    Welcome to Your Dashboard
+  </h2>
 
-      {userRole === "provider" ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-4xl">
-          {/* Post a Job */}
-          <button
-            className="bg-blue-600 hover:bg-blue-700 p-4 rounded-lg flex items-center justify-center gap-2"
-            onClick={() => handleNavigation("/providerprofile")}
-          >
-            <PlusCircle /> post a job
-          </button>
+  <img
+    src="/1.gif"
+    alt="Profile Image"
+    className="h-24 mt-3 mb-6 sm:h-32 md:h-40 lg:h-48 xl:h-56 rounded-3xl object-contain transition-transform duration-500 hover:scale-105"
+  />
 
-          {/* View Applications */}
-          <button
-            className="bg-green-600 hover:bg-green-700 p-4 rounded-lg flex items-center justify-center gap-2"
-            onClick={() => handleNavigation("/providerprofile/applications")}
-          >
-            <FileText /> View Applications
-          </button>
+  <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl shadow-lg p-8 w-full max-w-6xl transition-all duration-700 ease-in-out">
+    {userRole === "provider" ? (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Post a Job */}
+        <GlassButton onClick={() => handleNavigation("/jobpost")} color="blue">
+          <PlusCircle /> Post a Job
+        </GlassButton>
 
-          {/* Manage Listings */}
-          <button
-            className="bg-purple-600 hover:bg-purple-700 p-4 rounded-lg flex items-center justify-center gap-2"
-            onClick={() =>
-              handleNavigation("/providerprofile/joblist")
-            }
-          >
-            <Briefcase /> Manage Listings
-          </button>
+        {/* View Applications */}
+        <GlassButton onClick={() => handleNavigation("/providerprofile/applications")} color="green">
+          <FileText /> View Applications
+        </GlassButton>
 
-              {/* History */}
-          <button
-            className="bg-yellow-600 hover:bg-yellow-700 p-4 rounded-lg flex items-center justify-center gap-2"
-            onClick={() =>
-              handleNavigation("/pastjobs")
-            }
-          >
-            <CalendarClock /> Past Jobs
-          </button>
-          
-        </div>
-      ) : userRole === "seeker" ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-4xl">
-          {/* Apply for Jobs */}
-          <button
-            className="bg-blue-600 hover:bg-blue-700 p-4 rounded-lg flex items-center justify-center gap-2"
-            onClick={() => handleNavigation("/jobsearch")}
-          >
-            <UserCheck /> Apply for Jobs
-          </button>
+        {/* Manage Listings */}
+        <GlassButton onClick={() => handleNavigation("/providerprofile/joblist")} color="purple">
+          <Briefcase /> Manage Listings
+        </GlassButton>
 
-          {/* View Saved Jobs */}
-          <button
-            className="bg-green-600 hover:bg-green-700 p-4 rounded-lg flex items-center justify-center gap-2"
-            onClick={() => handleNavigation("/viewappliedjobs")}
-          >
-            <FileText /> View My Applied Jobs
-          </button>
+        {/* History */}
+        <GlassButton onClick={() => handleNavigation("/completedjobs")} color="yellow">
+          <CalendarClock /> Completed Jobs
+        </GlassButton>
 
-          {/* Manage Profile */}
-          <button
-            className="bg-purple-600 hover:bg-purple-700 p-4 rounded-lg flex items-center justify-center gap-2"
-            onClick={() => handleNavigation("/seekerprofile")}
-          >
-            <UserPlus /> Manage Profile
-          </button>
+        {/* Manage Profile */}
+        <GlassButton onClick={() => handleNavigation("/providerprofile")} color="pink">
+          <UserPlus /> Manage Profile
+        </GlassButton>
+      </div>
+    ) : userRole === "seeker" ? (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Apply for Jobs */}
+        <GlassButton onClick={() => handleNavigation("/jobsearch")} color="blue">
+          <UserCheck /> Apply for Jobs
+        </GlassButton>
 
-        </div>
-      ) : (
-        <p className="text-gray-400">Loading...</p>
-      )}
+        {/* View Saved Jobs */}
+        <GlassButton onClick={() => handleNavigation("/viewappliedjobs")} color="green">
+          <FileText /> View My Applied Jobs
+        </GlassButton>
 
-      {/* Logout Button */}
-      <button
-        onClick={handleLogout}
-        className="bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded-lg mt-6 flex items-center gap-2"
-      >
-        <LogOut /> Logout
-      </button>
-    </div>
+        {/* Manage Profile */}
+        <GlassButton onClick={() => handleNavigation("/seekerprofile")} color="purple">
+          <UserPlus /> Manage Profile
+        </GlassButton>
+      </div>
+    ) : (
+      <p className="text-gray-400 text-center">Loading...</p>
+    )}
+  </div>
+
+  {/* Logout Button */}
+  <button
+    onClick={handleLogout}
+    className="bg-red-500 hover:bg-red-700 text-white py-2 px-6 rounded-full mt-8 shadow-lg backdrop-blur-md transition-transform duration-300 hover:scale-105 flex items-center gap-2"
+  >
+    <LogOut /> Logout
+  </button>
+</div>
+
   );
 };
 

@@ -22,7 +22,7 @@ import ApplyForm from "./components/Seeker/ApplyForm";
 import JobList from "./components/Provider/JobList";
 import ApplicationsList from "./components/Provider/ApplicatiosList";
 import ViewAppliedJobs from "./components/Seeker/ViewAppliedJobs";
-import ExpiredJobs from "./components/Provider/PastJobs";
+import CompletedJobs from "./components/Provider/CompletedJobs";
 
 function App() {
   return (
@@ -50,10 +50,10 @@ function App() {
             }
           />
 <Route
-          path = "/pastjobs"
+          path = "/completedjobs"
           element={
             <ProtectRoutes allowedRoles={["provider"]}>
-              <ExpiredJobs/>
+              <CompletedJobs/>
             </ProtectRoutes>
           }
           />

@@ -72,40 +72,54 @@ const [selectedApplicant, setSelectedApplicant] = useState(null);
     }
   };
   
-
-  // if (loading) {
-  //   return (
-  //     <motion.div
-  //       className="fixed inset-0 bg-gray-800 bg-opacity-60 flex justify-center items-center z-50"
-  //       initial={{ opacity: 0 }}
-  //       animate={{ opacity: 1 }}
-  //       transition={{ duration: 0.3 }}
-  //     >
-  //       <div className="text-white text-xl sm:text-2xl font-semibold">Loading...</div>
-  //     </motion.div>
-  //   );
-  // }
   
   // Update application status
-  const handleUpdateStatus = async (jobId, appId, status) => {
-    try {
-      await update(ref(database, `jobs/completed/${jobId}/applications/${appId}`), {
-        status,
-      });
-      toast.success(status ? `Application ${status}!` : "Application Reset");
-        setJobsWithApplications((prevJobs) =>
-        prevJobs.map((job) => ({
-          ...job,
-          applications: job.applications.map((app) =>
-            app.id === appId ? { ...app, status } : app
-          ),
-        }))
-      );
-      window.location.reload();
-    } catch (error) {
-      toast.error("Error updating status: " + error.message);
+const handleUpdateStatus = async (jobId, appId, rating) => {
+  try {
+    const ratingValue = Number(rating); // Ensure it's a number
+
+    // Step 1: Update application rating
+    await update(ref(database, `jobs/completed/${jobId}/applications/${appId}`), {
+      rating: ratingValue,
+    });
+
+    // Step 2: Fetch existing rating (if any)
+    const sanitizedEmail = appId.replace(/\./g, ",");
+    const userRef = ref(database, `user-metadata/seeker/${sanitizedEmail}`);
+    const snapshot = await get(userRef);
+    let newAverageRating = ratingValue;
+
+    if (snapshot.exists()) {
+      const data = snapshot.val();
+      if (data.rating) {
+        const existingRating = Number(data.rating);
+        newAverageRating = ((existingRating + ratingValue) / 2).toFixed(1); // average to 1 decimal
+      }
     }
-  };
+
+    // Step 3: Update averaged rating
+    await update(userRef, {
+      rating: newAverageRating,
+    });
+
+    // Step 4: Local state update
+    toast.success(rating ? `Application rated ${rating}!` : "Application Reset");
+
+    setJobsWithApplications((prevJobs) =>
+      prevJobs.map((job) => ({
+        ...job,
+        applications: job.applications.map((app) =>
+          app.id === appId ? { ...app, rating: ratingValue } : app
+        ),
+      }))
+    );
+
+    window.location.reload();
+  } catch (error) {
+    toast.error("Error updating rating: " + error.message);
+  }
+};
+
 
   const openModal = (applicant) => {
     setSelectedApplicant(applicant);
@@ -126,24 +140,9 @@ const [selectedApplicant, setSelectedApplicant] = useState(null);
   return (
     <div className="pt-10 min-h-screen px-4 sm:px-8 md:px-12 lg:px-16 bg-gray-900 pb-10">
       <Toaster />
-      <h2 className="text-2xl sm:text-3xl font-semibold text-center mb-6 sm:mb-10 text-white tracking-wider pt-16 sm:pt-20">
-        Applications for Your Jobs
+      <h2 className="text-2xl sm:text-3xl font-semibold text-center text-white tracking-wider pt-16 sm:pt-20">
+        Completed Jobs
       </h2>
-  
-      {/* Status Filter */}
-      <div className="flex flex-col sm:flex-row gap-3 sm:gap-5 items-center justify-center mb-6 text-white">
-        <p className="text-sm sm:text-base">Select Application Status: </p>
-        <select
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value)}
-          className="p-2 border rounded-md bg-gray-800/90 w-full sm:w-auto"
-        >
-          <option value="all">All</option>
-          <option value="Pending">Pending</option>
-          <option value="Approved">Approved</option>
-          <option value="Rejected">Rejected</option>
-        </select>
-      </div>
   
       {loading ? (
   // Skeleton loader while jobs are loading
@@ -163,7 +162,7 @@ const [selectedApplicant, setSelectedApplicant] = useState(null);
 ) :jobsWithApplications.length === 0 ? (
   <p className="text-center text-gray-400 text-base sm:text-lg">No applications available.</p>
 ) : (
-  <div className="space-y-5 sm:space-y-7">
+  <div className="space-y-5 sm:space-y-7 scale-90">
     {jobsWithApplications.map((job) => (
       <motion.div
         key={job.id}
@@ -210,25 +209,30 @@ const [selectedApplicant, setSelectedApplicant] = useState(null);
                     </span>
                   </div>
 
-                  {/* Buttons & Select Menu */}
-                  <div className="w-full flex flex-wrap sm:flex-nowrap gap-2 sm:gap-4">
-                    <button
-                      onClick={() => openModal(app.applicantDetails)}
-                      className="bg-purple-900 text-white text-sm sm:text-base font-medium px-4 sm:px-5 py-2 rounded-3xl shadow-lg transform transition-transform duration-300 hover:scale-105 hover:shadow-purple-500 active:scale-95 w-full sm:w-auto"
-                    >
-                      Details
-                    </button>
+                 {/* Buttons & Select Menu */}
+<div className="w-full flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5 mt-4 scale-80">
+  <button
+    onClick={() => openModal(app.applicantDetails)}
+    className="bg-purple-700 hover:bg-purple-800 text-white text-sm sm:text-base font-semibold px-4 py-2 rounded-xl shadow-md transition-all duration-300 active:scale-95 w-full sm:w-auto"
+  >
+    View Details
+  </button>
 
-                    <select
-                      onChange={(e) => handleUpdateStatus(job.id, app.id, e.target.value)}
-                      className="bg-gray-100 border border-gray-300 px-3 py-2 rounded-md text-sm sm:text-base w-full sm:w-auto"
-                    >
-                      <option value="">Change</option>
-                      <option value="Approved" className="text-green-600">Approve</option>
-                      <option value="Rejected" className="text-red-600">Reject</option>
-                      <option value="" className="text-yellow-600">Reset</option>
-                    </select>
-                  </div>
+  <select
+    value={app.rating || ""}
+    onChange={(e) => handleUpdateStatus(job.id, app.id, e.target.value)}
+    disabled={!!app.rating}
+    className="bg-white border border-gray-300 text-gray-800 px-4 py-2 rounded-xl shadow-sm text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all duration-300 w-full sm:w-40"
+  >
+    <option value="">Rate ⭐</option>
+    <option value="1">1 ⭐</option>
+    <option value="2">2 ⭐</option>
+    <option value="3">3 ⭐</option>
+    <option value="4">4 ⭐</option>
+    <option value="5">5 ⭐</option>
+  </select>
+</div>
+
                 </motion.div>
               ))}
           </div>
@@ -276,6 +280,7 @@ const [selectedApplicant, setSelectedApplicant] = useState(null);
         <p className="text-gray-700"><strong>Location:</strong> {selectedApplicant.location || "N/A"}</p>
         <p className="text-gray-700"><strong>Experience:</strong> {selectedApplicant.experienceYears || "N/A"} years</p>
         <p className="text-gray-700"><strong>Expected Pay:</strong> {selectedApplicant.expectedPayRange || "N/A"}</p>
+        <p className="text-gray-700"><strong>Rating :</strong> {selectedApplicant.rating || "N/A"}⭐</p>
         <p className="text-gray-700 col-span-1 sm:col-span-2">
           <strong>Skills:</strong> {selectedApplicant.skills?.join(", ") || "N/A"}
         </p>
