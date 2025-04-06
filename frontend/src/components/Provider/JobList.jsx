@@ -208,7 +208,6 @@ const JobList = () => {
       `}
     >
       <Toaster position="top-center" toastOptions={{ style: { fontSize: '1rem', padding: '10px 20px', maxWidth: '500px', borderRadius: '40px', marginTop: '70px' } }} />
-      
   
       {/* ✅ Page Title */}
       <h2 className="text-3xl pt-20 font-semibold text-center mb-10 text-white tracking-wider">
@@ -279,7 +278,7 @@ const JobList = () => {
                   onClick={() => handleMarkAsCompleted(job.id)}
                   className="bg-green-600 text-white px-3 py-2 rounded-3xl md:scale-90 hover:shadow-purple-500 transition transform hover:scale-95 "
                 >
-                  Mark As Completed
+                  Mark As Done
                 </button>
                 <button
                   onClick={(e) => {
