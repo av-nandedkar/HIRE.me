@@ -179,7 +179,7 @@ const Navbar = () => {
           {authToken ? "Dashboard" : "Login"}
         </a>
 
-        <a href="/companies" className="hover:text-[#ff347f] transition duration-300">Jobs</a>
+        <a href="/jobrecommendations" className="hover:text-[#ff347f] transition duration-300">Jobs</a>
         <a href="/pricing" className="hover:text-[#ff347f] transition duration-300">Part-time</a>
         <a href="/contact" className="hover:text-[#ff347f] transition duration-300">Services</a>
 

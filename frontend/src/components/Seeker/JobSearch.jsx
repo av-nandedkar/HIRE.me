@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from 'uuid';
-import { getDatabase, ref, onValue } from "firebase/database";
+import { getDatabase, ref, onValue ,set,push} from "firebase/database";
 import { app } from "../../firebase";
 import Select from "react-select";
 import toast, { Toaster } from "react-hot-toast";
@@ -18,7 +18,8 @@ const JobSearch = () => {
   const [flipped, setFlipped] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
   const [seekerLocation, setSeekerLocation] = useState(null);
-  
+  const [viewStartTime, setViewStartTime] = useState(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -49,7 +50,7 @@ const JobSearch = () => {
     });
   }, []);
   
-
+  
   const fetchOlaDistance = async (origin, destination) => {
     const apiKey = "9QqEQDVDfqLRFOPZzKsMqNn9tOWca999Ujqe09mN"; // Replace with your actual API key
     const requestId = uuidv4(); // Generates a unique request ID
@@ -128,6 +129,7 @@ const JobSearch = () => {
         return;
       }
 
+
       const updatedJobs = await Promise.all(
         filtered.map(async (job) => {
           const jobLat = parseFloat(job.latitude);
@@ -169,8 +171,53 @@ const JobSearch = () => {
     window.open(url, "_blank");
   };
 
+  const storeTimeSpent = async (jobId, timeSpent) => {
+  const db = getDatabase();
+  const seekerEmail = localStorage.getItem("email").replace(/\./g, ",");
+  const historyRef = ref(db, `user-metadata/seeker/${seekerEmail}/seeker-activity`);
+
+  onValue(historyRef, (snapshot) => {
+    const existingData = snapshot.val();
+    let existingKey = null;
+
+    if (existingData) {
+      for (const [key, value] of Object.entries(existingData)) {
+        if (value.jobId === jobId) {
+          existingKey = key;
+          break;
+        }
+      }
+    }
+
+    if (existingKey) {
+      // Update timeSpent
+      const existingEntryRef = ref(db, `user-metadata/seeker/${seekerEmail}/seeker-activity/${existingKey}`);
+      const updatedTimeSpent = (existingData[existingKey].timeSpent || 0) + timeSpent;
+
+      set(existingEntryRef, {
+        ...existingData[existingKey],
+        timeSpent: updatedTimeSpent,
+        timestamp: new Date().toISOString(),
+      })
+        .then(() => console.log("Time spent updated:", updatedTimeSpent))
+        .catch((error) => console.error("Error updating time spent:", error));
+    } else {
+      // Create new entry
+      push(historyRef, {
+        jobId,
+        timeSpent,
+        timestamp: new Date().toISOString(),
+      })
+        .then(() => console.log("New time spent recorded"))
+        .catch((error) => console.error("Error storing new time spent:", error));
+    }
+  }, { onlyOnce: true });
+};
+
+  
+
   return (
-    <div className="min-h-screen pt-25 bg-gray-900 p-6">
+    <div className="min-h-screen pt-25 bg-gray-150 p-6">
       <Toaster />
       <div className="flex flex-col md:flex-row gap-6 sm:justify-center">
         <div className="w-auto min-w-60 sm:w-auto max-h-50 md:w-auto bg-gray-100 p-3 rounded-lg shadow-md">
@@ -256,7 +303,10 @@ const JobSearch = () => {
                   <div className="mt-3 md:mt-0 w-full md:w-auto">
                     <button
                       className="bg-purple-900 text-white font-medium px-4 md:px-5 py-2 rounded-3xl flex gap-2 justify-center items-center w-full md:w-auto shadow-lg transform transition-transform duration-300 hover:scale-105 hover:shadow-purple-500 active:scale-95 text-sm md:text-base"
-                      onClick={() => setSelectedJob(job)}
+                      onClick={() => {
+                        setSelectedJob(job);
+                        setViewStartTime(Date.now()); // start timer
+                      }}                      
                     >
                       View
                       <svg className="h-4 md:h-5 w-4 md:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -321,12 +371,19 @@ const JobSearch = () => {
 </button>
 
 
-                  <button
-                    className="bg-black text-white font-medium px-5 py-2 rounded-3xl shadow-lg transform transition-transform duration-300 hover:scale-105 hover:shadow-purple-500 active:scale-95"
-                    onClick={() => setSelectedJob(null)}
-                  >
-                    Back
-                  </button>
+<button
+  className="bg-black text-white font-medium px-5 py-2 rounded-3xl shadow-lg transform transition-transform duration-300 hover:scale-105 hover:shadow-purple-500 active:scale-95"
+  onClick={() => {
+    if (viewStartTime) {
+      const timeSpent = (Date.now() - viewStartTime) / 1000; // Convert to seconds
+      storeTimeSpent(selectedJob.id, timeSpent);
+    }
+    setSelectedJob(null);
+  }}
+>
+  Back
+</button>
+
                   <button
                  className="bg-purple-900 text-white font-medium px-5 py-2 rounded-3xl shadow-lg transform transition-transform duration-300 hover:scale-105 hover:shadow-purple-500 active:scale-95"
                  onClick={() => navigate(`/applyform?jobId=${selectedJob.id}`)} // Navigates to ApplyForm with jobId

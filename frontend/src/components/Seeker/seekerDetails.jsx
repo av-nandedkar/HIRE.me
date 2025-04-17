@@ -134,7 +134,7 @@ const SeekerForm = () => {
 
   const skillOptions = [
     "Plumber", "Electrician", "Painter", "Electronics Repairs", "Mechanic", 
-    "Housemaid", "Cleaning Worker"
+    "Housemaid", "Cleaning Worker","Agriculture","Poultry Farming","Fisheries","Construction", "Maintenance","Handicrafts"
   ];
 
   const handleChange = (e) => {

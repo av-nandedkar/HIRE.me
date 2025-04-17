@@ -23,7 +23,7 @@ import JobList from "./components/Provider/JobList";
 import ApplicationsList from "./components/Provider/ApplicatiosList";
 import ViewAppliedJobs from "./components/Seeker/ViewAppliedJobs";
 import CompletedJobs from "./components/Provider/CompletedJobs";
-
+import JobRecommendations from "./components/Seeker/JobRecommandations";
 function App() {
   return (
     <Router>
@@ -117,7 +117,14 @@ function App() {
               </ProtectRoutes>
             }
           />
-
+        <Route
+            path="/jobrecommendations"
+            element={
+              <ProtectRoutes allowedRoles={["seeker"]}>
+                <JobRecommendations />
+              </ProtectRoutes>
+            }
+          />
 
 
           <Route path="*" element={<Navigate to="/" replace />} />
