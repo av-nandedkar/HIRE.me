@@ -13,7 +13,7 @@ from sentence_transformers import SentenceTransformer, util
 
 # Firebase Initialization
 if not firebase_admin._apps:
-    cred = credentials.Certificate("backend/hireme-5716f-firebase-adminsdk-fbsvc-787a3ccebb.json")
+    cred = credentials.Certificate("hireme-5716f-firebase-adminsdk-fbsvc-787a3ccebb.json")
     firebase_admin.initialize_app(cred, {
         'databaseURL': 'https://hireme-5716f-default-rtdb.firebaseio.com'
     })
