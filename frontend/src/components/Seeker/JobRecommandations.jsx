@@ -23,6 +23,30 @@ const JobRecommendations = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+      const seekerEmail = localStorage.getItem("email");
+      if (!seekerEmail) {
+        navigate("/seekerprofile");
+        return;
+      }
+    
+      const encodedEmail = seekerEmail.replace(/\./g, ",");
+      const seekerRef = ref(database, `user-metadata/seeker/${encodedEmail}`);
+    
+      onValue(seekerRef, (snapshot) => {
+        const seekerData = snapshot.val();
+        if (seekerData) {
+          if (!seekerData.formSubmitted) {
+            navigate("/seekerprofile");
+            return;
+          }
+    
+        } else {
+          navigate("/seekerprofile");
+        }
+      });
+    }, []);
+
+  useEffect(() => {
     // Get email from localStorage
     const storedEmail = localStorage.getItem("email");
     if (!storedEmail) return;
@@ -199,8 +223,8 @@ const JobRecommendations = () => {
 
       {/* Job Details Modal */}
       {selectedJob && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto">
-          <div className="bg-white rounded-xl shadow-lg max-w-xl w-full p-6 relative">
+        <div className="fixed inset-0  flex items-center justify-center z-100 overflow-y-auto transform scale-100 backdrop-blur-lg">
+        <div className="bg-white rounded-xl shadow-lg max-w-xl w-full p-6 relative scale-90">
           <button
   onClick={() => {
     if (jobOpenTime && selectedJob) {

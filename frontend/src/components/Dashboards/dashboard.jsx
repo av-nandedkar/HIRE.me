@@ -102,7 +102,7 @@ const Dashboard = () => {
     ) : userRole === "seeker" ? (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Apply for Jobs */}
-        <GlassButton onClick={() => handleNavigation("/jobsearch")} color="blue">
+        <GlassButton onClick={() => handleNavigation("/jobrecommendations")} color="blue">
           <UserCheck /> Apply for Jobs
         </GlassButton>
 
