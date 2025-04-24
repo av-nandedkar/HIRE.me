@@ -174,7 +174,7 @@ const Navbar = () => {
           {authToken ? "Dashboard" : "Login"}
         </a>
 
-        <a href="/jobrecommendations" className="hover:text-[#ff347f] transition duration-300">Jobs</a>
+        <a href="/alljobs" className="hover:text-[#ff347f] transition duration-300">Jobs</a>
         <a href="/contact" className="hover:text-[#ff347f] transition duration-300">Services</a>
 
         {/* Mobile Profile Dropdown */}
