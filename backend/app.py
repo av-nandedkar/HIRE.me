@@ -322,6 +322,8 @@ def recommend():
         return jsonify({"error": str(e)}), 500
 
 
-if __name__ == '__main__':
-    app.run(host='10.40.4.225', port=5000, ssl_context=('cert.pem', 'key.pem'))
+# if __name__ == '__main__':                                                                                      ### CHANGED
+#     app.run(host='10.40.4.225', port=5000, ssl_context=('cert.pem', 'key.pem'))                                 ### CHANGED
 
+if __name__ == '__main__':
+    app.run(debug=True)
