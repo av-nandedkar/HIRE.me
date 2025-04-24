@@ -15,7 +15,7 @@ const AllJobs = () => {
     const userData = localStorage.getItem('authToken');
     setIsLoggedIn(!!userData);
   }, []);
-
+  
   useEffect(() => {
     const jobsRef = ref(database, "jobs/current");
     onValue(jobsRef, (snapshot) => {
