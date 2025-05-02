@@ -169,116 +169,306 @@ const JobRecommendations = () => {
     };
   
 
-  return (
-    <div className="p-4 sm:p-6 md:p-10 max-w-6xl mx-auto font-sans">
-      <h2 className="text-3xl font-bold text-purple-800 mb-6 text-center animate-fade-in">
-        🔎 Job Recommendations Just for You
-      </h2>
-
-      {/* Profile Info */}
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 text-gray-800 mb-6">
-        <div className="bg-white p-4 shadow-xl rounded-2xl">
-          <strong>Skills:</strong>
-          <p>{skills.length > 0 ? skills.join(", ") : "Not specified"}</p>
-        </div>
-        <div className="bg-white p-4 shadow-xl rounded-2xl">
-          <strong>Experience:</strong>
-          <p>{experience} years</p>
-        </div>
-        <div className="bg-white p-4 shadow-xl rounded-2xl">
-          <strong>Budget:</strong>
-          <p>₹{budget}</p>
-        </div>
-      </div>
-
-      {/* Loading / Error */}
-      {loading && <p className="text-center text-gray-500 animate-pulse">⏳ Loading job recommendations...</p>}
-      {error && <p className="text-center text-red-500 font-semibold">⚠️ {error}</p>}
-
-      {/* Job List */}
-      <div className="mt-8">
-        <h3 className="text-2xl font-semibold mb-4 text-purple-700">🎯 Recommended Jobs</h3>
-        {jobs.length > 0 ? (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {jobs.map((job, index) => (
-              <div
-                key={index}
-                onClick={() => showJobDetails(job)}
-                className="cursor-pointer bg-gradient-to-br from-white to-purple-50 border border-purple-100 shadow-lg rounded-2xl p-5 transition-all duration-300 hover:shadow-purple-300 hover:scale-[1.02]"
-              >
-                <h4 className="text-lg font-bold text-purple-900 mb-1">{job.jobTitle}</h4>
-                <p className="text-sm text-gray-700 mb-2">
-                  📍 <span className="font-medium">{job.location}</span> | 📅 {job.jobDate}
-                </p>
-                <p className="text-sm text-gray-800 mb-1">🛠️ <strong>Skills:</strong> {job.skillsRequired}</p>
-                <p className="text-sm text-gray-800 mb-1">💰 <strong>Budget:</strong> ₹{job.budgetRange}</p>
-                <p className="text-sm text-gray-800">🛣️ <strong>Distance:</strong> {job.distance_km} km</p>
+    return (
+      <div className="p-4 sm:p-6 md:p-10 max-w-7xl mx-auto font-sans">
+        <h2 className="text-2xl md:text-3xl font-bold text-purple-900 mb-8 text-center animate-fade-in mt-15">
+          🔎 Job Recommendations Just for You
+        </h2>
+    
+        {/* Profile Info */}
+        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mb-10">
+          <div className="bg-white p-6 rounded-xl border border-purple-100 shadow-sm hover:shadow-md transition-all duration-300 hover:border-purple-200">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="bg-purple-100 p-2 rounded-full">
+                <span className="text-purple-700">🛠️</span>
               </div>
-            ))}
+              <div>
+                <strong className="block text-purple-900 text-sm font-medium">Skills</strong>
+                <p className="text-gray-600 text-sm">{skills.length > 0 ? skills.join(", ") : "Not specified"}</p>
+              </div>
+            </div>
           </div>
-        ) : (
-          !loading && <p className="text-gray-500 text-center">No job recommendations found.</p>
+          
+          <div className="bg-white p-6 rounded-xl border border-purple-100 shadow-sm hover:shadow-md transition-all duration-300 hover:border-purple-200">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="bg-purple-100 p-2 rounded-full">
+                <span className="text-purple-700">📅</span>
+              </div>
+              <div>
+                <strong className="block text-purple-900 text-sm font-medium">Experience</strong>
+                <p className="text-gray-600 text-sm">{experience} years</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white p-6 rounded-xl border border-purple-100 shadow-sm hover:shadow-md transition-all duration-300 hover:border-purple-200">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="bg-purple-100 p-2 rounded-full">
+                <span className="text-purple-700">💰</span>
+              </div>
+              <div>
+                <strong className="block text-purple-900 text-sm font-medium">Budget</strong>
+                <p className="text-gray-600 text-sm">₹{budget}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+    
+        {/* Loading / Error */}
+        {loading && (
+          <div className="text-center py-10">
+            <div className="inline-flex items-center gap-2 text-gray-500 animate-pulse">
+              <svg className="animate-spin h-5 w-5 text-purple-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Loading job recommendations...
+            </div>
+          </div>
+        )}
+        {error && (
+          <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded">
+            <div className="flex items-center gap-2">
+              <svg className="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-red-700 font-medium">{error}</p>
+            </div>
+          </div>
+        )}
+    
+        {/* Job List */}
+        <div className="mt-10">
+          
+          {jobs.length > 0 ? (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {jobs.map((job, index) => (
+                <div
+                  key={index}
+                  onClick={() => showJobDetails(job)}
+                  className="cursor-pointer group bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 hover:border-purple-200 overflow-hidden"
+                >
+                  <div className="p-6">
+                    <div className="flex justify-between items-start mb-3">
+                      <h4 className="text-lg font-bold text-gray-900 group-hover:text-purple-700 transition-colors">{job.jobTitle}</h4>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <svg className="h-4 w-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span>{job.location}</span>
+                      </div>
+
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <svg className="h-4 w-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                      </svg>
+                        <span>{parseFloat(job.distance_km).toFixed(2)} km</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <svg className="h-4 w-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span>{new Date(job.jobDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+                      </div>
+                      
+                      <div className="flex items-start gap-2 text-sm text-gray-600">
+                        <svg className="h-4 w-4 text-purple-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        <span><strong className="font-medium">Skills:</strong> {job.skillsRequired}</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <svg className="h-4 w-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span><strong className="font-medium">Budget:</strong> ₹{job.budgetRange}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="px-6 py-3 bg-gray-50 border-t border-gray-100">
+                    <button className="text-purple-700 hover:text-purple-900 text-sm font-medium flex items-center gap-1 transition-colors">
+                      View Details
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            !loading && (
+              <div className="bg-gray-50 rounded-xl p-8 text-center">
+                <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h4 className="mt-3 text-lg font-medium text-gray-900">No job recommendations found</h4>
+                <p className="mt-1 text-gray-500">Try adjusting your filters or check back later</p>
+              </div>
+            )
+          )}
+        </div>
+    
+       {/* Job Details Modal */}
+{selectedJob && (
+  <div className="mt-20 fixed inset-0 flex items-start justify-center z-50 overflow-y-auto p-4 backdrop-blur-sm bg-black/30">
+    <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl mx-4 my-8 relative transform transition-all duration-300 scale-95 group-hover:scale-100">
+      <button
+        onClick={() => {
+          if (jobOpenTime && selectedJob) {
+            const timeSpentSec = Math.round((Date.now() - jobOpenTime) / 1000);
+            storeTimeSpent(selectedJob.job_id, timeSpentSec);
+          }
+          setSelectedJob(null);
+          setJobOpenTime(null);
+        }}
+        className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition-colors"
+      >
+        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <div className="p-4 sm:p-6 space-y-4">
+        {/* Job Title and Basic Info */}
+        <div>
+          <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">{selectedJob.jobTitle}</h3>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {/* Distance */}
+            <div className="flex items-start gap-3">
+              <div className="bg-purple-100 p-2 rounded-lg">
+                <svg className="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v3l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-xs sm:text-sm font-medium text-gray-500">Distance</p>
+                <p className="text-sm sm:text-base text-gray-900">{parseFloat(selectedJob.distance_km).toFixed(2)} km away</p>
+              </div>
+            </div>
+
+            {/* Posted Date */}
+            <div className="flex items-start gap-3">
+              <div className="bg-purple-100 p-2 rounded-lg">
+                <svg className="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-xs sm:text-sm font-medium text-gray-500">Posted On</p>
+                <p className="text-sm sm:text-base text-gray-900">
+                  {new Date(selectedJob.jobDate).toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                  })}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Job Details Grid */}
+        <div className="grid gap-3 sm:grid-cols-2">
+          {/* Location */}
+          <div className="flex items-start gap-3">
+            <div className="bg-purple-100 p-2 rounded-lg">
+              <svg className="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-xs sm:text-sm font-medium text-gray-500">Location</p>
+              <p className="text-sm sm:text-base text-gray-900">{selectedJob.location}</p>
+            </div>
+          </div>
+
+          {/* Budget */}
+          <div className="flex items-start gap-3">
+            <div className="bg-purple-100 p-2 rounded-lg">
+              <svg className="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-xs sm:text-sm font-medium text-gray-500">Budget</p>
+              <p className="text-sm sm:text-base text-gray-900">₹{selectedJob.budgetRange}</p>
+            </div>
+          </div>
+
+          {/* Skills Required */}
+          <div className="flex items-start gap-3 sm:col-span-2">
+            <div className="bg-purple-100 p-2 rounded-lg">
+              <svg className="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-xs sm:text-sm font-medium text-gray-500">Skills Required</p>
+              <p className="text-sm sm:text-base text-gray-900">{selectedJob.skillsRequired}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Job Description */}
+        <div className="pt-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+  <div className="flex-1">
+    <h4 className="text-sm sm:text-base font-medium text-gray-900 mb-2">Job Description</h4>
+    <p className="text-sm sm:text-base text-gray-700 whitespace-pre-line">{selectedJob.description || "No additional details provided."}</p>
+  </div>
+
+  {/* Apply Button - Compact version */}
+  <div className="w-full sm:w-auto">
+    <button
+      className="bg-purple-700 hover:bg-purple-800 text-white font-medium px-4 sm:px-5 py-1.5 rounded-lg shadow-sm transition-all duration-200 hover:shadow-md flex items-center justify-center gap-2 text-xs sm:text-sm w-full sm:w-auto"
+      onClick={() => navigate(`/applyform?jobId=${selectedJob.job_id}`)}
+    >
+      Apply Now
+      <svg className="h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+      </svg>
+    </button>
+  </div>
+</div>
+
+        {/* Similar Jobs */}
+        {similarJobs.length > 0 && (
+          <div className="pt-5 mt-5 border-t border-purple-200">
+            <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-3">Similar Jobs</h4>
+            <div className="grid gap-2 max-h-48 sm:max-h-60 overflow-y-auto pr-2">
+              {similarJobs.map((job, idx) => (
+                <div
+                  key={idx}
+                  className="bg-purple-100 hover:bg-gray-100 p-3 sm:p-4 rounded-lg border border-gray-100 transition cursor-pointer"
+                  onClick={() => showJobDetails(job)}
+                >
+                  <h5 className="font-medium text-sm sm:text-base text-gray-900">{job.jobTitle}</h5>
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs sm:text-sm text-gray-600">
+                    <span>{job.location}</span>
+                    <span>•</span>
+                    <span>₹{job.budgetRange}</span>
+                    <span>•</span>
+                    <span>{parseFloat(job.distance_km).toFixed(2)} km</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
       </div>
-
-      {/* Job Details Modal */}
-      {selectedJob && (
-        <div className="fixed inset-0  flex items-center justify-center z-100 overflow-y-auto transform scale-100 backdrop-blur-lg">
-        <div className="bg-white rounded-xl shadow-lg max-w-xl w-full p-6 relative scale-90">
-          <button
-  onClick={() => {
-    if (jobOpenTime && selectedJob) {
-      const timeSpentSec = Math.round((Date.now() - jobOpenTime) / 1000);
-      storeTimeSpent(selectedJob.job_id, timeSpentSec); // <-- store it
-    }
-    setSelectedJob(null);
-    setJobOpenTime(null);
-  }}
-  className="absolute top-3 right-4 text-gray-500 hover:text-black text-xl"
->
-  ✖
-</button>
-
-
-            <h3 className="text-xl font-bold text-purple-800 mb-2">{selectedJob.jobTitle}</h3>
-            <p className="mb-2"><strong>Location:</strong> {selectedJob.location}</p>
-            <p className="mb-2"><strong>Skills:</strong> {selectedJob.skillsRequired}</p>
-            <p className="mb-2"><strong>Budget:</strong> ₹{selectedJob.budgetRange}</p>
-            <p className="mb-2"><strong>Distance:</strong> {selectedJob.distance_km} km</p>
-            <p className="mb-4"><strong>Description:</strong> {selectedJob.description || "No additional details provided."}</p>
-
-            <button
-              className="bg-purple-900 text-white font-medium px-5 py-2 rounded-3xl shadow-lg transform transition-transform duration-300 hover:scale-105 hover:shadow-purple-500 active:scale-95"
-              onClick={() => navigate(`/applyform?jobId=${selectedJob.job_id}`)}
-            >
-              Apply Now
-            </button>
-
-            {/* Similar Jobs */}
-            {similarJobs.length > 0 && (
-              <div className="mt-6">
-                <h4 className="text-lg font-semibold text-purple-700 mb-2">🔁 Similar Jobs</h4>
-                <div className="grid gap-4 max-h-60 overflow-y-auto pr-2">
-                  {similarJobs.map((job, idx) => (
-                    <div
-                      key={idx}
-                      className="bg-purple-50 p-3 rounded-xl border border-purple-100 hover:shadow-md transition cursor-pointer"
-                      onClick={() => showJobDetails(job)}
-                    >
-                      <h5 className="font-semibold text-purple-800">{job.jobTitle}</h5>
-                      <p className="text-sm text-gray-700">
-                        {job.location} • ₹{job.budgetRange}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </div>
-  );
+  </div>
+)}
+      </div>
+    );
+    
 };
 
 export default JobRecommendations;

@@ -25,6 +25,7 @@ import ViewAppliedJobs from "./components/Seeker/ViewAppliedJobs";
 import CompletedJobs from "./components/Provider/CompletedJobs";
 import JobRecommendations from "./components/Seeker/JobRecommandations";
 import AllJobs from "./components/Seeker/AllJobs";
+import PartTimeJobs from "./components/Seeker/PartTime";
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/viewprofile" element={<ViewProfile />}></Route>
           <Route path="/alljobs" element={<AllJobs/>}></Route>
+          <Route path="/partimejobs" element={<PartTimeJobs/>}></Route>
 
           {/* Provider-only Routes */}
           <Route

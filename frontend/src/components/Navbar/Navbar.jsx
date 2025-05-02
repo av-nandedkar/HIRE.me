@@ -102,6 +102,13 @@ const Navbar = () => {
       Jobs
     </a>
   </li>
+  <li>
+    <a href="/partimejobs" className="relative hover:text-[#ff347f] transition duration-300 
+       after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] 
+       after:bg-[#ff347f] after:transition-all after:duration-300 hover:after:w-full">
+      Part-Time
+    </a>
+  </li>
   
   
 </ul>
@@ -175,6 +182,7 @@ const Navbar = () => {
         </a>
 
         <a href="/alljobs" className="hover:text-[#ff347f] transition duration-300">Jobs</a>
+        <a href="/partimejobs" className="hover:text-[#ff347f] transition duration-300">Part-Time</a>
         <a href="/contact" className="hover:text-[#ff347f] transition duration-300">Services</a>
 
         {/* Mobile Profile Dropdown */}
