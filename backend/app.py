@@ -327,5 +327,9 @@ def recommend():
 # if __name__ == '__main__':                                                                                      ### CHANGED
 #     app.run(host='192.168.174.55', port=5000, ssl_context=('cert.pem', 'key.pem'))                                 ### CHANGED
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# if __name__ == '__main__':
+#     app.run(debug=True)
+
+@app.route("/")
+def home():
+    return "Hello from Flask on Vercel!"
