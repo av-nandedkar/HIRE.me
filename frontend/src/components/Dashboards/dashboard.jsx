@@ -62,7 +62,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen py-30 bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white flex flex-col items-center p-6">
   <h2 className="text-4xl font-semibold mb-4 text-center drop-shadow-md transition-all duration-500 ease-in-out">
-    Welcome to Your Dashboard
+    Welcome to Your Menu
   </h2>
 
   <img

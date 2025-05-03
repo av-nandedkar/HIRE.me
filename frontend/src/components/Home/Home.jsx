@@ -58,7 +58,7 @@ const Home = () => {
           onClick={() => navigate("/dashboard")}
           className="bg-[black] hover:bg-[#ff347f] cursor-pointer text-white px-6 py-3 rounded-lg font-medium transition"
         >
-          Dashboard
+          Menu
         </button>
       ) : (
         <a href="/register">
