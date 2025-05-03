@@ -133,9 +133,45 @@ const SeekerForm = () => {
 
 
   const skillOptions = [
+    // Original list
     "Plumber", "Electrician", "Painter", "Electronics Repairs", "Mechanic", 
-    "Housemaid", "Cleaning Worker","Agriculture","Poultry Farming","Fisheries","Construction", "Maintenance","Handicrafts"
+    "Housemaid", "Cleaning Worker", "Agriculture", "Poultry Farming", "Fisheries", 
+    "Construction", "Maintenance", "Handicrafts",
+  
+    // Additional related fields (Grouped by domain)
+  
+    // Household & Cleaning
+    "Housekeeping", "Home Cleaning", "Laundry Services", "Dishwashing", "Ironing",
+    "Babysitting", "Elderly Care",
+  
+    // Technical & Repairs
+    "Carpenter", "Welder", "Tailor", "Blacksmith", "AC Technician",
+    "Refrigerator Technician", "Mobile Repair Technician", "Computer Repair Technician",
+    "Water Purifier Technician", "CCTV Installation", "Cable TV Technician", "Clock Repair",
+  
+    // Mechanical & Transport
+    "Vehicle Washer", "Driver", "Driving Instructor", "Delivery Person",
+    "Car Washing", "Mechanic (2-Wheeler)", "Mechanic (4-Wheeler)",
+  
+    // Construction & Manual Labor
+    "Mason", "Tile Fitter", "Roofer", "Factory Worker", "Warehouse Worker",
+    "Garbage Collection", "Recycling Worker", "Sign Board Installer", "Window Cleaner",
+  
+    // Agriculture & Livelihood
+    "Farm Laborer", "Gardener", "Livestock Care", "Pest Control Worker", "Fishing Net Repairer",
+  
+    // Event & Service Industry
+    "Event Decorator", "Sound Technician", "DJ Services", "Catering Assistant",
+    "Waiter / Waitress", "Street Vendor", "Packers and Movers",
+  
+    // Personal Care
+    "Barber", "Beautician", "Massage Therapist", "Yoga Instructor",
+  
+    // Miscellaneous
+    "Baker", "Cook", "Retail Assistant", "Customer Support", "Photographer",
+    "Sewing Machine Operator", "Shoe Repair", "Receptionist", "Tutor"
   ];
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
