@@ -81,7 +81,7 @@ const JobRecommendations = () => {
       setError("");
     
       try {
-        const response = await fetch("http://0.0.0.0:5000/recommend", {              //### CHANGED             
+        const response = await fetch("http://10.40.4.225:5000/recommend", {              //### CHANGED             
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
